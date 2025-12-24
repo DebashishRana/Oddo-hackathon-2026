@@ -1,47 +1,44 @@
 import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
+import Credentials from "next-auth/providers/credentials"
+import { getUserByEmail } from "./database"
+import { verifyPassword } from "./auth-utils"
+import { authConfig } from "./auth.config"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    ...authConfig.providers,
+    Credentials({
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      authorize: async (credentials) => {
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
+
+        const email = credentials.email as string
+        const user = await getUserByEmail(email)
+
+        if (!user || !user.password_hash) {
+          // User not found or has no password (maybe Google only)
+          return null
+        }
+
+        const isValid = await verifyPassword(credentials.password as string, user.password_hash)
+
+        if (!isValid) {
+          return null
+        }
+
+        return {
+          id: user.id.toString(),
+          email: user.email,
+          name: user.name,
+          image: user.image_url,
+        }
+      },
     }),
   ],
-  callbacks: {
-    async jwt({ token, account, profile }) {
-      // Persist the OAuth access_token and or the user id to the token right after signin
-      if (account) {
-        token.accessToken = account.access_token
-        token.id = profile?.sub
-        token.email = profile?.email
-        token.name = profile?.name
-        token.picture = profile?.picture
-      }
-      return token
-    },
-    async session({ session, token }) {
-      // Send properties to the client, like an access_token and user id from a provider.
-      if (token.accessToken) {
-        session.accessToken = token.accessToken as string
-      }
-      if (token.id) {
-        session.user.id = token.id as string
-      }
-      if (token.email) {
-        session.user.email = token.email as string
-      }
-      if (token.name) {
-        session.user.name = token.name as string
-      }
-      if (token.picture) {
-        session.user.image = token.picture as string
-      }
-      return session
-    },
-  },
-  pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
-  },
 })

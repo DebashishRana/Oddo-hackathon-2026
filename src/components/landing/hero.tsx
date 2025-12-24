@@ -1,13 +1,24 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Sparkles, Zap, Code, Rocket, Github } from "lucide-react"
+import {
+  ArrowRight,
+  Sparkles,
+  ShieldCheck,
+  QrCode,
+  FileCheck2,
+  Workflow,
+  Github
+} from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 pt-20 sm:pt-16">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 sm:pt-16" style={{backgroundImage: 'url(/hero-background.jpg)', backgroundSize: 'cover', backgroundPosition: 'center'}}>
+      {/* Background overlay for better text readability */}
+      <div className="absolute inset-0 bg-black/40"></div>
+      
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
@@ -20,19 +31,8 @@ const Hero = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="space-y-6 sm:space-y-8"
+          className="space-y-6 sm:space-y-8 pt-12 sm:pt-24"
         >
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="inline-flex items-center space-x-2 bg-muted/50 backdrop-blur-sm border border-border rounded-full px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm text-muted-foreground"
-          >
-            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-            <span className="whitespace-nowrap">Ultimate AI SAAS Kit - Launch in Minutes</span>
-          </motion.div>
-
           {/* Main Headline */}
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -40,13 +40,13 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-tight"
           >
-            Build AI-Powered
+            Next Generation Documentation
             <br />
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              SAAS Applications
+            <span className="bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 bg-clip-text text-transparent">
+              starts here
             </span>
             <br />
-            in Minutes
+            
           </motion.h1>
 
           {/* Subtitle */}
@@ -54,32 +54,10 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4"
+            className="text-base sm:text-lg lg:text-xl text-white max-w-3xl mx-auto leading-relaxed px-4"
           >
-            The complete toolkit for developers to create, customize, and launch
-            AI-powered SAAS applications with authentication, payments, and modern UI components.
+            Manage, verify, and redirect documents all at once with VeriQuick Supercharged with verefied databases and QR. 
           </motion.p>
-
-          {/* Feature Pills */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex flex-wrap justify-center gap-4 text-sm"
-          >
-            <div className="flex items-center space-x-2 bg-muted/30 backdrop-blur-sm border border-border rounded-full px-4 py-2">
-              <Zap className="w-4 h-4 text-primary" />
-              <span>Next.js 15 + TypeScript</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-muted/30 backdrop-blur-sm border border-border rounded-full px-4 py-2">
-              <Code className="w-4 h-4 text-primary" />
-              <span>ShadCN UI + Tailwind</span>
-            </div>
-            <div className="flex items-center space-x-2 bg-muted/30 backdrop-blur-sm border border-border rounded-full px-4 py-2">
-              <Rocket className="w-4 h-4 text-primary" />
-              <span>AI Integration Ready</span>
-            </div>
-          </motion.div>
 
           {/* CTA Buttons */}
           <motion.div
@@ -94,7 +72,7 @@ const Hero = () => {
               asChild
             >
               <Link href="/get-started" className="flex items-center space-x-2">
-                <span>Get Started Free</span>
+                <span>Get started</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>
@@ -104,8 +82,47 @@ const Hero = () => {
               className="text-base font-medium px-6 py-3 h-12 rounded-lg border-2 hover:bg-muted/50 transition-all duration-300 hover:scale-105"
               asChild
             >
-              <Link href="/demo">View Live Demo</Link>
+              <Link href="#features">Explore more</Link>
             </Button>
+          </motion.div>
+
+          {/* Live status */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.65 }}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8"
+          >
+            {[
+              {
+                title: "EDV Verifying...",
+                description: "Automated validation under 60 seconds",
+                icon: <FileCheck2 className="w-5 h-5 text-primary" />
+              },
+              {
+                title: "Govt backed integrity",
+                description: "Double verification with trusted databases",
+                icon: <ShieldCheck className="w-5 h-5 text-primary" />
+              },
+              {
+                title: "Redirect and pipeline",
+                description: "Stream results to your lakes and APIs securely",
+                icon: <Workflow className="w-5 h-5 text-primary" />
+              }
+            ].map((item) => (
+              <div
+                key={item.title}
+                className="flex items-start space-x-3 bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl px-4 py-3 text-left"
+              >
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
+                  {item.icon}
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">{item.title}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+                </div>
+              </div>
+            ))}
           </motion.div>
 
           {/* GitHub Button */}
@@ -140,13 +157,16 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="pt-8 text-sm text-muted-foreground"
           >
-            <p>Trusted by 1000+ developers worldwide</p>
-            <div className="flex justify-center items-center space-x-8 mt-4 opacity-60">
-              <div className="text-xs font-medium">⭐⭐⭐⭐⭐ 4.9/5</div>
-              <div className="text-xs">•</div>
-              <div className="text-xs font-medium">500+ GitHub Stars</div>
-              <div className="text-xs">•</div>
-              <div className="text-xs font-medium">Open Source</div>
+            <p>Supercharged by the tools your team already loves</p>
+            <div className="flex flex-wrap justify-center items-center gap-4 mt-4 opacity-80 text-xs font-medium">
+              {["Brainwave", "Figma", "Notion", "Slack", "Photoshop", "Framer", "Raindrop", "Protopie"].map((name) => (
+                <span
+                  key={name}
+                  className="px-3 py-1 rounded-full border border-border/60 bg-muted/40"
+                >
+                  {name}
+                </span>
+              ))}
             </div>
           </motion.div>
         </motion.div>

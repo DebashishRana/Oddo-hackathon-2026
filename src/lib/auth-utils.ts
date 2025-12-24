@@ -1,4 +1,5 @@
 import { auth } from "./auth"
+import { hash, compare } from "bcryptjs"
 
 export async function getCurrentUser() {
   const session = await auth()
@@ -11,4 +12,12 @@ export async function requireAuth() {
     throw new Error("Authentication required")
   }
   return session.user
+}
+
+export async function hashPassword(password: string): Promise<string> {
+  return hash(password, 12)
+}
+
+export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  return compare(password, hashedPassword)
 }

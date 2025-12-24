@@ -13,8 +13,9 @@ export { pool }
 
 export interface User {
   id: number
-  google_id: string
+  google_id?: string | null
   email: string
+  password_hash?: string | null
   name?: string
   image_url?: string
   created_at: Date
@@ -28,7 +29,7 @@ export interface User {
 }
 
 export interface CreateUserData {
-  google_id: string
+  google_id?: string | null
   email: string
   name?: string
   image_url?: string
@@ -83,33 +84,73 @@ export interface DiscountValidationResult {
   error_message?: string
 }
 
+export async function getUserByEmail(email: string): Promise<User | null> {
+  const client = await pool.connect()
+  try {
+    const result = await client.query('SELECT * FROM users WHERE email = $1', [email])
+    return result.rows[0] || null
+  } finally {
+    client.release()
+  }
+}
+
+export async function createUserWithPassword(email: string, passwordHash: string, name?: string): Promise<User> {
+  const client = await pool.connect()
+  try {
+    const query = `
+      INSERT INTO users (email, password_hash, name, created_at, updated_at, last_login)
+      VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      RETURNING *
+    `
+    const result = await client.query(query, [email, passwordHash, name])
+    return result.rows[0]
+  } finally {
+    client.release()
+  }
+}
+
 // Create or update user on login
 export async function upsertUser(userData: CreateUserData): Promise<User> {
   const client = await pool.connect()
   
   try {
-    const query = `
-      INSERT INTO users (google_id, email, name, image_url, last_login)
-      VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
-      ON CONFLICT (google_id)
-      DO UPDATE SET
-        email = EXCLUDED.email,
-        name = EXCLUDED.name,
-        image_url = EXCLUDED.image_url,
-        last_login = CURRENT_TIMESTAMP,
-        updated_at = CURRENT_TIMESTAMP
-      RETURNING *
-    `
+    // First try to find by email to handle linking
+    const existingUser = await client.query('SELECT * FROM users WHERE email = $1', [userData.email])
     
-    const values = [
-      userData.google_id,
-      userData.email,
-      userData.name || null,
-      userData.image_url || null
-    ]
-    
-    const result = await client.query(query, values)
-    return result.rows[0] as User
+    if (existingUser.rows.length > 0) {
+      // User exists, update google_id if missing (Link Account)
+      const query = `
+        UPDATE users 
+        SET google_id = $1, 
+            name = COALESCE(users.name, $2),
+            image_url = COALESCE(users.image_url, $3),
+            last_login = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE email = $4
+        RETURNING *
+      `
+      const result = await client.query(query, [
+        userData.google_id, 
+        userData.name, 
+        userData.image_url, 
+        userData.email
+      ])
+      return result.rows[0]
+    } else {
+      // Create new Google user
+      const query = `
+        INSERT INTO users (google_id, email, name, image_url, last_login)
+        VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+        RETURNING *
+      `
+      const result = await client.query(query, [
+        userData.google_id, 
+        userData.email, 
+        userData.name, 
+        userData.image_url
+      ])
+      return result.rows[0]
+    }
   } finally {
     client.release()
   }
@@ -129,19 +170,7 @@ export async function getUserByGoogleId(googleId: string): Promise<User | null> 
   }
 }
 
-// Get user by email
-export async function getUserByEmail(email: string): Promise<User | null> {
-  const client = await pool.connect()
 
-  try {
-    const query = 'SELECT * FROM users WHERE email = $1'
-    const result = await client.query(query, [email])
-
-    return result.rows[0] as User || null
-  } finally {
-    client.release()
-  }
-}
 
 // Get user by ID
 export async function getUserById(id: number): Promise<User | null> {

@@ -12,6 +12,9 @@ interface PricingClientProps {
     popular: boolean;
     variant: "default" | "outline";
     cta: string;
+    action?: "checkout" | "signin" | "contact";
+    checkoutPlan?: string;
+    contactEmail?: string;
   };
   isAuthenticated: boolean;
 }
@@ -22,20 +25,21 @@ export function PricingClient({ plan, isAuthenticated }: PricingClientProps) {
   const [showDiscountInput, setShowDiscountInput] = useState(false);
 
   const handlePurchase = async () => {
-    if (!isAuthenticated) {
-      // Redirect to sign in
-      window.location.href = '/auth/signin?callbackUrl=/dashboard/billing';
+    const action = plan.action || 'checkout';
+
+    if (action === 'signin') {
+      window.location.href = '/auth/signin';
       return;
     }
 
-    if (plan.name !== 'Pro') {
-      // Handle other plans (Free, Enterprise)
-      if (plan.name === 'Starter') {
-        window.location.href = '/auth/signin';
-      } else {
-        // Enterprise - contact sales
-        window.location.href = 'mailto:support@bestsaaskit.com?subject=Enterprise Plan Inquiry';
-      }
+    if (action === 'contact') {
+      const email = plan.contactEmail || 'support@veriquick.com';
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent(`${plan.name} Plan Inquiry`)}`;
+      return;
+    }
+
+    if (!isAuthenticated) {
+      window.location.href = '/auth/signin?callbackUrl=/dashboard/billing';
       return;
     }
 
@@ -43,7 +47,7 @@ export function PricingClient({ plan, isAuthenticated }: PricingClientProps) {
     
     try {
       // Create checkout session for Pro plan with optional discount
-      const requestBody: any = { plan: 'pro' };
+      const requestBody: any = { plan: plan.checkoutPlan || 'pro' };
       if (appliedDiscount) {
         requestBody.discountCode = appliedDiscount.code;
       }

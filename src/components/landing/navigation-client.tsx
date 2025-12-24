@@ -2,10 +2,10 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { cn } from "@/lib/utils"
-import { Menu, X, Zap } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { SignInButton } from "@/components/auth/signin-button"
 import { UserButtonClient } from "@/components/auth/user-button-client"
 import { CreditsDisplay } from "@/components/credits/credits-display"
@@ -18,10 +18,10 @@ export function NavigationClient({ session }: NavigationClientProps) {
   const [isOpen, setIsOpen] = React.useState(false)
 
   const navItems = [
-    { name: "Features", href: "#features" },
+    { name: "Solutions", href: "#features" },
     { name: "Pricing", href: "#pricing" },
-    { name: "Testimonials", href: "#testimonials" },
-    { name: "Documentation", href: "/docs" },
+    { name: "Why VeriQuick", href: "#testimonials" },
+    { name: "Docs", href: "/docs" },
     { name: "Contact", href: "/contact" },
   ]
 
@@ -31,10 +31,14 @@ export function NavigationClient({ session }: NavigationClientProps) {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Zap className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold">Best SAAS Kit</span>
+            <Image
+              src="/Logo.png"
+              alt="VeriQuick Logo"
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-lg"
+            />
+            <span className="text-xl font-bold">VeriQuick</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -52,7 +56,6 @@ export function NavigationClient({ session }: NavigationClientProps) {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <ThemeToggle />
             {!session ? (
               <>
                 <SignInButton>
@@ -101,10 +104,6 @@ export function NavigationClient({ session }: NavigationClientProps) {
               </Link>
             ))}
             <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">Theme</span>
-                <ThemeToggle />
-              </div>
               {!session ? (
                 <>
                   <SignInButton>

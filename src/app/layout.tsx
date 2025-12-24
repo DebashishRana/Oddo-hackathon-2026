@@ -16,25 +16,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI SAAS Kit - Build AI-Powered Applications in Minutes",
-  description: "The ultimate toolkit for developers to create, customize, and launch AI-powered SAAS applications with authentication, payments, and modern UI components.",
-  keywords: ["AI", "SAAS", "Next.js", "TypeScript", "Tailwind CSS", "ShadCN", "OpenRouter", "Clerk", "Neon"],
-  authors: [{ name: "AI SAAS Kit Team" }],
-  creator: "AI SAAS Kit",
-  publisher: "AI SAAS Kit",
+  title: "VeriQuick - Instant Document Verification",
+  description: "Manage, verify, and redirect documents all at once with VeriQuick. Instant EDV validation, QR-based access, and secure redirects.",
+  keywords: ["Document Verification", "EDV", "QR Access", "Compliance", "Identity Verification", "SAAS"],
+  authors: [{ name: "VeriQuick Team" }],
+  creator: "VeriQuick",
+  publisher: "VeriQuick",
+  icons: {
+    icon: "/Logo.png",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://aisaaskit.com",
-    title: "AI SAAS Kit - Build AI-Powered Applications in Minutes",
-    description: "The ultimate toolkit for developers to create, customize, and launch AI-powered SAAS applications with authentication, payments, and modern UI components.",
-    siteName: "AI SAAS Kit",
+    url: "https://veriquick.com",
+    title: "VeriQuick - Instant Document Verification",
+    description: "Manage, verify, and redirect documents all at once with VeriQuick. Instant EDV validation, QR-based access, and secure redirects.",
+    siteName: "VeriQuick",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI SAAS Kit - Build AI-Powered Applications in Minutes",
-    description: "The ultimate toolkit for developers to create, customize, and launch AI-powered SAAS applications with authentication, payments, and modern UI components.",
-    creator: "@aisaaskit",
+    title: "VeriQuick - Instant Document Verification",
+    description: "Manage, verify, and redirect documents all at once with VeriQuick. Instant EDV validation, QR-based access, and secure redirects.",
+    creator: "@veriquick",
   },
   robots: {
     index: true,
@@ -68,7 +71,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
         <ThemeProvider
-          defaultTheme="system"
+          defaultTheme="dark"
           storageKey="ui-theme"
         >
           {children}

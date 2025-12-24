@@ -1,15 +1,16 @@
 "use client"
 
 import Link from "next/link"
-import { Zap, Github, Twitter, Linkedin, Mail } from "lucide-react"
+import Image from "next/image"
+import { Github, Twitter, Linkedin, Mail } from "lucide-react"
 
 const Footer = () => {
   const footerLinks = {
     product: [
-      { name: "Features", href: "#features" },
+      { name: "Solutions", href: "#features" },
       { name: "Pricing", href: "#pricing" },
+      { name: "Why VeriQuick", href: "#testimonials" },
       { name: "Documentation", href: "/docs" },
-      { name: "Changelog", href: "/changelog" },
       { name: "Roadmap", href: "/roadmap" }
     ],
     company: [
@@ -20,7 +21,7 @@ const Footer = () => {
       { name: "Press Kit", href: "/press" }
     ],
     resources: [
-      { name: "Community", href: "/community" },
+      { name: "Compliance Center", href: "/compliance" },
       { name: "Help Center", href: "/help" },
       { name: "API Reference", href: "/api" },
       { name: "Examples", href: "/examples" },
@@ -36,10 +37,10 @@ const Footer = () => {
   }
 
   const socialLinks = [
-    { name: "GitHub", href: "https://github.com", icon: Github },
+    { name: "GitHub", href: "https://github.com/VeriQuick", icon: Github },
     { name: "Twitter", href: "https://twitter.com", icon: Twitter },
-    { name: "LinkedIn", href: "https://linkedin.com", icon: Linkedin },
-    { name: "Email", href: "mailto:hello@aisaaskit.com", icon: Mail }
+    { name: "LinkedIn", href: "https://linkedin.com/company/veriquick", icon: Linkedin },
+    { name: "Email", href: "mailto:hello@veriquick.com", icon: Mail }
   ]
 
   return (
@@ -50,14 +51,17 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg">
-                <Zap className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold text-foreground">AI SAAS Kit</span>
+              <Image
+                src="/Logo.png"
+                alt="VeriQuick Logo"
+                width={32}
+                height={32}
+                className="w-8 h-8 rounded-lg"
+              />
+              <span className="text-xl font-bold text-foreground">VeriQuick</span>
             </div>
             <p className="text-muted-foreground mb-6 max-w-sm">
-              The ultimate toolkit for building AI-powered SAAS applications. 
-              Launch faster, scale better, and focus on what matters most.
+              Instant document verification, QR access, and government-backed integrity. Manage, verify, and redirect documents from one secure workspace.
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((social) => {
@@ -168,10 +172,10 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">
           <div className="text-muted-foreground text-sm">
-            © 2024 AI SAAS Kit. All rights reserved.
+            © 2026 VeriQuick. All rights reserved.
           </div>
           <div className="flex items-center space-x-6 mt-4 md:mt-0">
-            <span className="text-muted-foreground text-sm">Built with ❤️ using Next.js</span>
+            <span className="text-muted-foreground text-sm">Built with ❤️ from D</span>
             <div className="flex items-center space-x-2 text-muted-foreground text-sm">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               <span>All systems operational</span>

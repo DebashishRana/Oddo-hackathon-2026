@@ -9,25 +9,25 @@ const Testimonials = () => {
   const testimonials = [
     {
       name: "Sarah Chen",
-      role: "Founder, AI Startup",
-      company: "TechFlow",
-      content: "This kit saved me months of development time. I went from idea to MVP in just 2 weeks. The AI integrations are seamless and the code quality is exceptional.",
+      role: "Head of Compliance",
+      company: "NorthRiver Bank",
+      content: "VeriQuick cut our document verification time from days to minutes. Audit logs, QR retrieval, and gov-backed checks make passing reviews painless.",
       rating: 5,
       avatar: "/api/placeholder/40/40"
     },
     {
       name: "Marcus Rodriguez",
-      role: "Senior Developer",
-      company: "InnovateLabs",
-      content: "The best SAAS starter kit I've used. Clean architecture, modern stack, and excellent documentation. My team was productive from day one.",
+      role: "Platform Lead",
+      company: "FinEdge",
+      content: "Bulk uploads plus automatic redirects feed our data lake in real time. We reclaimed 30% of ops time and eliminated manual checks.",
       rating: 5,
       avatar: "/api/placeholder/40/40"
     },
     {
       name: "Emily Watson",
       role: "Product Manager",
-      company: "DataCorp",
-      content: "We launched our AI-powered analytics platform using this kit. The built-in authentication and payment processing saved us countless hours.",
+      company: "DocuServe",
+      content: "QR-based access is a game changer for field teams. They scan, verify, and move on — zero back-and-forth with HQ.",
       rating: 5,
       avatar: "/api/placeholder/40/40"
     },
@@ -35,15 +35,15 @@ const Testimonials = () => {
       name: "David Kim",
       role: "Indie Hacker",
       company: "Solo Founder",
-      content: "As a solo founder, this kit was a game-changer. I could focus on my unique features instead of rebuilding the same boilerplate code.",
+      content: "I plugged VeriQuick into my portal with minimal code. Token-based auth and auto-deletion keep me compliant out of the box.",
       rating: 5,
       avatar: "/api/placeholder/40/40"
     },
     {
       name: "Lisa Thompson",
       role: "CTO",
-      company: "StartupXYZ",
-      content: "The scalability and performance optimizations are impressive. We're handling thousands of users without any issues. Highly recommended!",
+      company: "RegShield",
+      content: "Government database checks layered with our own APIs give us double assurance against fraud. Clients love the transparency.",
       rating: 5,
       avatar: "/api/placeholder/40/40"
     },
@@ -51,7 +51,7 @@ const Testimonials = () => {
       name: "Alex Johnson",
       role: "Full Stack Developer",
       company: "FreelanceForce",
-      content: "I've built multiple client projects with this kit. The TypeScript setup and component library make development a breeze. Worth every penny.",
+      content: "Every client project asks for verification now. VeriQuick lets me ship QR flows, redirects, and audit logs without rewriting code.",
       rating: 5,
       avatar: "/api/placeholder/40/40"
     }
@@ -68,14 +68,10 @@ const Testimonials = () => {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-            Loved by
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              {" "}Developers
-            </span>
+            Trusted by teams who need documents to verify fast
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Join thousands of developers who have successfully launched their AI SAAS applications 
-            using our comprehensive toolkit.
+            Banks, fintechs, and ops teams rely on VeriQuick for instant EDV, QR access, and auditable redirects.
           </p>
         </motion.div>
 
@@ -88,12 +84,12 @@ const Testimonials = () => {
           className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16"
         >
           <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">1000+</div>
-            <div className="text-muted-foreground">Happy Developers</div>
+            <div className="text-3xl font-bold text-primary mb-2">120K+</div>
+            <div className="text-muted-foreground">Documents verified</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-primary mb-2">500+</div>
-            <div className="text-muted-foreground">Apps Launched</div>
+            <div className="text-3xl font-bold text-primary mb-2">30%</div>
+            <div className="text-muted-foreground">Ops cost reduction</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-primary mb-2">4.9/5</div>
@@ -101,7 +97,7 @@ const Testimonials = () => {
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-primary mb-2">99%</div>
-            <div className="text-muted-foreground">Satisfaction Rate</div>
+            <div className="text-muted-foreground">Verification uptime</div>
           </div>
         </motion.div>
 
@@ -158,10 +154,9 @@ const Testimonials = () => {
           className="text-center mt-16"
         >
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-2xl p-8 border border-primary/20">
-            <h3 className="text-2xl font-bold mb-4">Join the Success Stories</h3>
+            <h3 className="text-2xl font-bold mb-4">Join the verified lane</h3>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Don't just take our word for it. Start building your AI SAAS today and 
-              see why developers love our toolkit.
+              Move verification from a backlog to a one-click flow. VeriQuick keeps every redirect, QR, and EDV check compliant and fast.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button
@@ -169,14 +164,14 @@ const Testimonials = () => {
                 whileTap={{ scale: 0.95 }}
                 className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
               >
-                Start Your Success Story
+                Start verifying
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="border border-border px-8 py-3 rounded-lg font-medium hover:bg-muted/50 transition-colors"
               >
-                Read More Reviews
+                See a live run
               </motion.button>
             </div>
           </div>

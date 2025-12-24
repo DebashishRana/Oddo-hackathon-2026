@@ -2,18 +2,15 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
-  Zap,
-  Shield,
-  Database,
-  Palette,
-  Bot,
-  CreditCard,
-  Code,
-  Rocket,
-  Users,
-  BarChart3,
+  FileCheck2,
+  ServerCog,
+  QrCode,
+  ShieldCheck,
+  Leaf,
+  Smartphone,
   Lock,
-  Globe
+  Workflow,
+  Puzzle
 } from "lucide-react"
 import { motion } from "framer-motion"
 import Image from "next/image"
@@ -21,76 +18,58 @@ import Image from "next/image"
 const Features = () => {
   const features = [
     {
-      icon: <Zap className="w-8 h-8" />,
-      title: "Lightning Fast Setup",
-      description: "Get your AI SAAS running in under 30 minutes with our pre-configured Next.js foundation.",
-      color: "text-yellow-500"
+      icon: <FileCheck2 className="w-8 h-8" />,
+      title: "Instant Document Verification",
+      description: "Verify identification and sensitive documents within seconds using automated validation — no manual checking or delays.",
+      color: "text-primary"
     },
     {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Secure Authentication",
-      description: "Complete auth system with Clerk.com including social login, MFA, and user management.",
-      color: "text-green-500"
+      icon: <ServerCog className="w-8 h-8" />,
+      title: "Enterprise-Level Savings & Automation",
+      description: "Supports bulk uploads, metadata extraction, audit logs, and integrations to streamline workflows while cutting costs by up to 30%.",
+      color: "text-amber-500"
     },
     {
-      icon: <Database className="w-8 h-8" />,
-      title: "Scalable Database",
-      description: "PostgreSQL with Neon.tech and Prisma ORM for type-safe, scalable data operations.",
+      icon: <QrCode className="w-8 h-8" />,
+      title: "QR-Based Access",
+      description: "Generate secure QR codes for every uploaded document, enabling fast retrieval and verification from any device.",
       color: "text-blue-500"
     },
     {
-      icon: <Bot className="w-8 h-8" />,
-      title: "AI Integration",
-      description: "OpenRouter integration with multiple AI models, usage tracking, and cost optimization.",
-      color: "text-purple-500"
+      icon: <ShieldCheck className="w-8 h-8" />,
+      title: "Govt Backed Integrity",
+      description: "Integrity checks backed by verified government databases ensure every document is tamper-proof and trusted.",
+      color: "text-green-500"
     },
     {
-      icon: <Palette className="w-8 h-8" />,
-      title: "Modern UI Components",
-      description: "Beautiful, accessible components with ShadCN UI and Tailwind CSS for rapid development.",
-      color: "text-pink-500"
-    },
-    {
-      icon: <CreditCard className="w-8 h-8" />,
-      title: "Payment Processing",
-      description: "Stripe integration with subscription management, usage-based billing, and webhooks.",
+      icon: <Leaf className="w-8 h-8" />,
+      title: "Eco-Friendly & Paperless",
+      description: "Digitize verification to reduce printing costs and keep operations sustainable without sacrificing security.",
       color: "text-emerald-500"
     },
     {
-      icon: <Code className="w-8 h-8" />,
-      title: "Developer Experience",
-      description: "TypeScript, ESLint, Prettier, and comprehensive documentation for smooth development.",
-      color: "text-orange-500"
-    },
-    {
-      icon: <BarChart3 className="w-8 h-8" />,
-      title: "Analytics & Monitoring",
-      description: "Built-in analytics, error tracking, and performance monitoring for production apps.",
-      color: "text-cyan-500"
-    },
-    {
-      icon: <Users className="w-8 h-8" />,
-      title: "Team Management",
-      description: "Multi-tenant architecture with role-based access control and team collaboration.",
+      icon: <Smartphone className="w-8 h-8" />,
+      title: "Free to Use Anywhere",
+      description: "Access VeriQuick on laptops or phones to upload and verify with QR validation at no cost.",
       color: "text-indigo-500"
     },
     {
-      icon: <Rocket className="w-8 h-8" />,
-      title: "Production Ready",
-      description: "Optimized for deployment with Vercel, including CI/CD pipelines and monitoring.",
-      color: "text-red-500"
-    },
-    {
       icon: <Lock className="w-8 h-8" />,
-      title: "Security First",
-      description: "OWASP compliance, data encryption, and security best practices built-in.",
-      color: "text-gray-500"
+      title: "Token-Based Security",
+      description: "Token authentication, automatic deletion, and audit-ready logs keep every verification session secure.",
+      color: "text-slate-500"
     },
     {
-      icon: <Globe className="w-8 h-8" />,
-      title: "Global Scale",
-      description: "CDN integration, edge functions, and optimizations for worldwide performance.",
-      color: "text-teal-500"
+      icon: <Workflow className="w-8 h-8" />,
+      title: "Pipelining & Storage",
+      description: "Redirect and forward verification records to your databases or lakes securely with built-in pipelines.",
+      color: "text-cyan-500"
+    },
+    {
+      icon: <Puzzle className="w-8 h-8" />,
+      title: "Custom API Support",
+      description: "Plug VeriQuick into your stack for bespoke workflows, verified databases, and automated redirection.",
+      color: "text-orange-500"
     }
   ]
 
@@ -109,7 +88,7 @@ const Features = () => {
             <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-2">
               <Image
                 src="/best saas kit.png"
-                alt="Best SAAS Kit V2 - Complete AI-Powered SAAS Starter Kit"
+                alt="VeriQuick workspace showing instant document verification"
                 width={1200}
                 height={800}
                 className="w-full h-auto rounded-xl"
@@ -136,14 +115,14 @@ const Features = () => {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-            Everything You Need to
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              {" "}Launch Fast
+            Because validity is proved
+            <span className="bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 bg-clip-text text-transparent">
+              {" "}by VeriQuick
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            A complete toolkit with all the features and integrations you need to build, 
-            deploy, and scale your AI-powered SAAS application.
+            Instant verification, government-backed integrity, and QR access in one place. Manage, verify,
+            and redirect documents without manual delays or fragmented tools.
           </p>
         </motion.div>
 
@@ -182,25 +161,24 @@ const Features = () => {
           className="text-center mt-16"
         >
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-2xl p-8 border border-primary/20">
-            <h3 className="text-2xl font-bold mb-4">Ready to Build Your AI SAAS?</h3>
+            <h3 className="text-2xl font-bold mb-4">Ready for instant document verification?</h3>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Join thousands of developers who have already launched their AI applications 
-              using our comprehensive toolkit.
+              Use VeriQuick to verify documents within seconds, generate QR access, and stream results into your existing data lakes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                className="bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 text-white px-8 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity"
               >
-                Start Building Now
+                Start verifying now
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="border border-border px-8 py-3 rounded-lg font-medium hover:bg-muted/50 transition-colors"
               >
-                View Documentation
+                See how VeriQuick works
               </motion.button>
             </div>
           </div>
