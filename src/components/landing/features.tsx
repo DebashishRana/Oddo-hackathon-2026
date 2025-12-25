@@ -115,9 +115,9 @@ const Features = () => {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-            Because validity is proved
+            Because validity is{" "}
             <span className="bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 bg-clip-text text-transparent">
-              {" "}by VeriQuick
+              proven
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">

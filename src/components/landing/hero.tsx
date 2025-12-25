@@ -149,26 +149,6 @@ const Hero = () => {
               </Link>
             </Button>
           </motion.div>
-
-          {/* Social Proof */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="pt-8 text-sm text-muted-foreground"
-          >
-            <p>Supercharged by the tools your team already loves</p>
-            <div className="flex flex-wrap justify-center items-center gap-4 mt-4 opacity-80 text-xs font-medium">
-              {["Brainwave", "Figma", "Notion", "Slack", "Photoshop", "Framer", "Raindrop", "Protopie"].map((name) => (
-                <span
-                  key={name}
-                  className="px-3 py-1 rounded-full border border-border/60 bg-muted/40"
-                >
-                  {name}
-                </span>
-              ))}
-            </div>
-          </motion.div>
         </motion.div>
       </div>
 
