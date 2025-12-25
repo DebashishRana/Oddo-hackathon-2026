@@ -54,9 +54,11 @@ export default function DemoPage() {
                   <Play className="w-4 h-4 mr-2" />
                   Try Sign In
                 </Button>
-                <Button className="w-full" variant="outline">
-                  <Play className="w-4 h-4 mr-2" />
-                  Try Sign Up
+                <Button className="w-full" variant="outline" asChild>
+                  <Link href="/auth/signup">
+                    <Play className="w-4 h-4 mr-2" />
+                    Try Sign Up
+                  </Link>
                 </Button>
               </div>
             </CardContent>

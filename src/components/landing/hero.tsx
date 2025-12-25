@@ -71,7 +71,7 @@ const Hero = () => {
               className="text-base font-medium px-6 py-3 h-12 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               asChild
             >
-              <Link href="/get-started" className="flex items-center space-x-2">
+              <Link href="/auth/signup" className="flex items-center space-x-2">
                 <span>Get started</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>

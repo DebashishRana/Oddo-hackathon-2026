@@ -61,9 +61,9 @@ export function NavigationClient({ session }: NavigationClientProps) {
                 <SignInButton>
                   <Button variant="ghost">Sign In</Button>
                 </SignInButton>
-                <SignInButton>
-                  <Button>Get Started</Button>
-                </SignInButton>
+                <Button asChild>
+                  <Link href="/auth/signup">Get Started</Link>
+                </Button>
               </>
             ) : (
               <>
@@ -109,9 +109,9 @@ export function NavigationClient({ session }: NavigationClientProps) {
                   <SignInButton>
                     <Button variant="ghost" className="w-full justify-start">Sign In</Button>
                   </SignInButton>
-                  <SignInButton>
-                    <Button className="w-full">Get Started</Button>
-                  </SignInButton>
+                  <Button asChild className="w-full">
+                    <Link href="/auth/signup">Get Started</Link>
+                  </Button>
                 </>
               ) : (
                 <>

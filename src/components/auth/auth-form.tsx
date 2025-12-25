@@ -23,9 +23,9 @@ function SubmitButton({ children, isLoading }: { children: React.ReactNode; isLo
   )
 }
 
-export function AuthForm() {
+export function AuthForm({ defaultIsSignUp = false }: { defaultIsSignUp?: boolean }) {
   const [isLoading, setIsLoading] = useState(false)
-  const [isSignUp, setIsSignUp] = useState(false)
+  const [isSignUp, setIsSignUp] = useState(defaultIsSignUp)
   const { toast } = useToast()
   const router = useRouter()
 

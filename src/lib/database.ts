@@ -109,6 +109,45 @@ export async function createUserWithPassword(email: string, passwordHash: string
   }
 }
 
+export async function getPasswordAuthSchemaStatus(): Promise<{
+  hasPasswordHashColumn: boolean
+  googleIdIsNullable: boolean | null
+}> {
+  const client = await pool.connect()
+  try {
+    const passwordHashColumn = await client.query(
+      `
+        SELECT EXISTS(
+          SELECT 1
+          FROM information_schema.columns
+          WHERE table_schema = 'public'
+            AND table_name = 'users'
+            AND column_name = 'password_hash'
+        ) as exists
+      `
+    )
+
+    const googleIdNullable = await client.query(
+      `
+        SELECT is_nullable
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'users'
+          AND column_name = 'google_id'
+        LIMIT 1
+      `
+    )
+
+    const hasPasswordHashColumn = Boolean(passwordHashColumn.rows?.[0]?.exists)
+    const isNullableRaw = googleIdNullable.rows?.[0]?.is_nullable
+    const googleIdIsNullable = typeof isNullableRaw === 'string' ? isNullableRaw === 'YES' : null
+
+    return { hasPasswordHashColumn, googleIdIsNullable }
+  } finally {
+    client.release()
+  }
+}
+
 // Create or update user on login
 export async function upsertUser(userData: CreateUserData): Promise<User> {
   const client = await pool.connect()

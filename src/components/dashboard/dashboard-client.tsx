@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { UserButtonClient } from "@/components/auth/user-button-client"
@@ -68,12 +69,16 @@ export function DashboardClient({ children, session }: DashboardClientProps) {
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-border">
-          <div className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Zap className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-semibold">Best SAAS Kit</span>
-          </div>
+          <Link href="/dashboard" className="flex items-center space-x-2">
+            <Image
+              src="/Logo.png"
+              alt="Vectra Logo"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
+            <span className="text-lg font-semibold">Vectra</span>
+          </Link>
           <Button
             variant="ghost"
             size="icon"
