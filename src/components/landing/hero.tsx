@@ -13,7 +13,7 @@ import { motion } from "framer-motion"
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 sm:pt-16" style={{backgroundImage: 'url(/hero-background.jpg)', backgroundSize: 'cover', backgroundPosition: 'center'}}>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 sm:pt-16" style={{backgroundImage: 'url(/hero-background.webp)', backgroundSize: 'cover', backgroundPosition: 'center'}}>
       {/* Background overlay for better text readability */}
       <div className="absolute inset-0 bg-black/40"></div>
       

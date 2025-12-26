@@ -80,7 +80,7 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-cover bg-center p-4" 
-         style={{ backgroundImage: 'url("/signup.jpg")' }}>
+         style={{ backgroundImage: 'url("/signup.webp")' }}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
       
       <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[600px]">
