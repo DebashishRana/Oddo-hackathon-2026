@@ -30,7 +30,7 @@ export function BillingClient({ currentPlan }: BillingClientProps) {
 
     try {
       // Create checkout session with optional discount
-      const requestBody: any = { plan: 'pro' };
+      const requestBody: { plan: string; discountCode?: string } = { plan: 'pro' };
       if (appliedDiscount) {
         requestBody.discountCode = appliedDiscount.code;
       }
@@ -65,7 +65,7 @@ export function BillingClient({ currentPlan }: BillingClientProps) {
     return (
       <div className="text-center p-4 bg-green-50 border border-green-200 rounded-lg">
         <Crown className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
-        <h3 className="font-medium text-green-800">You're a Pro Member!</h3>
+        <h3 className="font-medium text-green-800">You&apos;re a Pro Member!</h3>
         <p className="text-sm text-green-600">
           Thank you for supporting our platform. Enjoy unlimited access to all features.
         </p>

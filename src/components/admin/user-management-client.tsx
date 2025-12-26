@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Search, Trash2, RefreshCw, Plus, Minus, Edit } from "lucide-react";
+import { Search, Trash2, RefreshCw, Plus, Edit } from "lucide-react";
 import { type User } from "@/lib/database";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -38,7 +38,7 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
-  const [editingCreditsUserId, setEditingCreditsUserId] = useState<number | null>(null);
+  const [, setEditingCreditsUserId] = useState<number | null>(null);
   const [creditsAmount, setCreditsAmount] = useState("");
   const [creditsAction, setCreditsAction] = useState<"add" | "set">("add");
   const { toast } = useToast();
@@ -48,7 +48,9 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
     user.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | undefined | null) => {
+    if (!date) return 'Never';
+
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -58,7 +60,9 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
     });
   };
 
-  const isRecentLogin = (lastLogin: Date) => {
+  const isRecentLogin = (lastLogin: Date | undefined | null) => {
+    if (!lastLogin) return false;
+
     const now = new Date();
     const loginDate = new Date(lastLogin);
     const diffHours = (now.getTime() - loginDate.getTime()) / (1000 * 60 * 60);
@@ -84,7 +88,7 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Search error",
         description: "An error occurred while searching",
@@ -114,7 +118,7 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Refresh error",
         description: "An error occurred while refreshing",
@@ -147,7 +151,7 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Delete error",
         description: "An error occurred while deleting the user",
@@ -206,7 +210,7 @@ export function UserManagementClient({ initialUsers }: UserManagementClientProps
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Update error",
         description: "An error occurred while updating credits",

@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       users,
       total: users.length,
-      admin: user.email
+      admin: user?.email || 'unknown'
     });
 
   } catch (error) {

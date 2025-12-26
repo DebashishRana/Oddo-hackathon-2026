@@ -5,9 +5,7 @@ import {
   Users, 
   DollarSign, 
   TrendingUp, 
-  Activity,
-  Crown,
-  Zap
+  Crown
 } from "lucide-react";
 
 export const runtime = 'nodejs';
@@ -50,7 +48,7 @@ export default async function SimpleAnalyticsPage() {
   const totalRevenue = analyticsData.revenue.total;
   const totalUsers = analyticsData.users.total;
   const proUsers = analyticsData.users.proUsers;
-  const freeUsers = analyticsData.users.freeUsers;
+  // const freeUsers = analyticsData.users.freeUsers;
 
   const keyMetrics = [
     {
@@ -88,7 +86,7 @@ export default async function SimpleAnalyticsPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Simple Analytics Dashboard</h1>
         <p className="text-muted-foreground">
-          Basic insights into your application's performance.
+          Basic insights into your application&apos;s performance.
         </p>
       </div>
 
@@ -122,7 +120,7 @@ export default async function SimpleAnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {analyticsData.users.byStatus.map((status: any) => {
+              {analyticsData.users.byStatus.map((status) => {
                 const percentage = (parseInt(status.count) / totalUsers) * 100;
                 return (
                   <div key={status.subscription_status} className="flex items-center justify-between">

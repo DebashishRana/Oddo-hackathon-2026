@@ -80,7 +80,7 @@ export async function DELETE(
     }
 
     // Prevent admin from deleting themselves
-    if (userToDelete.email === adminUser.email) {
+    if (userToDelete.email === adminUser?.email) {
       return NextResponse.json(
         { error: 'Cannot delete your own admin account' },
         { status: 400 }
@@ -95,7 +95,7 @@ export async function DELETE(
       );
     }
 
-    console.log(`Admin ${adminUser.email} deleted user ${userToDelete.email} (ID: ${userId})`);
+    console.log(`Admin ${adminUser?.email || 'unknown'} deleted user ${userToDelete.email} (ID: ${userId})`);
 
     return NextResponse.json({ 
       success: true, 

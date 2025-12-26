@@ -1,8 +1,7 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, Star, Zap } from "lucide-react"
+import { Check, Star } from "lucide-react"
 import { motion } from "framer-motion"
 import { PricingClient } from "./pricing-client"
 

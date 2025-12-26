@@ -47,8 +47,14 @@ export async function requireAdminPermission(permission: AdminPermission) {
   return session.user;
 }
 
+interface AdminUser {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
+
 // Check admin access without redirect (for API routes)
-export async function checkAdminAccess(): Promise<{ isAdmin: boolean; user: any | null }> {
+export async function checkAdminAccess(): Promise<{ isAdmin: boolean; user: AdminUser | null }> {
   const session = await auth();
   
   if (!session?.user) {

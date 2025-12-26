@@ -81,13 +81,14 @@ export function DiscountInput({ onDiscountApplied, disabled = false }: DiscountI
     return type === 'percentage' ? `${value}%` : `$${(value / 100).toFixed(2)}`
   }
 
-  const calculateDiscountAmount = (originalPrice: number, discount: DiscountDetails) => {
-    if (discount.discount_type === 'percentage') {
-      return (originalPrice * discount.discount_value) / 100
-    } else {
-      return Math.min(discount.discount_value / 100, originalPrice) // Don't exceed original price
-    }
-  }
+  // Commented out - reserved for future use
+  // const calculateDiscountAmount = (originalPrice: number, discount: DiscountDetails) => {
+  //   if (discount.discount_type === 'percentage') {
+  //     return (originalPrice * discount.discount_value) / 100
+  //   } else {
+  //     return Math.min(discount.discount_value / 100, originalPrice) // Don't exceed original price
+  //   }
+  // }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {

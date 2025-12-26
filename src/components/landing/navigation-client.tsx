@@ -10,8 +10,16 @@ import { SignInButton } from "@/components/auth/signin-button"
 import { UserButtonClient } from "@/components/auth/user-button-client"
 import { CreditsDisplay } from "@/components/credits/credits-display"
 
+interface Session {
+  user: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+}
+
 interface NavigationClientProps {
-  session: any
+  session: Session | null
 }
 
 export function NavigationClient({ session }: NavigationClientProps) {

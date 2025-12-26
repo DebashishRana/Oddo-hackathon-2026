@@ -1,6 +1,5 @@
 import { requireAdminAccess } from "@/lib/admin-auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAnalyticsData, getGrowthMetrics } from "@/lib/database";
 import { getSimpleAnalytics, getSimpleGrowthMetrics } from "@/lib/simple-analytics";
 
 import { 
@@ -10,7 +9,6 @@ import {
   Activity,
   Crown,
   Zap,
-  Target,
   Repeat
 } from "lucide-react";
 
@@ -59,7 +57,7 @@ export default async function AnalyticsPage() {
   const totalRevenue = analyticsData.revenue.total;
   const totalUsers = analyticsData.users.total;
   const proUsers = analyticsData.revenue.proUsers;
-  const freeUsers = totalUsers - proUsers;
+  // const freeUsers = totalUsers - proUsers;
   const conversionRate = growthMetrics.conversionRate;
   const growthRate = growthMetrics.growthRate;
 
@@ -99,7 +97,7 @@ export default async function AnalyticsPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
         <p className="text-muted-foreground">
-          Comprehensive insights into your application's performance and growth (Real-time data).
+          Comprehensive insights into your application&apos;s performance and growth (Real-time data).
         </p>
         {/* Debug info to verify real data */}
         <div className="text-xs text-muted-foreground mt-2">
@@ -179,7 +177,7 @@ export default async function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {analyticsData.users.byStatus.map((status: any) => {
+              {analyticsData.users.byStatus.map((status) => {
                 const percentage = (parseInt(status.count) / totalUsers) * 100;
                 return (
                   <div key={status.subscription_status} className="flex items-center justify-between">

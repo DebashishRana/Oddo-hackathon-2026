@@ -3,7 +3,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Star } from "lucide-react"
 import { motion } from "framer-motion"
-import Image from "next/image"
 
 const Testimonials = () => {
   const testimonials = [
@@ -122,7 +121,7 @@ const Testimonials = () => {
 
                   {/* Content */}
                   <blockquote className="text-muted-foreground mb-6 leading-relaxed">
-                    "{testimonial.content}"
+                    &ldquo;{testimonial.content}&rdquo;
                   </blockquote>
 
                   {/* Author */}

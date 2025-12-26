@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Icons } from "@/components/ui/icons"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/navigation"
 
 function SubmitButton({ children, isLoading }: { children: React.ReactNode; isLoading: boolean }) {
   const { pending } = useFormStatus()
@@ -27,13 +26,12 @@ export function AuthForm({ defaultIsSignUp = false }: { defaultIsSignUp?: boolea
   const [isLoading, setIsLoading] = useState(false)
   const [isSignUp, setIsSignUp] = useState(defaultIsSignUp)
   const { toast } = useToast()
-  const router = useRouter()
 
   async function handleGoogleSignIn() {
     setIsLoading(true)
     try {
       await signInAction()
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Something went wrong with Google sign in",

@@ -1,7 +1,9 @@
-import type { NextAuthConfig } from "next-auth"
 import Google from "next-auth/providers/google"
 
-export const authConfig = {
+type NextAuthInitParam = Parameters<typeof import("next-auth").default>[0]
+type NextAuthConfigObject = Exclude<NextAuthInitParam, (request: never) => unknown>
+
+export const authConfig: NextAuthConfigObject = {
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -11,17 +13,17 @@ export const authConfig = {
   callbacks: {
     async jwt({ token, account, profile, user }) {
       if (account?.provider === "google") {
-        token.accessToken = account.access_token
-        token.id = profile?.sub
+        token.accessToken = account.access_token ?? undefined
+        token.id = profile?.sub ?? undefined
       } else if (user) {
         // For credentials provider
         token.id = user.id
       }
       
       if (user) {
-        token.email = user.email
-        token.name = user.name
-        token.picture = user.image
+        token.email = user.email ?? undefined
+        token.name = user.name ?? undefined
+        token.picture = user.image ?? undefined
       }
       return token
     },
@@ -49,4 +51,4 @@ export const authConfig = {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
-} satisfies NextAuthConfig
+}

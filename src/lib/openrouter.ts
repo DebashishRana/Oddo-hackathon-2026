@@ -127,7 +127,7 @@ class OpenRouterClient {
   }
 
   // Helper method to get available models
-  async getModels(): Promise<any> {
+  async getModels(): Promise<unknown> {
     try {
       const response = await fetch(`${this.baseURL}/models`, {
         headers: {

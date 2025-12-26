@@ -21,20 +21,20 @@ import {
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
+import type { DiscountCode } from "@/lib/database"
 
-interface DiscountCode {
-  id: number
-  code: string
-  discount_type: 'percentage' | 'fixed'
-  discount_value: number
-  max_uses?: number
-  expires_at?: string
-  is_active: boolean
+export interface DiscountFormData {
+  code: string;
+  discount_type: "percentage" | "fixed";
+  discount_value: number;
+  max_uses: number | null;
+  expires_at: string | null;
+  is_active: boolean;
 }
 
 interface DiscountFormProps {
   discount?: DiscountCode
-  onSubmit: (data: any) => void
+  onSubmit: (data: DiscountFormData) => void
   isLoading: boolean
 }
 
@@ -102,7 +102,7 @@ export function DiscountForm({ discount, onSubmit, isLoading }: DiscountFormProp
     onSubmit(submitData)
   }
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field: string, value: string | number | boolean | Date | null) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     // Clear error when user starts typing
     if (errors[field]) {
@@ -213,7 +213,7 @@ export function DiscountForm({ discount, onSubmit, isLoading }: DiscountFormProp
             <Calendar
               mode="single"
               selected={formData.expires_at || undefined}
-              onSelect={(date) => handleInputChange('expires_at', date)}
+                onSelect={(date) => handleInputChange('expires_at', date ?? null)}
               disabled={(date) => date < new Date()}
               initialFocus
             />

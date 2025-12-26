@@ -12,7 +12,7 @@ export default function ContactPage() {
             Get in Touch
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Have questions about Best SAAS Kit V2? We're here to help! Send us a message and we'll get back to you as soon as possible.
+            Have questions about Best SAAS Kit V2? We&apos;re here to help! Send us a message and we&apos;ll get back to you as soon as possible.
           </p>
         </div>
 
@@ -74,14 +74,14 @@ export default function ContactPage() {
                 <div>
                   <h4 className="font-semibold text-sm">Do you offer custom development?</h4>
                   <p className="text-xs text-gray-600 dark:text-gray-300">
-                    Yes! Contact us to discuss your specific requirements and we'll provide a custom quote.
+                    Yes! Contact us to discuss your specific requirements and we&apos;ll provide a custom quote.
                   </p>
                 </div>
 
                 <div>
                   <h4 className="font-semibold text-sm">Is there a refund policy?</h4>
                   <p className="text-xs text-gray-600 dark:text-gray-300">
-                    We offer a 30-day money-back guarantee if you're not satisfied with the kit.
+                    We offer a 30-day money-back guarantee if you&apos;re not satisfied with the kit.
                   </p>
                 </div>
               </CardContent>

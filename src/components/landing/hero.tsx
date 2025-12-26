@@ -3,9 +3,7 @@
 import { Button } from "@/components/ui/button"
 import {
   ArrowRight,
-  Sparkles,
   ShieldCheck,
-  QrCode,
   FileCheck2,
   Workflow,
   Github

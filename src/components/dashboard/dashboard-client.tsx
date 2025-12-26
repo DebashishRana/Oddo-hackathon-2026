@@ -15,7 +15,6 @@ import {
   User,
   Users,
   BarChart3,
-  Zap,
   Menu,
   X,
   MessageSquare,
@@ -41,9 +40,17 @@ const adminUserItems = [
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ]
 
+interface DashboardSession {
+  user: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+}
+
 interface DashboardClientProps {
   children: React.ReactNode
-  session: any
+  session: DashboardSession
 }
 
 export function DashboardClient({ children, session }: DashboardClientProps) {

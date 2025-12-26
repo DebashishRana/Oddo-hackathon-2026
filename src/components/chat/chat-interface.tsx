@@ -5,7 +5,7 @@ import { ChatMessage } from "./chat-message";
 import { ChatInput } from "./chat-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, Download, MessageSquare, AlertCircle } from "lucide-react";
+import { Trash2, Download, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CreditsDisplay } from "@/components/credits/credits-display";
 
@@ -29,7 +29,7 @@ export function ChatInterface({
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [credits, setCredits] = useState<number | null>(null);
+  // const [credits, setCredits] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -89,11 +89,6 @@ export function ChatInterface({
       }
 
       const data = await response.json();
-
-      // Update credits if returned
-      if (typeof data.credits === 'number') {
-        setCredits(data.credits);
-      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -207,7 +202,7 @@ export function ChatInterface({
                   Start a conversation
                 </h3>
                 <p className="text-muted-foreground">
-                  Ask me anything and I'll help you with information, analysis, or creative tasks.
+                  Ask me anything and I&apos;ll help you with information, analysis, or creative tasks.
                 </p>
               </div>
             </div>

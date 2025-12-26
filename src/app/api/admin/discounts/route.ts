@@ -153,17 +153,18 @@ export async function POST(request: NextRequest) {
         data: discountCode
       }, { status: 201 });
 
-    } catch (stripeError: any) {
-      console.error('Stripe coupon creation error:', stripeError);
+    } catch (stripeError: unknown) {
+      const error = stripeError as { type?: string; code?: string; message?: string; param?: string };
+      console.error('Stripe coupon creation error:', error);
       console.error('Stripe error details:', {
-        type: stripeError.type,
-        code: stripeError.code,
-        message: stripeError.message,
-        param: stripeError.param
+        type: error.type,
+        code: error.code,
+        message: error.message,
+        param: error.param
       });
 
       // Handle specific Stripe errors
-      if (stripeError.code === 'resource_already_exists') {
+      if (error.code === 'resource_already_exists') {
         return NextResponse.json(
           { error: 'A discount code with this name already exists in Stripe' },
           { status: 409 }
@@ -171,24 +172,25 @@ export async function POST(request: NextRequest) {
       }
 
       // Handle parameter errors
-      if (stripeError.type === 'invalid_request_error') {
+      if (error.type === 'invalid_request_error') {
         return NextResponse.json(
-          { error: `Stripe validation error: ${stripeError.message}` },
+          { error: `Stripe validation error: ${error.message}` },
           { status: 400 }
         );
       }
 
       return NextResponse.json(
-        { error: `Failed to create Stripe coupon: ${stripeError.message || 'Unknown error'}` },
+        { error: `Failed to create Stripe coupon: ${error.message || 'Unknown error'}` },
         { status: 500 }
       );
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const dbError = error as { code?: string };
     console.error('Admin discounts POST error:', error);
     
     // Handle database constraint errors
-    if (error.code === '23505') { // Unique constraint violation
+    if (dbError.code === '23505') { // Unique constraint violation
       return NextResponse.json(
         { error: 'Discount code already exists' },
         { status: 409 }

@@ -167,11 +167,12 @@ export async function PUT(
       data: updatedDiscount
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const dbError = error as { code?: string };
     console.error('Admin discount PUT error:', error);
     
     // Handle database constraint errors
-    if (error.code === '23505') { // Unique constraint violation
+    if (dbError.code === '23505') { // Unique constraint violation
       return NextResponse.json(
         { error: 'Discount code already exists' },
         { status: 409 }

@@ -1,6 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import {
   CheckCircle,
   Code,
@@ -465,7 +464,7 @@ export default function DocsPage() {
                         <div className="border-l-4 border-green-500 pl-4">
                           <h4 className="font-medium mb-2">2. Get Connection String</h4>
                           <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                            <li>• In your Neon dashboard, go to "Connection Details"</li>
+                            <li>• In your Neon dashboard, go to &quot;Connection Details&quot;</li>
                             <li>• Copy the connection string</li>
                             <li>• Add it to your <code>.env.local</code> as <code>DATABASE_URL</code></li>
                           </ul>
@@ -499,8 +498,8 @@ export default function DocsPage() {
                         <div className="border-l-4 border-blue-500 pl-4">
                           <h4 className="font-medium mb-2">2. Create OAuth Credentials</h4>
                           <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                            <li>• Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client IDs"</li>
-                            <li>• Choose "Web application"</li>
+                            <li>• Go to &quot;Credentials&quot; → &quot;Create Credentials&quot; → &quot;OAuth 2.0 Client IDs&quot;</li>
+                            <li>• Choose &quot;Web application&quot;</li>
                             <li>• Add authorized redirect URIs:</li>
                             <li className="ml-4">- <code>http://localhost:3000/api/auth/callback/google</code> (development)</li>
                             <li className="ml-4">- <code>https://yourdomain.com/api/auth/callback/google</code> (production)</li>

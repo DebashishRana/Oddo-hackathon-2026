@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Icons } from "@/components/ui/icons"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/navigation"
 import { Eye, EyeOff, X } from "lucide-react"
 import Link from "next/link"
 
@@ -15,11 +14,10 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const { toast } = useToast()
-  const router = useRouter()
 
-  // Login Form State
-  const [loginEmail, setLoginEmail] = useState("")
-  const [loginPassword, setLoginPassword] = useState("")
+  // Login Form State - commented out unused variables
+  // const loginEmail = "";
+  // const loginPassword = "";
 
   // Signup Form State (if we want to support email signup on the left side too, or just social)
   // The design shows "Sign up with email" button on the left. 
@@ -41,7 +39,7 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
     setIsLoading(true)
     try {
       await signInAction()
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Something went wrong with Google sign in",
@@ -136,7 +134,7 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
           </div>
 
           <div className="mt-8 text-center text-xs text-gray-400 px-8">
-            By signing up, you agree to the <Link href="/terms" className="underline hover:text-gray-600">Terms of Service</Link> and acknowledge you've read our <Link href="/privacy" className="underline hover:text-gray-600">Privacy Policy</Link>.
+            By signing up, you agree to the <Link href="/terms" className="underline hover:text-gray-600">Terms of Service</Link> and acknowledge you&apos;ve read our <Link href="/privacy" className="underline hover:text-gray-600">Privacy Policy</Link>.
           </div>
         </div>
 
@@ -227,7 +225,7 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
               className="text-sm text-gray-500 hover:text-gray-900"
               onClick={() => setMode(mode === "login" ? "signup" : "login")}
             >
-              {mode === "login" ? "Don't have an account? Sign up" : "Already have an account? Log in"}
+              {mode === "login" ? "Don&apos;t have an account? Sign up" : "Already have an account? Log in"}
             </button>
           </div>
         </div>

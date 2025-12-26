@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Zap, Loader2 } from "lucide-react";
 import { redirectToCheckout } from "@/lib/stripe-client";
-import { DiscountInput } from "@/components/checkout/discount-input";
 
 interface PricingClientProps {
   plan: {
@@ -21,8 +20,8 @@ interface PricingClientProps {
 
 export function PricingClient({ plan, isAuthenticated }: PricingClientProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [appliedDiscount, setAppliedDiscount] = useState<any>(null);
-  const [showDiscountInput, setShowDiscountInput] = useState(false);
+  // const [appliedDiscount, setAppliedDiscount] = useState<{ code: string } | null>(null);
+  // const [showDiscountInput] = useState(false);
 
   const handlePurchase = async () => {
     const action = plan.action || 'checkout';
@@ -46,11 +45,9 @@ export function PricingClient({ plan, isAuthenticated }: PricingClientProps) {
     setIsLoading(true);
     
     try {
-      // Create checkout session for Pro plan with optional discount
-      const requestBody: any = { plan: plan.checkoutPlan || 'pro' };
-      if (appliedDiscount) {
-        requestBody.discountCode = appliedDiscount.code;
-      }
+      // Create checkout session for Pro plan
+      const requestBody: { plan: string } = { plan: plan.checkoutPlan || 'pro' };
+      // Discount functionality can be added here if needed
 
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',

@@ -65,7 +65,7 @@ export async function POST(
       );
     }
 
-    console.log(`Admin ${adminUser.email} ${action}ed ${amount} credits to user ${user.email} (ID: ${userId}). New balance: ${result.newBalance}`);
+    console.log(`Admin ${adminUser?.email || 'unknown'} ${action}ed ${amount} credits to user ${user.email} (ID: ${userId}). New balance: ${result.newBalance}`);
 
     return NextResponse.json({
       success: true,

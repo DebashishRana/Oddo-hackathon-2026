@@ -3,7 +3,17 @@
 import { signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "@/lib/auth"
 import { createUserWithPassword, getPasswordAuthSchemaStatus, getUserByEmail } from "@/lib/database"
 import { hashPassword } from "@/lib/auth-utils"
-import { AuthError } from "next-auth"
+
+type NextAuthErrorLike = {
+  type?: string;
+};
+
+function getNextAuthErrorType(error: unknown): string | null {
+  if (!error || typeof error !== "object") return null;
+
+  const maybe = error as NextAuthErrorLike;
+  return typeof maybe.type === "string" ? maybe.type : null;
+}
 
 export async function signInAction() {
   await nextAuthSignIn("google", { redirectTo: "/dashboard" })
@@ -13,7 +23,12 @@ export async function signOutAction() {
   await nextAuthSignOut({ redirectTo: "/" })
 }
 
-export async function signInWithCredentialsAction(prevState: any, formData: FormData) {
+interface AuthActionState {
+  error?: string;
+  success?: boolean;
+}
+
+export async function signInWithCredentialsAction(prevState: AuthActionState | null, formData: FormData) {
   try {
     await nextAuthSignIn("credentials", {
       email: formData.get("email"),
@@ -27,8 +42,9 @@ export async function signInWithCredentialsAction(prevState: any, formData: Form
       throw error
     }
     
-    if (error instanceof AuthError) {
-      switch (error.type) {
+    const authErrorType = getNextAuthErrorType(error);
+    if (authErrorType) {
+      switch (authErrorType) {
         case "CredentialsSignin":
           return { error: "Invalid email or password." }
         default:
@@ -39,7 +55,7 @@ export async function signInWithCredentialsAction(prevState: any, formData: Form
   }
 }
 
-export async function signUpAction(prevState: any, formData: FormData) {
+export async function signUpAction(prevState: AuthActionState | null, formData: FormData) {
   const email = formData.get("email") as string
   const password = formData.get("password") as string
   const name = formData.get("name") as string
@@ -80,13 +96,12 @@ export async function signUpAction(prevState: any, formData: FormData) {
       throw error
     }
     
-    if (error instanceof AuthError) {
-      throw error
-    }
+    const authErrorType = getNextAuthErrorType(error)
+    if (authErrorType) throw error
     console.error("Signup error:", error)
 
-    const pgError = error as any
-    const code = pgError?.code as string | undefined
+    const pgError = error as { code?: string; message?: unknown }
+    const code = pgError?.code
 
     // Provide actionable, non-sensitive messages for common DB misconfigurations.
     if (code === "42703") {

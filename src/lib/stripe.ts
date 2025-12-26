@@ -64,7 +64,7 @@ export async function createStripeCoupon(
   discountValue: number
 ) {
   try {
-    const couponData: any = {
+    const couponData: Stripe.CouponCreateParams = {
       id: `discount_${discountCode.toLowerCase()}`,
       name: `Discount Code: ${discountCode}`,
       duration: 'once', // One-time use discount
@@ -108,7 +108,7 @@ export async function createCheckoutSessionWithDiscount(
   cancelUrl: string,
   discountCouponId?: string
 ) {
-  const sessionData: any = {
+  const sessionData: Stripe.Checkout.SessionCreateParams = {
     customer: customerId,
     payment_method_types: ['card'],
     line_items: [

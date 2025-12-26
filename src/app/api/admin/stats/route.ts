@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       ...stats,
-      admin: user.email,
+      admin: user?.email || 'unknown',
       timestamp: new Date().toISOString()
     });
 

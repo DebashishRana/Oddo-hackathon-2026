@@ -11,7 +11,6 @@ import {
   Users,
   BarChart3,
   Settings,
-  Home,
   Menu,
   X,
   ArrowLeft,
@@ -19,9 +18,15 @@ import {
 } from "lucide-react"
 import { UserButtonClient } from "@/components/auth/user-button-client"
 
+interface AdminUser {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
+
 interface AdminClientProps {
   children: React.ReactNode
-  adminUser: any
+  adminUser: AdminUser
 }
 
 const sidebarItems = [

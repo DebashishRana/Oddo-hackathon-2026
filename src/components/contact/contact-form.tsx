@@ -56,7 +56,7 @@ export function ContactForm() {
         setSubmitStatus('error')
         setErrorMessage(result.error || 'Failed to send message')
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus('error')
       setErrorMessage('Network error. Please try again.')
     } finally {
@@ -72,7 +72,7 @@ export function ContactForm() {
           Contact Us
         </CardTitle>
         <CardDescription>
-          Send us a message and we'll get back to you as soon as possible.
+          Send us a message and we&apos;ll get back to you as soon as possible.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -81,7 +81,7 @@ export function ContactForm() {
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-green-700 mb-2">Message Sent Successfully!</h3>
             <p className="text-gray-600 mb-4">
-              Thank you for contacting us. We'll get back to you within 24 hours.
+              Thank you for contacting us. We&apos;ll get back to you within 24 hours.
             </p>
             <Button 
               onClick={() => setSubmitStatus('idle')}

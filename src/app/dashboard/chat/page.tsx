@@ -2,7 +2,6 @@ import { ChatInterface } from "@/components/chat/chat-interface";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
-  MessageSquare, 
   Zap, 
   Brain, 
   Sparkles,

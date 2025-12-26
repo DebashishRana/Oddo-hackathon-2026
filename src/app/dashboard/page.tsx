@@ -9,10 +9,7 @@ export const runtime = 'nodejs';
 import {
   Users,
   Activity,
-  CreditCard,
   DollarSign,
-  TrendingUp,
-  Zap,
   BarChart3,
   Settings,
   UserPlus,

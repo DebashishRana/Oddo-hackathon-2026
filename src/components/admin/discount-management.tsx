@@ -32,25 +32,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Plus, Edit, Trash2, Copy, Eye, EyeOff } from "lucide-react"
-import { DiscountForm } from "./discount-form"
+import { DiscountForm, type DiscountFormData } from "./discount-form"
 import { toast } from "sonner"
-
-interface DiscountCode {
-  id: number
-  code: string
-  stripe_coupon_id?: string
-  discount_type: 'percentage' | 'fixed'
-  discount_value: number
-  max_uses?: number
-  current_uses: number
-  expires_at?: string
-  is_active: boolean
-  created_by?: number
-  created_at: string
-  updated_at: string
-  created_by_email?: string
-  created_by_name?: string
-}
+import type { DiscountCode } from "@/lib/database"
 
 interface DiscountStats {
   totalCodes: number
@@ -80,12 +64,12 @@ export function DiscountManagement({ initialDiscounts, initialStats }: DiscountM
         setDiscounts(data.data.discountCodes)
         setStats(data.data.stats)
       }
-    } catch (error) {
-      console.error('Error refreshing discount data:', error)
+    } catch {
+      console.error('Error refreshing discount data')
     }
   }
 
-  const handleCreateDiscount = async (discountData: any) => {
+  const handleCreateDiscount = async (discountData: DiscountFormData) => {
     setIsLoading(true)
     try {
       const response = await fetch('/api/admin/discounts', {
@@ -104,14 +88,14 @@ export function DiscountManagement({ initialDiscounts, initialStats }: DiscountM
         const error = await response.json()
         toast.error(error.error || 'Failed to create discount code')
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to create discount code')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleUpdateDiscount = async (id: number, discountData: any) => {
+  const handleUpdateDiscount = async (id: number, discountData: Partial<DiscountFormData>) => {
     setIsLoading(true)
     try {
       const response = await fetch(`/api/admin/discounts/${id}`, {
@@ -130,7 +114,7 @@ export function DiscountManagement({ initialDiscounts, initialStats }: DiscountM
         const error = await response.json()
         toast.error(error.error || 'Failed to update discount code')
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to update discount code')
     } finally {
       setIsLoading(false)
@@ -151,7 +135,7 @@ export function DiscountManagement({ initialDiscounts, initialStats }: DiscountM
         const error = await response.json()
         toast.error(error.error || 'Failed to delete discount code')
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete discount code')
     } finally {
       setIsLoading(false)
@@ -173,8 +157,8 @@ export function DiscountManagement({ initialDiscounts, initialStats }: DiscountM
     return type === 'percentage' ? `${value}%` : `$${(value / 100).toFixed(2)}`
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (dateValue: Date | string) => {
+    return new Date(dateValue).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -183,9 +167,9 @@ export function DiscountManagement({ initialDiscounts, initialStats }: DiscountM
     })
   }
 
-  const isExpired = (expiresAt?: string) => {
+  const isExpired = (expiresAt?: Date | null) => {
     if (!expiresAt) return false
-    return new Date(expiresAt) < new Date()
+    return expiresAt < new Date()
   }
 
   const isMaxUsesReached = (discount: DiscountCode) => {
@@ -401,7 +385,7 @@ export function DiscountManagement({ initialDiscounts, initialStats }: DiscountM
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Delete Discount Code</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Are you sure you want to delete the discount code "{discount.code}"? 
+                                  Are you sure you want to delete the discount code &quot;{discount.code}&quot;? 
                                   This action cannot be undone and will also remove the associated Stripe coupon.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>

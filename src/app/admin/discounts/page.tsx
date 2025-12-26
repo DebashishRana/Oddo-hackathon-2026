@@ -1,16 +1,24 @@
 import { requireAdminAccess } from "@/lib/admin-auth";
-import { getAllDiscountCodes, getDiscountStats } from "@/lib/database";
+import { getAllDiscountCodes, getDiscountStats, type DiscountCode } from "@/lib/database";
 import { DiscountManagement } from "@/components/admin/discount-management";
 
 export const runtime = 'nodejs';
+
+interface DiscountStats {
+  totalCodes: number;
+  activeCodes: number;
+  expiredCodes: number;
+  usedCodes: number;
+  totalUsage: number;
+}
 
 export default async function AdminDiscountsPage() {
   // This will redirect non-admin users
   await requireAdminAccess();
 
   // Get discount codes and stats
-  let discountCodes: any[] = [];
-  let stats: any = {
+  let discountCodes: DiscountCode[] = [];
+  let stats: DiscountStats = {
     totalCodes: 0,
     activeCodes: 0,
     expiredCodes: 0,
