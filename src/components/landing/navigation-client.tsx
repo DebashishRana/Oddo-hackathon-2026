@@ -6,7 +6,6 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Menu, X } from "lucide-react"
-import { SignInButton } from "@/components/auth/signin-button"
 import { UserButtonClient } from "@/components/auth/user-button-client"
 import { CreditsDisplay } from "@/components/credits/credits-display"
 
@@ -66,9 +65,9 @@ export function NavigationClient({ session }: NavigationClientProps) {
           <div className="hidden md:flex items-center space-x-4">
             {!session ? (
               <>
-                <SignInButton>
-                  <Button variant="ghost">Sign In</Button>
-                </SignInButton>
+                <Button variant="ghost" asChild>
+                  <Link href="/auth/signin">Sign In</Link>
+                </Button>
                 <Button asChild>
                   <Link href="/auth/signup">Get Started</Link>
                 </Button>
@@ -114,9 +113,11 @@ export function NavigationClient({ session }: NavigationClientProps) {
             <div className="flex flex-col space-y-2 pt-4 border-t border-border">
               {!session ? (
                 <>
-                  <SignInButton>
-                    <Button variant="ghost" className="w-full justify-start">Sign In</Button>
-                  </SignInButton>
+                  <Button variant="ghost" asChild className="w-full justify-start">
+                    <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
+                      Sign In
+                    </Link>
+                  </Button>
                   <Button asChild className="w-full">
                     <Link href="/auth/signup">Get Started</Link>
                   </Button>
