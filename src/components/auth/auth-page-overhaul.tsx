@@ -35,21 +35,6 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
   
   const [mode, setMode] = useState<"login" | "signup">(defaultIsSignUp ? "signup" : "login")
 
-  async function handleGoogleSignIn() {
-    setIsLoading(true)
-    try {
-      await signInAction()
-    } catch {
-      toast({
-        title: "Error",
-        description: "Something went wrong with Google sign in",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   async function handleEmailSubmit(formData: FormData) {
     setIsLoading(true)
     try {
@@ -102,15 +87,17 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
           </div>
 
           <div className="space-y-4 max-w-xs mx-auto w-full">
-            <Button 
-              variant="outline" 
-              className="w-full h-12 rounded-full border-gray-300 hover:bg-gray-50 hover:text-gray-900 justify-start px-6 relative"
-              onClick={handleGoogleSignIn}
-              disabled={isLoading}
-            >
-              <Icons.google className="h-5 w-5 mr-3 absolute left-6" />
-              <span className="w-full text-center">Continue with Google</span>
-            </Button>
+            <form action={signInAction}>
+              <Button 
+                type="submit"
+                variant="outline" 
+                className="w-full h-12 rounded-full border-gray-300 hover:bg-gray-50 hover:text-gray-900 justify-start px-6 relative"
+                disabled={isLoading}
+              >
+                <Icons.google className="h-5 w-5 mr-3 absolute left-6" />
+                <span className="w-full text-center">Continue with Google</span>
+              </Button>
+            </form>
 
             <Button 
               variant="outline" 

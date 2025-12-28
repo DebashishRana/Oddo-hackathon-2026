@@ -27,21 +27,6 @@ export function AuthForm({ defaultIsSignUp = false }: { defaultIsSignUp?: boolea
   const [isSignUp, setIsSignUp] = useState(defaultIsSignUp)
   const { toast } = useToast()
 
-  async function handleGoogleSignIn() {
-    setIsLoading(true)
-    try {
-      await signInAction()
-    } catch {
-      toast({
-        title: "Error",
-        description: "Something went wrong with Google sign in",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   async function handleSubmit(formData: FormData) {
     setIsLoading(true)
     try {
@@ -131,14 +116,16 @@ export function AuthForm({ defaultIsSignUp = false }: { defaultIsSignUp?: boolea
         </div>
       </div>
       
-      <Button variant="outline" type="button" disabled={isLoading} onClick={handleGoogleSignIn}>
-        {isLoading ? (
-          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Icons.google className="mr-2 h-4 w-4" />
-        )}{" "}
-        Google
-      </Button>
+      <form action={signInAction}>
+        <Button variant="outline" type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Icons.google className="mr-2 h-4 w-4" />
+          )}{" "}
+          Google
+        </Button>
+      </form>
 
       <div className="text-center text-sm">
         <button

@@ -1,0 +1,16 @@
+
+> best-saas-kit-v2@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.9
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.29.227:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 2.7s
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 805ms (442 modules)
+ GET /api/auth/providers 200 in 2005ms
+ ✓ Compiled /middleware in 365ms (245 modules)
+ ○ Compiling /auth/error ...
