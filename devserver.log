@@ -14,3 +14,16 @@
  GET /api/auth/providers 200 in 2005ms
  ✓ Compiled /middleware in 365ms (245 modules)
  ○ Compiling /auth/error ...
+ ✓ Compiled /auth/error in 1832ms (794 modules)
+Error: Route "/auth/error" used `searchParams.error`. `searchParams` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at AuthErrorPage (src\app\auth\error\page.tsx:8:17)
+   6 |   searchParams?: { error?: string }
+   7 | }) {
+>  8 |   const error = searchParams?.error
+     |                 ^
+   9 |
+  10 |   return (
+  11 |     <div className="mx-auto flex min-h-[60vh] w-full max-w-lg flex-col items-center justify-center gap-4 px-6 text-center">
+ GET /auth/error?error=Configuration 200 in 2234ms
+ ✓ Compiled in 303ms (245 modules)
+ ✓ Compiled in 244ms (245 modules)
