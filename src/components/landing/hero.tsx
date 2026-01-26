@@ -54,7 +54,7 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-base sm:text-lg lg:text-xl text-white max-w-3xl mx-auto leading-relaxed px-4"
           >
-            Manage, verify, and redirect documents all at once with VeriQuick Supercharged with verefied databases and QR. 
+            Manage, verify, and redirect documents all at once with Dectra Supercharged with verefied databases and QR. 
           </motion.p>
 
           {/* CTA Buttons */}

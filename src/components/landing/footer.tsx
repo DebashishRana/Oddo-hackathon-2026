@@ -9,7 +9,7 @@ const Footer = () => {
     product: [
       { name: "Solutions", href: "#features" },
       { name: "Pricing", href: "#pricing" },
-      { name: "Why VeriQuick", href: "#testimonials" },
+      { name: "Why Dectra", href: "#testimonials" },
       { name: "Documentation", href: "/docs" },
       { name: "Roadmap", href: "/roadmap" }
     ],
@@ -37,10 +37,10 @@ const Footer = () => {
   }
 
   const socialLinks = [
-    { name: "GitHub", href: "https://github.com/VeriQuick", icon: Github },
+    { name: "GitHub", href: "https://github.com/Dectra", icon: Github },
     { name: "Twitter", href: "https://twitter.com", icon: Twitter },
-    { name: "LinkedIn", href: "https://linkedin.com/company/veriquick", icon: Linkedin },
-    { name: "Email", href: "mailto:hello@veriquick.com", icon: Mail }
+    { name: "LinkedIn", href: "https://linkedin.com/company/dectra", icon: Linkedin },
+    { name: "Email", href: "mailto:hello@dectra.com", icon: Mail }
   ]
 
   return (
@@ -53,12 +53,12 @@ const Footer = () => {
             <div className="flex items-center space-x-2 mb-4">
               <Image
                 src="/Logo.png"
-                alt="VeriQuick Logo"
+                alt="Dectra Logo"
                 width={32}
                 height={32}
                 className="w-8 h-8 rounded-lg"
               />
-              <span className="text-xl font-bold text-foreground">VeriQuick</span>
+              <span className="text-xl font-bold text-foreground">Dectra</span>
             </div>
             <p className="text-muted-foreground mb-6 max-w-sm">
               Instant document verification, QR access, and government-backed integrity. Manage, verify, and redirect documents from one secure workspace.
@@ -172,7 +172,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">
           <div className="text-muted-foreground text-sm">
-            © 2026 VeriQuick. All rights reserved.
+            © 2026 Dectra. All rights reserved.
           </div>
           <div className="flex items-center space-x-6 mt-4 md:mt-0">
             <span className="text-muted-foreground text-sm">Built with ❤️ from D</span>

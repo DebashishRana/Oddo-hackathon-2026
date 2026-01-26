@@ -16,28 +16,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VeriQuick - Instant Document Verification",
-  description: "Manage, verify, and redirect documents all at once with VeriQuick. Instant EDV validation, QR-based access, and secure redirects.",
+  title: "Dectra - Instant Document Verification",
+  description: "Manage, verify, and redirect documents all at once with Dectra. Instant EDV validation, QR-based access, and secure redirects.",
   keywords: ["Document Verification", "EDV", "QR Access", "Compliance", "Identity Verification", "SAAS"],
-  authors: [{ name: "VeriQuick Team" }],
-  creator: "VeriQuick",
-  publisher: "VeriQuick",
+  authors: [{ name: "Dectra Team" }],
+  creator: "Dectra",
+  publisher: "Dectra",
   icons: {
     icon: "/Logo.png",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://veriquick.com",
-    title: "VeriQuick - Instant Document Verification",
-    description: "Manage, verify, and redirect documents all at once with VeriQuick. Instant EDV validation, QR-based access, and secure redirects.",
-    siteName: "VeriQuick",
+    url: "https://dectra.com",
+    title: "Dectra - Instant Document Verification",
+    description: "Manage, verify, and redirect documents all at once with Dectra. Instant EDV validation, QR-based access, and secure redirects.",
+    siteName: "Dectra",
   },
   twitter: {
     card: "summary_large_image",
-    title: "VeriQuick - Instant Document Verification",
-    description: "Manage, verify, and redirect documents all at once with VeriQuick. Instant EDV validation, QR-based access, and secure redirects.",
-    creator: "@veriquick",
+    title: "Dectra - Instant Document Verification",
+    description: "Manage, verify, and redirect documents all at once with Dectra. Instant EDV validation, QR-based access, and secure redirects.",
+    creator: "@dectra",
   },
   robots: {
     index: true,

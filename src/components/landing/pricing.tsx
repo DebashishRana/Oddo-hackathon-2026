@@ -61,7 +61,7 @@ const Pricing = ({ isAuthenticated = false }: PricingProps) => {
       popular: false,
       variant: "outline" as const,
       action: "contact" as const,
-      contactEmail: "support@veriquick.com"
+      contactEmail: "support@dectra.com"
     }
   ]
 
@@ -150,7 +150,7 @@ const Pricing = ({ isAuthenticated = false }: PricingProps) => {
           <h3 className="text-2xl font-bold text-center mb-12">Frequently Asked Questions</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div className="space-y-4">
-              <h4 className="font-semibold">How fast can VeriQuick verify documents?</h4>
+              <h4 className="font-semibold">How fast can Dectra verify documents?</h4>
               <p className="text-muted-foreground text-sm">
                 Typical verifications complete in under a minute with EDV automation. Bulk uploads and redirects run continuously with audit-ready logs.
               </p>
@@ -164,7 +164,7 @@ const Pricing = ({ isAuthenticated = false }: PricingProps) => {
             <div className="space-y-4">
               <h4 className="font-semibold">Can I integrate with my data lakes?</h4>
               <p className="text-muted-foreground text-sm">
-                Absolutely. VeriQuick streams verified records to your databases or lakes and supports custom API pipelines for bespoke workflows.
+                Absolutely. Dectra streams verified records to your databases or lakes and supports custom API pipelines for bespoke workflows.
               </p>
             </div>
             <div className="space-y-4">

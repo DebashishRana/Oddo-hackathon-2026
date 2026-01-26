@@ -10,7 +10,7 @@ const Testimonials = () => {
       name: "Sarah Chen",
       role: "Head of Compliance",
       company: "NorthRiver Bank",
-      content: "VeriQuick cut our document verification time from days to minutes. Audit logs, QR retrieval, and gov-backed checks make passing reviews painless.",
+      content: "Dectra cut our document verification time from days to minutes. Audit logs, QR retrieval, and gov-backed checks make passing reviews painless.",
       rating: 5,
       avatar: "/api/placeholder/40/40"
     },
@@ -34,7 +34,7 @@ const Testimonials = () => {
       name: "David Kim",
       role: "Indie Hacker",
       company: "Solo Founder",
-      content: "I plugged VeriQuick into my portal with minimal code. Token-based auth and auto-deletion keep me compliant out of the box.",
+      content: "I plugged Dectra into my portal with minimal code. Token-based auth and auto-deletion keep me compliant out of the box.",
       rating: 5,
       avatar: "/api/placeholder/40/40"
     },
@@ -50,7 +50,7 @@ const Testimonials = () => {
       name: "Alex Johnson",
       role: "Full Stack Developer",
       company: "FreelanceForce",
-      content: "Every client project asks for verification now. VeriQuick lets me ship QR flows, redirects, and audit logs without rewriting code.",
+      content: "Every client project asks for verification now. Dectra lets me ship QR flows, redirects, and audit logs without rewriting code.",
       rating: 5,
       avatar: "/api/placeholder/40/40"
     }
@@ -70,7 +70,7 @@ const Testimonials = () => {
             Trusted by teams who need documents to verify fast
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Banks, fintechs, and ops teams rely on VeriQuick for instant EDV, QR access, and auditable redirects.
+            Banks, fintechs, and ops teams rely on Dectra for instant EDV, QR access, and auditable redirects.
           </p>
         </motion.div>
 
@@ -155,7 +155,7 @@ const Testimonials = () => {
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-2xl p-8 border border-primary/20">
             <h3 className="text-2xl font-bold mb-4">Join the verified lane</h3>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Move verification from a backlog to a one-click flow. VeriQuick keeps every redirect, QR, and EDV check compliant and fast.
+              Move verification from a backlog to a one-click flow. Dectra keeps every redirect, QR, and EDV check compliant and fast.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button

@@ -32,7 +32,7 @@ export function PricingClient({ plan, isAuthenticated }: PricingClientProps) {
     }
 
     if (action === 'contact') {
-      const email = plan.contactEmail || 'support@veriquick.com';
+      const email = plan.contactEmail || 'support@dectra.com';
       window.location.href = `mailto:${email}?subject=${encodeURIComponent(`${plan.name} Plan Inquiry`)}`;
       return;
     }

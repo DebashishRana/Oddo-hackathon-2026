@@ -27,7 +27,7 @@ export function NavigationClient({ session }: NavigationClientProps) {
   const navItems = [
     { name: "Solutions", href: "#features" },
     { name: "Pricing", href: "#pricing" },
-    { name: "Why VeriQuick", href: "#testimonials" },
+    { name: "Why Dectra", href: "#testimonials" },
     { name: "Docs", href: "/docs" },
     { name: "Contact", href: "/contact" },
   ]
@@ -40,12 +40,12 @@ export function NavigationClient({ session }: NavigationClientProps) {
           <Link href="/" className="flex items-center space-x-2">
             <Image
               src="/Logo.png"
-              alt="VeriQuick Logo"
+              alt="Dectra Logo"
               width={32}
               height={32}
               className="w-8 h-8 rounded-lg"
             />
-            <span className="text-xl font-bold">VeriQuick</span>
+            <span className="text-xl font-bold">Dectra</span>
           </Link>
 
           {/* Desktop Navigation */}

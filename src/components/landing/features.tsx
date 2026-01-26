@@ -50,7 +50,7 @@ const Features = () => {
     {
       icon: <Smartphone className="w-8 h-8" />,
       title: "Free to Use Anywhere",
-      description: "Access VeriQuick on laptops or phones to upload and verify with QR validation at no cost.",
+      description: "Access Dectra on laptops or phones to upload and verify with QR validation at no cost.",
       color: "text-indigo-500"
     },
     {
@@ -68,7 +68,7 @@ const Features = () => {
     {
       icon: <Puzzle className="w-8 h-8" />,
       title: "Custom API Support",
-      description: "Plug VeriQuick into your stack for bespoke workflows, verified databases, and automated redirection.",
+      description: "Plug Dectra into your stack for bespoke workflows, verified databases, and automated redirection.",
       color: "text-orange-500"
     }
   ]
@@ -88,7 +88,7 @@ const Features = () => {
             <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-2">
               <Image
                 src="/best saas kit.png"
-                alt="VeriQuick workspace showing instant document verification"
+                alt="Dectra workspace showing instant document verification"
                 width={1200}
                 height={800}
                 className="w-full h-auto rounded-xl"
@@ -163,7 +163,7 @@ const Features = () => {
           <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-2xl p-8 border border-primary/20">
             <h3 className="text-2xl font-bold mb-4">Ready for instant document verification?</h3>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Use VeriQuick to verify documents within seconds, generate QR access, and stream results into your existing data lakes.
+              Use Dectra to verify documents within seconds, generate QR access, and stream results into your existing data lakes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button
@@ -178,7 +178,7 @@ const Features = () => {
                 whileTap={{ scale: 0.95 }}
                 className="border border-border px-8 py-3 rounded-lg font-medium hover:bg-muted/50 transition-colors"
               >
-                See how VeriQuick works
+                See how Dectra works
               </motion.button>
             </div>
           </div>
