@@ -201,7 +201,7 @@ const Features = () => {
               whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
             >
               <Image
-                src={active.id === "accessibility" ? "/2.jpg" : active.id === "security" ? "/3.jpg" : "/4.jpg"}
+                src={active.id === "accessibility" ? "/2.webp" : active.id === "security" ? "/3.webp" : "/4.webp"}
                 alt={active.title}
                 fill
                 className="object-cover"

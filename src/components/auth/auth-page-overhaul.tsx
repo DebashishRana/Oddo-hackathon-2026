@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { signInAction, signUpAction } from "@/lib/auth-actions"
+import { signInAction, signUpAction, signInWithCredentialsAction } from "@/lib/auth-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -41,6 +41,7 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
   const [showPassword, setShowPassword] = useState(false)
   const [emailPreferences, setEmailPreferences] = useState(false)
   const [showIncluded, setShowIncluded] = useState(false)
+  const [isSignUp, setIsSignUp] = useState(defaultIsSignUp)
   const { toast } = useToast()
 
   async function handleSignUp(formData: FormData) {
@@ -69,13 +70,39 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
     }
   }
 
+  async function handleSignIn(formData: FormData) {
+    setIsLoading(true)
+    try {
+      const result = await signInWithCredentialsAction(null, formData)
+
+      if (result?.error) {
+        toast({
+          title: "Error",
+          description: result.error,
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+        throw error
+      }
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row">
       {/* Left Side - Dark promo panel */}
       <div className="relative w-full lg:w-[45%] text-white flex flex-col justify-between overflow-hidden min-h-[300px] lg:min-h-screen">
         {/* Background image */}
         <img
-          src="/signup.jpg"
+          src="/signup.webp"
           alt="Signup background"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -111,15 +138,34 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
         </div>
       </div>
 
-      {/* Right Side - Signup form */}
+      {/* Right Side - Auth form */}
       <div className="w-full lg:w-[55%] bg-[#f6f8fa] flex flex-col min-h-screen lg:min-h-0">
-        {/* Top bar: Already have account? Sign in */}
+        {/* Top bar: Toggle between sign in and sign up */}
         <div className="flex justify-end items-center px-6 md:px-10 py-4">
           <span className="text-sm text-[#57606a]">
-            Already have an account?{" "}
-            <Link href="/auth/signin" className="text-[#0969da] hover:underline font-medium">
-              Sign in &rarr;
-            </Link>
+            {isSignUp ? (
+              <>
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(false)}
+                  className="text-[#0969da] hover:underline font-medium"
+                >
+                  Sign in &rarr;
+                </button>
+              </>
+            ) : (
+              <>
+                Don&apos;t have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(true)}
+                  className="text-[#0969da] hover:underline font-medium"
+                >
+                  Sign up &rarr;
+                </button>
+              </>
+            )}
           </span>
         </div>
 
@@ -127,7 +173,7 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
         <div className="flex-1 flex items-start lg:items-center justify-center px-6 md:px-10 py-6 lg:py-0">
           <div className="w-full max-w-[440px]">
             <h2 className="text-2xl font-semibold text-[#24292f] mb-8">
-              Sign up for Dectra
+              {isSignUp ? "Sign up for Dectra" : "Sign in to Dectra"}
             </h2>
 
             {/* Social sign-in buttons */}
@@ -165,8 +211,8 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
               </div>
             </div>
 
-            {/* Signup form */}
-            <form action={handleSignUp} className="space-y-4">
+            {/* Auth form */}
+            <form action={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
               {/* Email */}
               <div className="space-y-1.5">
                 <Label htmlFor="email" className="text-sm font-medium text-[#24292f]">
@@ -207,73 +253,81 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                <p className="text-xs text-[#57606a] leading-snug mt-1">
-                  Password should be at least 15 characters OR at least 8 characters including a number and a lowercase letter.
-                </p>
+                {isSignUp && (
+                  <p className="text-xs text-[#57606a] leading-snug mt-1">
+                    Password should be at least 15 characters OR at least 8 characters including a number and a lowercase letter.
+                  </p>
+                )}
               </div>
 
-              {/* Username */}
-              <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-sm font-medium text-[#24292f]">
-                  Username<span className="text-[#cf222e]">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="Username"
-                  className="h-9 rounded-md border-[#d0d7de] bg-white text-[#24292f] text-sm shadow-sm placeholder:text-[#6e7781] focus:border-[#0969da] focus:ring-[#0969da] focus:ring-1"
-                  disabled={isLoading}
-                  required
-                />
-                <p className="text-xs text-[#57606a] leading-snug mt-1">
-                  Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.
-                </p>
-              </div>
-
-              {/* Country/Region */}
-              <div className="space-y-1.5">
-                <Label htmlFor="country" className="text-sm font-medium text-[#24292f]">
-                  Your Country/Region<span className="text-[#cf222e]">*</span>
-                </Label>
-                <div className="relative">
-                  <select
-                    id="country"
-                    name="country"
-                    className="w-full h-9 rounded-md border border-[#d0d7de] bg-white text-[#24292f] text-sm shadow-sm px-3 pr-8 appearance-none focus:border-[#0969da] focus:ring-[#0969da] focus:ring-1 focus:outline-none cursor-pointer"
-                    defaultValue="India"
+              {/* Username - only for signup */}
+              {isSignUp && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="name" className="text-sm font-medium text-[#24292f]">
+                    Username<span className="text-[#cf222e]">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="Username"
+                    className="h-9 rounded-md border-[#d0d7de] bg-white text-[#24292f] text-sm shadow-sm placeholder:text-[#6e7781] focus:border-[#0969da] focus:ring-[#0969da] focus:ring-1"
                     disabled={isLoading}
-                  >
-                    {COUNTRIES.map((country) => (
-                      <option key={country} value={country}>
-                        {country}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#57606a] pointer-events-none" />
-                </div>
-                <p className="text-xs text-[#0969da] leading-snug mt-1">
-                  For compliance reasons, we&apos;re required to collect country information to send you occasional updates and announcements.
-                </p>
-              </div>
-
-              {/* Email preferences */}
-              <div className="space-y-2 pt-1">
-                <p className="text-sm font-medium text-[#24292f]">Email preferences</p>
-                <label className="flex items-start gap-2.5 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="emailPreferences"
-                    checked={emailPreferences}
-                    onChange={(e) => setEmailPreferences(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded border-[#d0d7de] text-[#0969da] focus:ring-[#0969da] cursor-pointer"
-                    disabled={isLoading}
+                    required
                   />
-                  <span className="text-xs text-[#57606a] leading-snug">
-                    Receive occasional product updates and announcements
-                  </span>
-                </label>
-              </div>
+                  <p className="text-xs text-[#57606a] leading-snug mt-1">
+                    Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.
+                  </p>
+                </div>
+              )}
+
+              {/* Country/Region - only for signup */}
+              {isSignUp && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="country" className="text-sm font-medium text-[#24292f]">
+                    Your Country/Region<span className="text-[#cf222e]">*</span>
+                  </Label>
+                  <div className="relative">
+                    <select
+                      id="country"
+                      name="country"
+                      className="w-full h-9 rounded-md border border-[#d0d7de] bg-white text-[#24292f] text-sm shadow-sm px-3 pr-8 appearance-none focus:border-[#0969da] focus:ring-[#0969da] focus:ring-1 focus:outline-none cursor-pointer"
+                      defaultValue="India"
+                      disabled={isLoading}
+                    >
+                      {COUNTRIES.map((country) => (
+                        <option key={country} value={country}>
+                          {country}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#57606a] pointer-events-none" />
+                  </div>
+                  <p className="text-xs text-[#0969da] leading-snug mt-1">
+                    For compliance reasons, we&apos;re required to collect country information to send you occasional updates and announcements.
+                  </p>
+                </div>
+              )}
+
+              {/* Email preferences - only for signup */}
+              {isSignUp && (
+                <div className="space-y-2 pt-1">
+                  <p className="text-sm font-medium text-[#24292f]">Email preferences</p>
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="emailPreferences"
+                      checked={emailPreferences}
+                      onChange={(e) => setEmailPreferences(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 rounded border-[#d0d7de] text-[#0969da] focus:ring-[#0969da] cursor-pointer"
+                      disabled={isLoading}
+                    />
+                    <span className="text-xs text-[#57606a] leading-snug">
+                      Receive occasional product updates and announcements
+                    </span>
+                  </label>
+                </div>
+              )}
 
               {/* Submit button */}
               <div className="pt-2">
@@ -285,22 +339,38 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
                   {isLoading ? (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   ) : null}
-                  Create account
+                  {isSignUp ? "Create account" : "Sign in"}
                 </Button>
               </div>
             </form>
 
             {/* Terms */}
             <p className="mt-6 text-xs text-[#57606a] leading-snug text-center border-t border-[#d0d7de] pt-6">
-              By creating an account, you agree to the{" "}
-              <Link href="/terms" className="text-[#0969da] hover:underline">
-                Terms of Service
-              </Link>
-              . For more information about our privacy practices, see the{" "}
-              <Link href="/privacy" className="text-[#0969da] hover:underline">
-                Privacy Statement
-              </Link>
-              . We&apos;ll occasionally send you account-related emails.
+              {isSignUp ? (
+                <>
+                  By creating an account, you agree to the{" "}
+                  <Link href="/terms" className="text-[#0969da] hover:underline">
+                    Terms of Service
+                  </Link>
+                  . For more information about our privacy practices, see the{" "}
+                  <Link href="/privacy" className="text-[#0969da] hover:underline">
+                    Privacy Statement
+                  </Link>
+                  . We&apos;ll occasionally send you account-related emails.
+                </>
+              ) : (
+                <>
+                  By signing in, you agree to our{" "}
+                  <Link href="/terms" className="text-[#0969da] hover:underline">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/privacy" className="text-[#0969da] hover:underline">
+                    Privacy Statement
+                  </Link>
+                  .
+                </>
+              )}
             </p>
           </div>
         </div>
