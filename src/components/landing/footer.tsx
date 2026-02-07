@@ -1,5 +1,8 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
+import { motion } from "motion/react"
 
 const footerColumns = [
   {
@@ -68,23 +71,35 @@ const Footer = () => {
       {/* CTA Banner */}
       <div className="border-b border-border/10">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-          <h2 className="text-3xl sm:text-4xl md:text-[42px] font-medium tracking-tight text-foreground leading-tight">
+          <motion.h2
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7 }}
+            viewport={{ once: true }}
+            className="text-3xl sm:text-4xl md:text-[42px] font-medium tracking-tight text-foreground leading-tight"
+          >
             Proof first, profit faster.
-          </h2>
-          <div className="flex items-center gap-3 shrink-0">
+          </motion.h2>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            viewport={{ once: true }}
+            className="flex items-center gap-3 shrink-0"
+          >
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-border/40 bg-white/5 px-5 py-2.5 text-sm font-medium text-foreground hover:bg-white/10 transition-colors"
+              className="inline-flex items-center justify-center rounded-full border border-border/40 bg-white/5 px-5 py-2.5 text-sm font-medium text-foreground hover:bg-white/10 hover:scale-105 transition-all duration-200"
             >
               Contact sales
             </Link>
             <Link
               href="/auth/signup"
-              className="inline-flex items-center justify-center rounded-full bg-[#f5f0eb] px-5 py-2.5 text-sm font-medium text-[#0a0a0b] hover:bg-[#ede6df] transition-colors"
+              className="inline-flex items-center justify-center rounded-full bg-[#f5f0eb] px-5 py-2.5 text-sm font-medium text-[#0a0a0b] hover:bg-[#ede6df] hover:scale-105 transition-all duration-200"
             >
               Get started
             </Link>
-          </div>
+          </motion.div>
         </div>
       </div>
 

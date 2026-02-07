@@ -6,6 +6,7 @@ import Insights from "@/components/landing/insights"
 import Foundations from "@/components/landing/foundations"
 import Pricing from "@/components/landing/pricing"
 import Testimonials from "@/components/landing/testimonials"
+import CustomerStories from "@/components/landing/customer-stories"
 import Footer from "@/components/landing/footer"
 import { SmoothScroll } from "@/components/ui/smooth-scroll"
 import { ScrollToTop } from "@/components/ui/scroll-to-top"
@@ -28,6 +29,7 @@ export default function Home() {
       <Hero />
       <Features />
       <Showcase />
+      <CustomerStories />
       <Insights />
       <Foundations />
       <Pricing />

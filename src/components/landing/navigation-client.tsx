@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { Menu, X, ChevronDown, FileCheck, QrCode, Shield, BarChart3, Workflow, Globe, Sparkles, Code2, ClipboardList, FileSearch } from "lucide-react"
+import { Menu, X, ChevronDown, FileCheck, QrCode, Shield, BarChart3, Workflow, Globe, Sparkles, Code2, ClipboardList, FileSearch, Handshake, GitBranch, Users } from "lucide-react"
 import { UserButtonClient } from "@/components/auth/user-button-client"
 import { CreditsDisplay } from "@/components/credits/credits-display"
 
@@ -88,11 +88,35 @@ const productItems = {
   ],
 }
 
+const partnerItems = [
+  {
+    icon: Handshake,
+    title: "Investors",
+    description: "Shape the future of verification.",
+    href: "/investors",
+  },
+  {
+    icon: GitBranch,
+    title: "Affiliates",
+    description: "Join our growth network.",
+    href: "#",
+  },
+  {
+    icon: Users,
+    title: "Community",
+    description: "Connect with other builders.",
+    href: "#",
+  },
+]
+
 export function NavigationClient({ session }: NavigationClientProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [productOpen, setProductOpen] = React.useState(false)
+  const [partnersOpen, setPartnersOpen] = React.useState(false)
   const [mobileProductOpen, setMobileProductOpen] = React.useState(false)
+  const [mobilePartnersOpen, setMobilePartnersOpen] = React.useState(false)
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null)
+  const partnersTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
   const handleProductEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
@@ -101,6 +125,15 @@ export function NavigationClient({ session }: NavigationClientProps) {
 
   const handleProductLeave = () => {
     timeoutRef.current = setTimeout(() => setProductOpen(false), 200)
+  }
+
+  const handlePartnersEnter = () => {
+    if (partnersTimeoutRef.current) clearTimeout(partnersTimeoutRef.current)
+    setPartnersOpen(true)
+  }
+
+  const handlePartnersLeave = () => {
+    partnersTimeoutRef.current = setTimeout(() => setPartnersOpen(false), 200)
   }
 
   const navItems = [
@@ -211,6 +244,54 @@ export function NavigationClient({ session }: NavigationClientProps) {
                 </div>
               </div>
 
+              {/* Partners dropdown trigger */}
+              <div
+                className="relative"
+                onMouseEnter={handlePartnersEnter}
+                onMouseLeave={handlePartnersLeave}
+              >
+                <button
+                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+                >
+                  Partners
+                  <ChevronDown className={cn(
+                    "h-3.5 w-3.5 transition-transform duration-200",
+                    partnersOpen && "rotate-180"
+                  )} />
+                </button>
+
+                {/* Partners dropdown */}
+                <div
+                  className={cn(
+                    "absolute left-0 top-full pt-3 z-50 transition-all duration-300 ease-out",
+                    partnersOpen
+                      ? "opacity-100 translate-y-0 pointer-events-auto"
+                      : "opacity-0 -translate-y-2 pointer-events-none"
+                  )}
+                >
+                  <div className="w-[250px] rounded-xl border border-border/40 bg-[#1a1a1e] shadow-2xl p-4">
+                    <div className="space-y-3">
+                      {partnerItems.map((item) => (
+                        <Link
+                          key={item.title}
+                          href={item.href}
+                          onClick={() => setPartnersOpen(false)}
+                          className="group block rounded-md p-2 transition-colors duration-150 hover:bg-white/5"
+                        >
+                          <div className="flex items-center gap-3">
+                            <item.icon className="h-4 w-4 text-muted-foreground" />
+                            <div>
+                              <div className="text-sm font-semibold text-foreground">{item.title}</div>
+                              <div className="mt-0.5 text-xs text-muted-foreground/80 leading-snug">{item.description}</div>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -279,6 +360,36 @@ export function NavigationClient({ session }: NavigationClientProps) {
             )}>
               <div className="pl-4 space-y-1 pb-2">
                 {[...productItems.products, ...productItems.platform].map((item) => (
+                  <Link
+                    key={item.title}
+                    href={item.href}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <item.icon className="h-3.5 w-3.5" />
+                    {item.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile Partners accordion */}
+            <button
+              onClick={() => setMobilePartnersOpen(!mobilePartnersOpen)}
+              className="flex w-full items-center justify-between px-3 py-2 text-base font-medium text-muted-foreground hover:text-foreground transition-colors duration-200"
+            >
+              Partners
+              <ChevronDown className={cn(
+                "h-4 w-4 transition-transform duration-200",
+                mobilePartnersOpen && "rotate-180"
+              )} />
+            </button>
+            <div className={cn(
+              "overflow-hidden transition-all duration-300 ease-in-out",
+              mobilePartnersOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+            )}>
+              <div className="pl-4 space-y-1 pb-2">
+                {partnerItems.map((item) => (
                   <Link
                     key={item.title}
                     href={item.href}

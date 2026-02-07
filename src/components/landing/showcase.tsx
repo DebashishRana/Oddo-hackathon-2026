@@ -27,12 +27,12 @@ function AIVerificationSection() {
           </div>
 
           <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-5xl lg:text-[3.25rem]">
-            AI‑assisted document verification
+            Industry grade <span className="bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 bg-clip-text text-transparent">models and compliance</span>, out of the box
           </h2>
 
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             <span className="font-medium text-foreground">Dectra for AI.</span>{" "}
-            Leverage intelligent document analysis and automated EDV checks to verify documents in seconds, not hours.
+            Leverage intelligent document analysis powered by industry leaders and automated workflow checks to verify documents with dual batch, not hours.
           </p>
 
           <Link
@@ -75,17 +75,25 @@ function AIVerificationSection() {
                 { name: "Compliance Bot", badge: "Agent", active: false, icon: <Shield className="h-4 w-4" /> },
                 { name: "QR Validator", badge: null, active: false, icon: <Zap className="h-4 w-4" /> },
                 { name: "Batch Processor", badge: "Agent", active: false, icon: <Layers className="h-4 w-4" /> },
-              ].map((agent) => (
-                <div
+              ].map((agent, i) => (
+                <motion.div
                   key={agent.name}
+                  initial={{ opacity: 0, x: -12 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.35, delay: 0.4 + i * 0.07 }}
+                  viewport={{ once: true }}
+                  whileHover={{ x: 4, backgroundColor: "rgba(255,255,255,0.05)", transition: { duration: 0.15 } }}
                   className={[
-                    "flex items-center gap-3 rounded-xl px-4 py-2.5 transition-colors",
-                    agent.active ? "bg-white/5" : "hover:bg-white/[0.03]",
+                    "flex items-center gap-3 rounded-xl px-4 py-2.5 transition-colors cursor-pointer",
+                    agent.active ? "bg-white/5" : "",
                   ].join(" ")}
                 >
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/60">
+                  <motion.span
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/60"
+                    whileHover={{ rotate: 12, scale: 1.1 }}
+                  >
                     {agent.icon}
-                  </span>
+                  </motion.span>
                   <span className="text-sm font-medium text-foreground">{agent.name}</span>
                   {agent.badge && (
                     <span className="rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
@@ -93,9 +101,14 @@ function AIVerificationSection() {
                     </span>
                   )}
                   {agent.active && (
-                    <CheckCircle2 className="ml-auto h-4 w-4 text-emerald-400/80" />
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <CheckCircle2 className="ml-auto h-4 w-4 text-emerald-400/80" />
+                    </motion.div>
                   )}
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -120,7 +133,7 @@ function SmartTriageCards() {
         viewport={{ once: true }}
         className="flex flex-col"
       >
-        <h3 className="text-xl font-semibold">Self‑driving verification ops</h3>
+        <h3 className="text-xl font-semibold">Meet Victor</h3>
         <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
           Streamline your verification workflows with AI assistance for routine, manual document checks.
         </p>
@@ -128,8 +141,13 @@ function SmartTriageCards() {
         {/* Mock card */}
         <div className="mt-6 flex-1 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/20 p-6 shadow-xl shadow-black/30 backdrop-blur">
           <div className="mb-4 flex items-center gap-2 text-sm font-medium">
-            <Sparkles className="h-4 w-4 text-muted-foreground" />
-            Triage Intelligence
+            <motion.div
+              animate={{ rotate: [0, 15, -15, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Sparkles className="h-4 w-4 text-muted-foreground" />
+            </motion.div>
+            Victor Intelligence
           </div>
 
           <div className="mb-4 flex flex-wrap gap-2 text-[11px] text-muted-foreground">
@@ -176,9 +194,9 @@ function SmartTriageCards() {
         viewport={{ once: true }}
         className="flex flex-col"
       >
-        <h3 className="text-xl font-semibold">Dectra API</h3>
+        <h3 className="text-xl font-semibold">One for all</h3>
         <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Connect Dectra to your favorite tools — CRMs, compliance platforms, and custom integrations.
+          Connect Dectra to your favorite compliance platforms, databases and pipelines, and custom integrations with full flexibility.
         </p>
 
         {/* Mock card */}
@@ -247,12 +265,12 @@ function PipelineSection() {
           </div>
 
           <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-5xl lg:text-[3.25rem]">
-            Track every verification end-to-end
+            Track every verification <span className="bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 bg-clip-text text-transparent">end-to-end</span>
           </h2>
 
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             <span className="font-medium text-foreground">Unified verification timeline.</span>{" "}
-            Plan, manage, and track all document verification pipelines with visual scheduling tools.
+            Plan, track, and manage all document verification pipelines with visual scheduling tools with zero compromise to security.
           </p>
         </div>
 
@@ -268,9 +286,20 @@ function PipelineSection() {
           <div className="overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/20 p-6 shadow-2xl shadow-black/40 backdrop-blur">
             {/* Timeline header */}
             <div className="mb-4 flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
-              <span>JAN 5</span>
-              <span className="rounded-md border border-border/60 bg-black/30 px-3 py-1 text-xs font-medium text-foreground">JAN 22</span>
-              <span>FEB</span>
+              {["JAN 5", "JAN 22", "FEB"].map((label, i) => (
+                i === 1 ? (
+                  <motion.span
+                    key={label}
+                    animate={{ opacity: [0.7, 1, 0.7] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="rounded-md border border-border/60 bg-black/30 px-3 py-1 text-xs font-medium text-foreground"
+                  >
+                    {label}
+                  </motion.span>
+                ) : (
+                  <span key={label}>{label}</span>
+                )
+              ))}
             </div>
 
             {/* Timeline bars */}
@@ -282,17 +311,27 @@ function PipelineSection() {
                 { label: "Batch EDV check", color: "from-emerald-400/20 via-emerald-400/10", width: "w-[75%]", offset: "ml-[5%]", hasIcon: true },
                 { label: "QR generation", color: "from-sky-400/15 via-sky-400/5", width: "w-[50%]", offset: "ml-[25%]", hasIcon: false },
                 { label: "Compliance review", color: "from-purple-400/15 via-purple-400/5", width: "w-[65%]", offset: "ml-[15%]", hasIcon: true },
-              ].map((bar) => (
-                <div key={bar.label} className={`${bar.offset} ${bar.width}`}>
-                  <div className={`flex items-center gap-2 rounded-xl border border-white/8 bg-gradient-to-r ${bar.color} to-transparent px-4 py-3`}>
+              ].map((bar, i) => (
+                <motion.div
+                  key={bar.label}
+                  className={`${bar.offset} ${bar.width}`}
+                  initial={{ scaleX: 0, originX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  transition={{ duration: 0.7, delay: 0.3 + i * 0.15, ease: [0.25, 0.4, 0.25, 1] }}
+                  viewport={{ once: true }}
+                >
+                  <motion.div
+                    className={`flex items-center gap-2 rounded-xl border border-white/8 bg-gradient-to-r ${bar.color} to-transparent px-4 py-3`}
+                    whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                  >
                     {bar.hasIcon && (
                       <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-white/10">
                         <CheckCircle2 className="h-3 w-3 text-emerald-400/80" />
                       </span>
                     )}
                     <span className="text-xs font-medium text-foreground/80">{bar.label}</span>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               ))}
             </div>
 
@@ -394,10 +433,14 @@ function DashboardCards() {
               { status: "At risk", message: "3 documents pending re-verification", date: "Feb 5", color: "text-amber-400", icon: <AlertTriangle className="h-4 w-4 text-amber-400" />, opacity: "opacity-70" },
               { status: "Under review", message: "Batch #47 submitted for compliance check", date: "Feb 2", color: "text-sky-400", icon: <Clock className="h-4 w-4 text-sky-400" />, opacity: "opacity-50" },
             ].map((card, i) => (
-              <div
+              <motion.div
                 key={card.status}
-                className={`rounded-xl border border-border/40 bg-black/20 px-4 py-3 ${card.opacity}`}
-                style={{ transform: `translateX(${i * 6}px)` }}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: i * 6 }}
+                transition={{ duration: 0.5, delay: i * 0.12 }}
+                viewport={{ once: true }}
+                whileHover={{ x: 0, opacity: 1, transition: { duration: 0.2 } }}
+                className={`rounded-xl border border-border/40 bg-black/20 px-4 py-3 ${card.opacity} cursor-pointer`}
               >
                 <div className="flex items-center gap-2">
                   {card.icon}
@@ -405,7 +448,7 @@ function DashboardCards() {
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">{card.message}</p>
                 <p className="mt-2 text-[10px] text-muted-foreground/60">{card.date}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

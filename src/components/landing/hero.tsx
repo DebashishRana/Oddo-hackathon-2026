@@ -10,38 +10,56 @@ const Hero = () => {
     <section className="relative overflow-hidden pt-28 sm:pt-36">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* ── Centred text block ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mx-auto max-w-4xl text-center"
-        >
-          <h1 className="text-4xl font-semibold tracking-tight sm:text-[3.5rem] md:text-[4rem] lg:text-[4.5rem] lg:leading-[1.08]">
-            Dectra is a purpose‑built tool for instant document verification
-          </h1>
+        <div className="mx-auto max-w-4xl text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.7, ease: [0.25, 0.4, 0.25, 1] }}
+            className="text-4xl font-semibold tracking-tight sm:text-[3.5rem] md:text-[4rem] lg:text-[4.5rem] lg:leading-[1.08]"
+          >
+            Trust and Time matter 
+          </motion.h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Meet the system for modern verification operations. Streamline EDV checks, QR access, and compliant
-            redirects into a single, auditable workflow.
-          </p>
+          <motion.p
+            initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.25, 0.4, 0.25, 1] }}
+            className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg"
+          >
+            <span className="bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 bg-clip-text text-transparent font-semibold">Save both with Dectra</span>, the all-in-one verification platform. Streamline your workflows, reduced compliance friction and trails 
+          </motion.p>
 
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button className="h-11 rounded-full px-6" size="lg" asChild>
-              <Link href="/auth/signup" className="flex items-center gap-2">
-                <span>Start verifying</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button
-              variant="ghost"
-              className="h-11 px-2 text-muted-foreground hover:text-foreground"
-              size="lg"
-              asChild
-            >
-              <Link href="#pricing">See pricing</Link>
-            </Button>
-          </div>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
+          >
+            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+              <Button className="h-11 rounded-full px-6" size="lg" asChild>
+                <Link href="/auth/signup" className="flex items-center gap-2">
+                  <span>Start verifying</span>
+                  <motion.span
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </motion.span>
+                </Link>
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+              <Button
+                variant="ghost"
+                className="h-11 px-2 text-muted-foreground hover:text-foreground"
+                size="lg"
+                asChild
+              >
+                <Link href="#pricing">See pricing</Link>
+              </Button>
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
 
       {/* ── Full-width product surface beneath the text ── */}
@@ -52,16 +70,20 @@ const Hero = () => {
         className="relative mt-16 sm:mt-20"
       >
         {/* Glow behind the mockup */}
-        <div className="pointer-events-none absolute -inset-x-10 -top-20 bottom-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(99,102,241,0.22),transparent_70%)]" />
+        <motion.div
+          animate={{ opacity: [0.6, 1, 0.6], scale: [0.98, 1.02, 0.98] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute -inset-x-10 -top-20 bottom-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(99,102,241,0.22),transparent_70%)]"
+        />
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="relative overflow-hidden rounded-t-[2rem] border border-b-0 border-border/60 bg-card/20 shadow-2xl shadow-black/50 backdrop-blur sm:rounded-t-[2.5rem]">
             {/* Browser chrome bar */}
             <div className="flex items-center justify-between border-b border-border/40 px-6 py-3 text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
-                <div className="h-2.5 w-2.5 rounded-full bg-white/20" />
-                <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
-                <div className="h-2.5 w-2.5 rounded-full bg-white/10" />
+                <motion.div animate={{ opacity: [0.2, 0.5, 0.2] }} transition={{ duration: 2, repeat: Infinity, delay: 0 }} className="h-2.5 w-2.5 rounded-full bg-red-400/60" />
+                <motion.div animate={{ opacity: [0.15, 0.45, 0.15] }} transition={{ duration: 2, repeat: Infinity, delay: 0.3 }} className="h-2.5 w-2.5 rounded-full bg-yellow-400/50" />
+                <motion.div animate={{ opacity: [0.1, 0.4, 0.1] }} transition={{ duration: 2, repeat: Infinity, delay: 0.6 }} className="h-2.5 w-2.5 rounded-full bg-green-400/40" />
               </div>
               <div>dectra.app</div>
               <div className="flex items-center gap-3">

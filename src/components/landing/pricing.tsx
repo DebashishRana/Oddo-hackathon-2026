@@ -13,11 +13,11 @@ interface PricingProps {
 const plans = [
   {
     badge: "STARTER",
-    name: "Free",
-    price: { monthly: "Free", yearly: "Free" },
+    name: "Free Trial",
+    price: { monthly: "Free Trial", yearly: "Free Trial" },
     period: "",
     billedLabel: "",
-    description: "For hobby and staging sites",
+    description: "For those just getting started with verification",
     sections: [
       {
         title: null,
@@ -25,7 +25,7 @@ const plans = [
           { text: "Dectra subdomain", info: true },
           { text: "An entry-level site", info: false },
           { text: "2 pages", info: false },
-          { text: "50 documents", info: false },
+          { text: "15 documents", info: false },
           { text: "50 verifications (lifetime)", info: false },
         ],
       },
@@ -45,8 +45,8 @@ const plans = [
   },
   {
     badge: "BASIC",
-    name: "$14",
-    price: { monthly: "$18", yearly: "$14" },
+    name: "₹14",
+    price: { monthly: "₹1900", yearly: "₹21000" },
     period: "/mo",
     billedLabel: "billed yearly",
     description: "For relatively simple, static sites",
@@ -77,9 +77,9 @@ const plans = [
     checkoutPlan: "basic",
   },
   {
-    badge: "CMS",
-    name: "$23",
-    price: { monthly: "$29", yearly: "$23" },
+    badge: "BUSINESS",
+    name: "₹2900",
+    price: { monthly: "₹2900", yearly: "₹34000" },
     period: "/mo",
     billedLabel: "billed yearly",
     description: "For blogs or other content-driven sites",
@@ -112,9 +112,9 @@ const plans = [
     checkoutPlan: "pro",
   },
   {
-    badge: "BUSINESS",
-    name: "$39",
-    price: { monthly: "$49", yearly: "$39" },
+    badge: "ORGANIZATIONZ ",
+    name: "₹39",
+    price: { monthly: "₹49000", yearly: "₹56000" },
     period: "/mo",
     billedLabel: "billed yearly",
     description: "For larger sites",
@@ -244,11 +244,12 @@ const Pricing = ({ isAuthenticated = false }: PricingProps) => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.08 }}
                 viewport={{ once: true }}
+                whileHover={{ y: -6, transition: { duration: 0.25 } }}
                 className={cn(
-                  "relative flex flex-col rounded-2xl border p-6",
+                  "relative flex flex-col rounded-2xl border p-6 transition-shadow duration-300",
                   plan.highlighted
-                    ? "border-[#d4854e]/50 bg-gradient-to-b from-[#d4854e]/10 to-transparent"
-                    : "border-border/40 bg-card/20"
+                    ? "border-[#d4854e]/50 bg-gradient-to-b from-[#d4854e]/10 to-transparent hover:shadow-xl hover:shadow-[#d4854e]/10"
+                    : "border-border/40 bg-card/20 hover:shadow-lg hover:shadow-black/20"
                 )}
               >
                 {/* Badge */}

@@ -131,7 +131,17 @@ function ScatterChart() {
 
             {/* Dots */}
             {dots.map((d, i) => (
-              <circle key={i} cx={d.cx} cy={d.cy} r={d.r} fill={d.fill} />
+              <motion.circle
+                key={i}
+                cx={d.cx}
+                cy={d.cy}
+                r={d.r}
+                fill={d.fill}
+                initial={{ opacity: 0, scale: 0 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: Math.min(i * 0.008, 1.2) }}
+                viewport={{ once: true }}
+              />
             ))}
           </svg>
         </div>
@@ -236,8 +246,16 @@ const Insights = () => {
               title: "SLAs",
               desc: "Automatically apply deadlines to time-sensitive verifications.",
             },
-          ].map((item) => (
-            <div key={item.title}>
+          ].map((item, i) => (
+            <motion.div
+              key={item.title}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.15 + i * 0.08 }}
+              viewport={{ once: true }}
+              className="cursor-default"
+            >
               <div className="flex items-center gap-2 text-sm font-medium">
                 <span className="text-muted-foreground">{item.icon}</span>
                 {item.title}
@@ -245,7 +263,7 @@ const Insights = () => {
               <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
                 {item.desc}
               </p>
-            </div>
+            </motion.div>
           ))}
         </motion.div>
       </div>

@@ -86,29 +86,38 @@ const Features = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {tabs.map((tab) => {
+          {tabs.map((tab, index) => {
             const isActive = tab.id === activeTab
             const Icon =
               tab.id === "accessibility" ? Workflow : tab.id === "security" ? Lock : ShieldCheck
 
             return (
-              <button
+              <motion.button
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
                 className="text-left"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.12 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
               >
                 <Card
                   className={[
                     "h-full rounded-2xl border-border/60 bg-card/25 backdrop-blur transition-all duration-300",
-                    isActive ? "border-primary/40 bg-card/35" : "hover:bg-card/30",
+                    isActive ? "border-primary/40 bg-card/35 shadow-lg shadow-primary/5" : "hover:bg-card/30 hover:shadow-md hover:shadow-black/20",
                   ].join(" ")}
                 >
                   <CardHeader>
                     <div className="mb-4 inline-flex h-9 items-center gap-2 rounded-full border border-border/60 px-3 text-xs text-muted-foreground">
-                      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <motion.span
+                        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary"
+                        animate={isActive ? { scale: [1, 1.2, 1] } : {}}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
                         <Icon className="h-3 w-3" />
-                      </span>
+                      </motion.span>
                       {tab.label}
                     </div>
                     <CardTitle className="text-lg">{tab.title}</CardTitle>
@@ -117,7 +126,7 @@ const Features = () => {
                     <CardDescription className="text-sm leading-relaxed">{tab.description}</CardDescription>
                   </CardContent>
                 </Card>
-              </button>
+              </motion.button>
             )
           })}
         </div>
@@ -141,16 +150,20 @@ const Features = () => {
                   { label: "EDV checks < ", value: "60s" },
                   { label: "Audit events / mo", value: "100k+" },
                   { label: "Encryption", value: "AES‑256" },
-                ].map((item) => (
-                  <div
+                ].map((item, i) => (
+                  <motion.div
                     key={item.label}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: i * 0.08 }}
+                    whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
                     className="rounded-2xl border border-border/60 bg-card/25 px-3 py-4 text-left"
                   >
                     <div className="text-2xl font-semibold">{item.value}</div>
                     <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                       {item.label}
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             )}
@@ -183,15 +196,17 @@ const Features = () => {
             className="relative"
           >
             <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-[radial-gradient(closest-side,rgba(99,102,241,0.18),transparent)] blur-2xl" />
-            <div className="h-64 rounded-[1.75rem] border border-border/60 bg-card/25 shadow-xl shadow-black/40 backdrop-blur">
-              {/* Placeholder for an isometric UI tile */}
-              <div className="relative h-full w-full overflow-hidden rounded-[1.75rem]">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/4 via-white/0 to-transparent" />
-                <div className="absolute -left-10 bottom-6 h-32 w-56 rotate-[-16deg] rounded-2xl border border-white/12 bg-gradient-to-tr from-emerald-400/25 via-sky-500/10 to-transparent" />
-                <div className="absolute right-0 top-8 h-28 w-40 rotate-[-10deg] rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-transparent" />
-                <div className="absolute left-6 top-6 h-9 w-40 rounded-xl border border-white/10 bg-black/30" />
-              </div>
-            </div>
+            <motion.div
+              className="h-64 rounded-[1.75rem] border border-border/60 bg-card/25 shadow-xl shadow-black/40 backdrop-blur overflow-hidden"
+              whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+            >
+              <Image
+                src={active.id === "accessibility" ? "/2.jpg" : active.id === "security" ? "/3.jpg" : "/4.jpg"}
+                alt={active.title}
+                fill
+                className="object-cover"
+              />
+            </motion.div>
           </motion.div>
         </div>
       </div>

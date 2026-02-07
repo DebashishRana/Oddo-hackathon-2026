@@ -58,18 +58,21 @@ const Testimonials = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <Card className="h-full rounded-2xl border-border/60 bg-card/25 backdrop-blur transition-colors duration-300 hover:bg-card/35">
+              <Card className="h-full rounded-2xl border-border/60 bg-card/25 backdrop-blur transition-all duration-300 hover:bg-card/35 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1">
                 <CardContent className="p-6">
                   <blockquote className="text-muted-foreground mb-6 leading-relaxed text-sm sm:text-base">
                     &ldquo;{testimonial.content}&rdquo;
                   </blockquote>
 
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-white/5 border border-border/60 rounded-full flex items-center justify-center">
+                    <motion.div
+                      className="w-10 h-10 bg-white/5 border border-border/60 rounded-full flex items-center justify-center"
+                      whileHover={{ scale: 1.15, rotate: 5 }}
+                    >
                       <span className="text-sm font-medium text-foreground">
                         {testimonial.name.split(' ').map(n => n[0]).join('')}
                       </span>
-                    </div>
+                    </motion.div>
                     <div>
                       <div className="font-medium text-sm">{testimonial.name}</div>
                       <div className="text-xs text-muted-foreground">

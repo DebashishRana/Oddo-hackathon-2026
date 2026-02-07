@@ -43,11 +43,18 @@ const Foundations = () => {
             </p>
 
             <div className="mt-10 space-y-6 border-t border-border/60 pt-8">
-              {rows.map((row) => (
-                <div key={row.title} className="grid gap-2 sm:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
+              {rows.map((row, i) => (
+                <motion.div
+                  key={row.title}
+                  className="grid gap-2 sm:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]"
+                  initial={{ opacity: 0, x: -16 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                >
                   <div className="text-sm font-medium">{row.title}</div>
                   <div className="text-sm text-muted-foreground leading-relaxed">{row.description}</div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </motion.div>
@@ -60,10 +67,26 @@ const Foundations = () => {
             className="relative hidden min-h-[360px] rounded-[2.25rem] border border-border/60 bg-card/20 shadow-2xl shadow-black/40 backdrop-blur lg:block"
           >
             <div className="pointer-events-none absolute inset-0 rounded-[2.25rem] border border-white/5" />
-            <div className="absolute left-10 top-10 h-24 w-40 rounded-2xl border border-white/12 bg-gradient-to-br from-white/12 to-transparent" />
-            <div className="absolute right-8 top-6 h-16 w-24 rounded-2xl border border-white/10 bg-gradient-to-tr from-emerald-400/18 via-sky-400/10 to-transparent" />
-            <div className="absolute bottom-10 left-8 h-28 w-56 rounded-2xl border border-white/8 bg-gradient-to-tr from-white/6 to-transparent" />
-            <div className="absolute bottom-6 right-8 h-10 w-32 rounded-full border border-white/10 bg-black/40" />
+            <motion.div
+              className="absolute left-10 top-10 h-24 w-40 rounded-2xl border border-white/12 bg-gradient-to-br from-white/12 to-transparent"
+              animate={{ y: [0, -8, 0], rotate: [0, 2, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute right-8 top-6 h-16 w-24 rounded-2xl border border-white/10 bg-gradient-to-tr from-emerald-400/18 via-sky-400/10 to-transparent"
+              animate={{ y: [0, 6, 0], rotate: [0, -3, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            />
+            <motion.div
+              className="absolute bottom-10 left-8 h-28 w-56 rounded-2xl border border-white/8 bg-gradient-to-tr from-white/6 to-transparent"
+              animate={{ y: [0, 5, 0], x: [0, 3, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            />
+            <motion.div
+              className="absolute bottom-6 right-8 h-10 w-32 rounded-full border border-white/10 bg-black/40"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            />
           </motion.div>
         </div>
       </div>

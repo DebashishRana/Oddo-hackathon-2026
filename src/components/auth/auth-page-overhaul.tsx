@@ -1,46 +1,53 @@
 "use client"
 
 import { useState } from "react"
-import { signInAction, signInWithCredentialsAction, signUpAction } from "@/lib/auth-actions"
+import { signInAction, signUpAction } from "@/lib/auth-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Icons } from "@/components/ui/icons"
 import { useToast } from "@/hooks/use-toast"
-import { Eye, EyeOff, X } from "lucide-react"
+import { Eye, EyeOff, ChevronDown } from "lucide-react"
 import Link from "next/link"
+
+const COUNTRIES = [
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia",
+  "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados",
+  "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina",
+  "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia",
+  "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia",
+  "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic",
+  "Denmark", "Djibouti", "Dominican Republic", "Ecuador", "Egypt", "El Salvador",
+  "Estonia", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia",
+  "Germany", "Ghana", "Greece", "Guatemala", "Guinea", "Guyana", "Haiti", "Honduras",
+  "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel",
+  "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kuwait", "Kyrgyzstan",
+  "Laos", "Latvia", "Lebanon", "Liberia", "Libya", "Lithuania", "Luxembourg",
+  "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Mexico", "Moldova",
+  "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia",
+  "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Macedonia",
+  "Norway", "Oman", "Pakistan", "Panama", "Papua New Guinea", "Paraguay", "Peru",
+  "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda",
+  "Saudi Arabia", "Senegal", "Serbia", "Sierra Leone", "Singapore", "Slovakia",
+  "Slovenia", "Somalia", "South Africa", "South Korea", "Spain", "Sri Lanka", "Sudan",
+  "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand",
+  "Togo", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Uganda",
+  "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay",
+  "Uzbekistan", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe",
+]
 
 export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?: boolean }) {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [emailPreferences, setEmailPreferences] = useState(false)
+  const [showIncluded, setShowIncluded] = useState(false)
   const { toast } = useToast()
 
-  // Login Form State - commented out unused variables
-  // const loginEmail = "";
-  // const loginPassword = "";
-
-  // Signup Form State (if we want to support email signup on the left side too, or just social)
-  // The design shows "Sign up with email" button on the left. 
-  // We'll assume clicking that might toggle the right side to signup mode or show a modal.
-  // For now, let's implement the right side as a toggleable form based on user interaction.
-  
-  // Actually, the design shows "Sign up" on left and "Log in" on right.
-  // But usually you can't do both at once.
-  // Let's interpret the design:
-  // Left side: "Sign up" header. Buttons for Google, Facebook, Email.
-  // Right side: "Log in" header. Form for Email/Password.
-  
-  // If user clicks "Sign up with email" on the left, maybe the right side changes to Signup form?
-  // Or maybe the left side IS the signup options and right side IS the login options.
-  
-  const [mode, setMode] = useState<"login" | "signup">(defaultIsSignUp ? "signup" : "login")
-
-  async function handleEmailSubmit(formData: FormData) {
+  async function handleSignUp(formData: FormData) {
     setIsLoading(true)
     try {
-      const action = mode === "signup" ? signUpAction : signInWithCredentialsAction
-      const result = await action(null, formData)
-      
+      const result = await signUpAction(null, formData)
+
       if (result?.error) {
         toast({
           title: "Error",
@@ -49,7 +56,6 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
         })
       }
     } catch (error) {
-      // NEXT_REDIRECT means successful redirect - let it propagate
       if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
         throw error
       }
@@ -64,170 +70,238 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-cover bg-center p-4" 
-         style={{ backgroundImage: 'url("/signup.webp")' }}>
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-      
-      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+    <div className="min-h-screen w-full flex flex-col lg:flex-row">
+      {/* Left Side - Dark promo panel */}
+      <div className="relative w-full lg:w-[45%] text-white flex flex-col justify-between overflow-hidden min-h-[300px] lg:min-h-screen">
+        {/* Background image */}
+        <img
+          src="/signup.jpg"
+          alt="Signup background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/50" />
 
-        <Link
-          href="/"
-          aria-label="Close"
-          className="absolute right-4 top-4 z-10 rounded-full p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100"
-        >
-          <X className="h-4 w-4" />
-        </Link>
-        
-        {/* Left Side - Sign Up Options */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center border-r border-gray-100">
-          <div className="text-center mb-8">
-            <div className="mx-auto mb-4 h-2 w-2 rounded-full bg-gray-300" />
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign up</h2>
-            <p className="text-gray-500">Unlimited free access to our resources</p>
-          </div>
+        {/* Content */}
+        <div className="relative z-10 flex flex-col justify-center flex-1 px-8 md:px-12 lg:px-16 py-12 lg:py-0">
+          <h1 className="text-3xl md:text-4xl lg:text-[2.75rem] font-semibold leading-tight mb-4 tracking-tight">
+            Proof first profit later
+          </h1>
+          <p className="text-white/70 text-base md:text-lg mb-6 max-w-md">
+            Explore Dectra&apos;s core features for individuals and organizations.
+          </p>
+          <button
+            type="button"
+            className="text-white text-sm font-medium flex items-center gap-1.5 hover:underline w-fit"
+            onClick={() => setShowIncluded(!showIncluded)}
+          >
+            See what&apos;s included
+            <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showIncluded ? 'rotate-180' : ''}`} />
+          </button>
 
-          <div className="space-y-4 max-w-xs mx-auto w-full">
-            <form action={signInAction}>
-              <Button 
-                type="submit"
-                variant="outline" 
-                className="w-full h-12 rounded-full border-gray-300 hover:bg-gray-50 hover:text-gray-900 justify-start px-6 relative"
-                disabled={isLoading}
-              >
-                <Icons.google className="h-5 w-5 mr-3 absolute left-6" />
-                <span className="w-full text-center">Continue with Google</span>
-              </Button>
-            </form>
+          {showIncluded && (
+            <div className="mt-4 space-y-2 text-white/70 text-sm animate-in slide-in-from-top-2 duration-200">
+              <p>&#x2022; Unlimited AI-powered verification checks</p>
+              <p>&#x2022; Real-time analytics dashboard</p>
+              <p>&#x2022; Team collaboration tools</p>
+              <p>&#x2022; API access for integrations</p>
+              <p>&#x2022; Priority support</p>
+            </div>
+          )}
+        </div>
+      </div>
 
-            <Button 
-              variant="outline" 
-              className="w-full h-12 rounded-full border-gray-300 hover:bg-gray-50 hover:text-gray-900 justify-start px-6 relative"
-              disabled={isLoading}
-              // Placeholder for Facebook
-            >
-              <Icons.facebook className="h-5 w-5 mr-3 absolute left-6 text-blue-600" />
-              <span className="w-full text-center">Continue with Facebook</span>
-            </Button>
-
-            <Button 
-              variant="outline" 
-              className={`w-full h-12 rounded-full border-gray-300 hover:bg-gray-50 hover:text-gray-900 justify-start px-6 relative ${mode === 'signup' ? 'ring-2 ring-primary ring-offset-2' : ''}`}
-              onClick={() => setMode("signup")}
-              disabled={isLoading}
-            >
-              <Icons.mail className="h-5 w-5 mr-3 absolute left-6" />
-              <span className="w-full text-center">Sign up with email</span>
-            </Button>
-          </div>
-
-          <div className="mt-8 text-center text-xs text-gray-400 px-8">
-            By signing up, you agree to the <Link href="/terms" className="underline hover:text-gray-600">Terms of Service</Link> and acknowledge you&apos;ve read our <Link href="/privacy" className="underline hover:text-gray-600">Privacy Policy</Link>.
-          </div>
+      {/* Right Side - Signup form */}
+      <div className="w-full lg:w-[55%] bg-[#f6f8fa] flex flex-col min-h-screen lg:min-h-0">
+        {/* Top bar: Already have account? Sign in */}
+        <div className="flex justify-end items-center px-6 md:px-10 py-4">
+          <span className="text-sm text-[#57606a]">
+            Already have an account?{" "}
+            <Link href="/auth/signin" className="text-[#0969da] hover:underline font-medium">
+              Sign in &rarr;
+            </Link>
+          </span>
         </div>
 
-        {/* Right Side - Login/Signup Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-gray-50/50">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              {mode === "login" ? "Log in" : "Create Account"}
+        {/* Form container */}
+        <div className="flex-1 flex items-start lg:items-center justify-center px-6 md:px-10 py-6 lg:py-0">
+          <div className="w-full max-w-[440px]">
+            <h2 className="text-2xl font-semibold text-[#24292f] mb-8">
+              Sign up for Dectra
             </h2>
-            <p className="text-gray-500">
-              {mode === "login" ? "Welcome back! Please enter your details." : "Enter your details to get started."}
-            </p>
-          </div>
 
-          <form action={handleEmailSubmit} className="space-y-6 max-w-xs mx-auto w-full">
-            {mode === "signup" && (
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-gray-600">Full Name</Label>
+            {/* Social sign-in buttons */}
+            <div className="space-y-3 mb-6">
+              <form action={signInAction}>
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className="w-full h-11 rounded-md border-[#d0d7de] bg-white hover:bg-[#f3f4f6] text-[#24292f] font-medium text-sm justify-center gap-2.5 shadow-sm"
+                  disabled={isLoading}
+                >
+                  <Icons.google className="h-[18px] w-[18px]" />
+                  Continue with Google
+                </Button>
+              </form>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-11 rounded-md border-[#d0d7de] bg-white hover:bg-[#f3f4f6] text-[#24292f] font-medium text-sm justify-center gap-2.5 shadow-sm"
+                disabled={isLoading}
+              >
+                <Icons.apple className="h-[18px] w-[18px]" />
+                Continue with Apple
+              </Button>
+            </div>
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[#d0d7de]" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-[#f6f8fa] px-4 text-[#57606a]">or</span>
+              </div>
+            </div>
+
+            {/* Signup form */}
+            <form action={handleSignUp} className="space-y-4">
+              {/* Email */}
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-sm font-medium text-[#24292f]">
+                  Email<span className="text-[#cf222e]">*</span>
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="Email"
+                  className="h-9 rounded-md border-[#d0d7de] bg-white text-[#24292f] text-sm shadow-sm placeholder:text-[#6e7781] focus:border-[#0969da] focus:ring-[#0969da] focus:ring-1"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
+
+              {/* Password */}
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-sm font-medium text-[#24292f]">
+                  Password<span className="text-[#cf222e]">*</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    className="h-9 rounded-md border-[#d0d7de] bg-white text-[#24292f] text-sm shadow-sm placeholder:text-[#6e7781] focus:border-[#0969da] focus:ring-[#0969da] focus:ring-1 pr-10"
+                    disabled={isLoading}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#57606a] hover:text-[#24292f]"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <p className="text-xs text-[#57606a] leading-snug mt-1">
+                  Password should be at least 15 characters OR at least 8 characters including a number and a lowercase letter.
+                </p>
+              </div>
+
+              {/* Username */}
+              <div className="space-y-1.5">
+                <Label htmlFor="name" className="text-sm font-medium text-[#24292f]">
+                  Username<span className="text-[#cf222e]">*</span>
+                </Label>
                 <Input
                   id="name"
                   name="name"
-                  placeholder="John Doe"
-                  className="h-12 rounded-xl bg-white border-gray-200 focus:border-primary focus:ring-primary text-gray-900"
+                  type="text"
+                  placeholder="Username"
+                  className="h-9 rounded-md border-[#d0d7de] bg-white text-[#24292f] text-sm shadow-sm placeholder:text-[#6e7781] focus:border-[#0969da] focus:ring-[#0969da] focus:ring-1"
                   disabled={isLoading}
+                  required
                 />
+                <p className="text-xs text-[#57606a] leading-snug mt-1">
+                  Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.
+                </p>
               </div>
-            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-600">Email address</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="name@example.com"
-                className="h-12 rounded-xl bg-white border-gray-200 focus:border-primary focus:ring-primary text-gray-900"
-                disabled={isLoading}
-                required
-              />
-            </div>
+              {/* Country/Region */}
+              <div className="space-y-1.5">
+                <Label htmlFor="country" className="text-sm font-medium text-[#24292f]">
+                  Your Country/Region<span className="text-[#cf222e]">*</span>
+                </Label>
+                <div className="relative">
+                  <select
+                    id="country"
+                    name="country"
+                    className="w-full h-9 rounded-md border border-[#d0d7de] bg-white text-[#24292f] text-sm shadow-sm px-3 pr-8 appearance-none focus:border-[#0969da] focus:ring-[#0969da] focus:ring-1 focus:outline-none cursor-pointer"
+                    defaultValue="India"
+                    disabled={isLoading}
+                  >
+                    {COUNTRIES.map((country) => (
+                      <option key={country} value={country}>
+                        {country}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#57606a] pointer-events-none" />
+                </div>
+                <p className="text-xs text-[#0969da] leading-snug mt-1">
+                  For compliance reasons, we&apos;re required to collect country information to send you occasional updates and announcements.
+                </p>
+              </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-gray-600">Password</Label>
-                <button 
-                  type="button"
-                  className="text-xs text-gray-400 hover:text-gray-600 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
+              {/* Email preferences */}
+              <div className="space-y-2 pt-1">
+                <p className="text-sm font-medium text-[#24292f]">Email preferences</p>
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="emailPreferences"
+                    checked={emailPreferences}
+                    onChange={(e) => setEmailPreferences(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-[#d0d7de] text-[#0969da] focus:ring-[#0969da] cursor-pointer"
+                    disabled={isLoading}
+                  />
+                  <span className="text-xs text-[#57606a] leading-snug">
+                    Receive occasional product updates and announcements
+                  </span>
+                </label>
+              </div>
+
+              {/* Submit button */}
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  className="w-full h-10 rounded-md bg-[#2da44e] hover:bg-[#2c974b] text-white font-medium text-sm border border-[rgba(27,31,36,0.15)] shadow-sm"
+                  disabled={isLoading}
                 >
-                  {showPassword ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
-                  {showPassword ? "Hide" : "Show"}
-                </button>
+                  {isLoading ? (
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  Create account
+                </Button>
               </div>
-              <Input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                className="h-12 rounded-xl bg-white border-gray-200 focus:border-primary focus:ring-primary text-gray-900"
-                disabled={isLoading}
-                required
-              />
-            </div>
+            </form>
 
-            {mode === "login" && (
-              <div className="flex justify-end">
-                <Link href="/auth/reset-password" className="text-xs font-medium text-gray-500 hover:text-gray-900">
-                  Forget your password
-                </Link>
-              </div>
-            )}
-
-            <Button 
-              type="submit" 
-              className="w-full h-12 rounded-full text-base font-medium shadow-lg hover:shadow-xl transition-all duration-200"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              ) : null}
-              {mode === "login" ? "Log in" : "Create Account"}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              className="text-sm text-gray-500 hover:text-gray-900"
-              onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            >
-              {mode === "login" ? "Don't have an account? Sign up" : "Already have an account? Log in"}
-            </button>
-          </div>
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0 border-t border-gray-100 bg-white/70 backdrop-blur px-6 py-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-400">
-            <span>English (United States)</span>
-            <div className="flex flex-wrap gap-x-4 gap-y-2">
-              <Link href="/about" className="hover:text-gray-600">About</Link>
-              <Link href="/help" className="hover:text-gray-600">Help Center</Link>
-              <Link href="/terms" className="hover:text-gray-600">Terms of Service</Link>
-              <Link href="/privacy" className="hover:text-gray-600">Privacy Policy</Link>
-              <Link href="/cookies" className="hover:text-gray-600">Cookie Policy</Link>
-              <Link href="/careers" className="hover:text-gray-600">Careers</Link>
-            </div>
+            {/* Terms */}
+            <p className="mt-6 text-xs text-[#57606a] leading-snug text-center border-t border-[#d0d7de] pt-6">
+              By creating an account, you agree to the{" "}
+              <Link href="/terms" className="text-[#0969da] hover:underline">
+                Terms of Service
+              </Link>
+              . For more information about our privacy practices, see the{" "}
+              <Link href="/privacy" className="text-[#0969da] hover:underline">
+                Privacy Statement
+              </Link>
+              . We&apos;ll occasionally send you account-related emails.
+            </p>
           </div>
         </div>
       </div>
