@@ -212,7 +212,7 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
               className="text-sm text-gray-500 hover:text-gray-900"
               onClick={() => setMode(mode === "login" ? "signup" : "login")}
             >
-              {mode === "login" ? "Don&apos;t have an account? Sign up" : "Already have an account? Log in"}
+              {mode === "login" ? "Don't have an account? Sign up" : "Already have an account? Log in"}
             </button>
           </div>
         </div>

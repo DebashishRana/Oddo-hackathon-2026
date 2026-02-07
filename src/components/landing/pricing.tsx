@@ -1,195 +1,346 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, Star } from "lucide-react"
-import { motion } from "framer-motion"
+import { useState } from "react"
+import { Check, Info } from "lucide-react"
+import { motion } from "motion/react"
+import { cn } from "@/lib/utils"
 import { PricingClient } from "./pricing-client"
 
 interface PricingProps {
   isAuthenticated?: boolean;
 }
 
+const plans = [
+  {
+    badge: "STARTER",
+    name: "Free",
+    price: { monthly: "Free", yearly: "Free" },
+    period: "",
+    billedLabel: "",
+    description: "For hobby and staging sites",
+    sections: [
+      {
+        title: null,
+        features: [
+          { text: "Dectra subdomain", info: true },
+          { text: "An entry-level site", info: false },
+          { text: "2 pages", info: false },
+          { text: "50 documents", info: false },
+          { text: "50 verifications (lifetime)", info: false },
+        ],
+      },
+      {
+        title: "Limited traffic",
+        features: [
+          { text: "1 GB bandwidth", info: false },
+          { text: "1k visitors", info: false },
+          { text: "Standard speeds", info: false },
+        ],
+      },
+    ],
+    cta: "Start for free",
+    popular: false,
+    highlighted: false,
+    action: "signin" as const,
+  },
+  {
+    badge: "BASIC",
+    name: "$14",
+    price: { monthly: "$18", yearly: "$14" },
+    period: "/mo",
+    billedLabel: "billed yearly",
+    description: "For relatively simple, static sites",
+    sections: [
+      {
+        title: null,
+        features: [
+          { text: "Custom domain", info: true },
+          { text: "A basic site", info: false },
+          { text: "150 pages", info: false },
+          { text: "500 documents", info: false },
+          { text: "500 verifications (monthly)", info: false },
+        ],
+      },
+      {
+        title: "Moderate traffic",
+        features: [
+          { text: "50 GB bandwidth", info: false },
+          { text: "250k visitors", info: false },
+          { text: "Blazing fast speeds", info: false },
+        ],
+      },
+    ],
+    cta: "Add Site plan",
+    popular: false,
+    highlighted: false,
+    action: "checkout" as const,
+    checkoutPlan: "basic",
+  },
+  {
+    badge: "CMS",
+    name: "$23",
+    price: { monthly: "$29", yearly: "$23" },
+    period: "/mo",
+    billedLabel: "billed yearly",
+    description: "For blogs or other content-driven sites",
+    sections: [
+      {
+        title: null,
+        features: [
+          { text: "Custom domain", info: true },
+          { text: "A content-rich site", info: false },
+          { text: "150 pages", info: false },
+          { text: "2k documents", info: false },
+          { text: "1k verifications (monthly)", info: false },
+          { text: "3 Content editors", info: false },
+          { text: "Site search", info: false },
+        ],
+      },
+      {
+        title: "Generous traffic",
+        features: [
+          { text: "200 GB bandwidth", info: false },
+          { text: "250k visitors", info: false },
+          { text: "Blazing fast speeds", info: false },
+        ],
+      },
+    ],
+    cta: "Add Site plan",
+    popular: true,
+    highlighted: true,
+    action: "checkout" as const,
+    checkoutPlan: "pro",
+  },
+  {
+    badge: "BUSINESS",
+    name: "$39",
+    price: { monthly: "$49", yearly: "$39" },
+    period: "/mo",
+    billedLabel: "billed yearly",
+    description: "For larger sites",
+    sections: [
+      {
+        title: null,
+        features: [
+          { text: "Custom domain", info: true },
+          { text: "A business site", info: false },
+          { text: "150 pages", info: false },
+          { text: "10k documents", info: false },
+          { text: "2.5k verifications (monthly)", info: false },
+          { text: "10 Content editors", info: false },
+          { text: "Site search", info: false },
+          { text: "Form file upload", info: false },
+        ],
+      },
+      {
+        title: "Expanded traffic",
+        features: [
+          { text: "400 GB bandwidth", info: false },
+          { text: "300k visitors", info: false },
+          { text: "Accelerated speeds", info: true },
+        ],
+      },
+    ],
+    cta: "Add Site plan",
+    popular: false,
+    highlighted: false,
+    action: "checkout" as const,
+    checkoutPlan: "business",
+  },
+  {
+    badge: "ENTERPRISE",
+    name: "Contact us",
+    price: { monthly: "Contact us", yearly: "Contact us" },
+    period: "",
+    billedLabel: "",
+    description: "For those needing an enterprise-grade solution",
+    sections: [
+      {
+        title: null,
+        features: [
+          { text: "Unlimited users", info: true },
+          { text: "Enterprise-ready scale", info: true },
+          { text: "Advanced collaboration", info: true },
+          { text: "Guaranteed SLA", info: true },
+          { text: "Enterprise security", info: true },
+          { text: "Customer success", info: true },
+        ],
+      },
+    ],
+    cta: "Contact sales",
+    popular: false,
+    highlighted: false,
+    action: "contact" as const,
+    contactEmail: "support@dectra.com",
+  },
+]
+
 const Pricing = ({ isAuthenticated = false }: PricingProps) => {
-  const plans = [
-    {
-      name: "EDV GO",
-      price: "Rs. 1900",
-      period: "m",
-      description: "Dedicated point for verification and documentation",
-      features: [
-        "EDV threshold 450 documents",
-        "Custom API integration for pipelines",
-        "Token auth & auto-deletion",
-        "Admin panel access",
-        "QR verification on laptop or phone"
-      ],
-      cta: "Get started",
-      popular: false,
-      variant: "outline" as const,
-      action: "signin" as const
-    },
-    {
-      name: "EDV Premium",
-      price: "Rs. 2999",
-      period: "m",
-      description: "Advanced point for verification and documentation",
-      features: [
-        "EDV threshold 1000 documents",
-        "Dedicated API support for custom pipelines and lakes",
-        "Priority token auth & auto-deletion",
-        "Admin panel & advanced analytics",
-        "Govt-backed double verification"
-      ],
-      cta: "Get started",
-      popular: true,
-      variant: "default" as const,
-      action: "checkout" as const,
-      checkoutPlan: "pro"
-    },
-    {
-      name: "EDV Enterprise",
-      price: "Contact us",
-      description: "Custom AI chatbot, advanced analytics, dedicated account",
-      features: [
-        "Unlimited EDV threshold",
-        "Enterprise API support for large-scale pipelines and lakes",
-        "Priority token auth & auto-deletion",
-        "Dedicated account management & SLA",
-        "Custom AI chatbot and analytics"
-      ],
-      cta: "Contact us",
-      popular: false,
-      variant: "outline" as const,
-      action: "contact" as const,
-      contactEmail: "support@dectra.com"
-    }
-  ]
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly")
 
   return (
-    <section id="pricing" className="py-24 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="pricing" className="py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-            Get started with project Vectra
-            <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              {" "}Flexible pricing for all teams
-            </span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Flexible pricing plans for teams of all sizes. Pick the right EDV throughput, integrations, and support for your compliance workflow.
-          </p>
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
+                Site plans
+              </h2>
+              <p className="mt-4 text-base text-muted-foreground max-w-xl">
+                Our site plans provide easy 1-click publishing and hosting, right from inside our powerful visual designer.
+              </p>
+            </div>
+
+            {/* Billing toggle */}
+            <div className="flex items-center gap-3 shrink-0">
+              <span className={cn("text-sm", billingCycle === "monthly" ? "text-foreground" : "text-muted-foreground")}>
+                Billed monthly
+              </span>
+              <button
+                onClick={() => setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")}
+                className={cn(
+                  "relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
+                  billingCycle === "yearly" ? "bg-[#d4854e]" : "bg-muted"
+                )}
+              >
+                <span
+                  className={cn(
+                    "pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out",
+                    billingCycle === "yearly" ? "translate-x-5" : "translate-x-0"
+                  )}
+                />
+              </button>
+              <div className="flex flex-col">
+                <span className={cn("text-sm font-medium", billingCycle === "yearly" ? "text-foreground" : "text-muted-foreground")}>
+                  Billed yearly
+                </span>
+                {billingCycle === "yearly" && (
+                  <span className="text-xs text-[#d4854e]">(Save up to 22%)</span>
+                )}
+              </div>
+            </div>
+          </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan, index) => (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-[#FF7F3F] text-primary-foreground px-4 py-1 rounded-full text-sm font-medium flex items-center space-x-1">
-                    <Star className="w-4 h-4" />
-                    <span>Most Popular</span>
-                  </div>
-                </div>
-              )}
-              
-              <Card className={`h-full ${plan.popular ? 'border-[#FF7F3F] shadow-lg scale-105' : 'border-border'} hover:shadow-lg transition-all duration-300`}>
-                <CardHeader className="text-center pb-8">
-                  <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    {plan.period && (
-                      <span className="text-muted-foreground ml-2">/{plan.period}</span>
+        {/* Plan cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {plans.map((plan, index) => {
+            const displayPrice = plan.price[billingCycle]
+            const isContact = displayPrice === "Contact us"
+            const isFree = displayPrice === "Free"
+
+            return (
+              <motion.div
+                key={plan.badge}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                viewport={{ once: true }}
+                className={cn(
+                  "relative flex flex-col rounded-2xl border p-6",
+                  plan.highlighted
+                    ? "border-[#d4854e]/50 bg-gradient-to-b from-[#d4854e]/10 to-transparent"
+                    : "border-border/40 bg-card/20"
+                )}
+              >
+                {/* Badge */}
+                <div className="mb-4">
+                  <span
+                    className={cn(
+                      "inline-block rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider",
+                      plan.highlighted
+                        ? "bg-[#d4854e] text-white"
+                        : "bg-muted text-muted-foreground border border-border/40"
                     )}
-                  </div>
-                  <CardDescription className="text-base mt-2">
-                    {plan.description}
-                  </CardDescription>
-                </CardHeader>
-                
-                <CardContent className="space-y-6">
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start space-x-3">
-                        <Check className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <PricingClient
-                    plan={plan}
-                    isAuthenticated={isAuthenticated}
-                  />
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                  >
+                    {plan.badge}
+                  </span>
+                </div>
+
+                {/* Price */}
+                <div className="mb-1">
+                  {isContact || isFree ? (
+                    <span className="text-3xl font-bold tracking-tight">{displayPrice}</span>
+                  ) : (
+                    <div className="flex items-baseline gap-0.5">
+                      <span className="text-3xl font-bold tracking-tight">{displayPrice}</span>
+                      <span className="text-sm text-muted-foreground">{plan.period}</span>
+                    </div>
+                  )}
+                </div>
+
+                {plan.billedLabel && (
+                  <p className="text-xs text-muted-foreground mb-3">{plan.billedLabel}</p>
+                )}
+
+                {/* Description */}
+                <p className="text-sm text-muted-foreground mb-6 leading-relaxed min-h-[40px]">
+                  {plan.description}
+                </p>
+
+                {/* Feature sections */}
+                <div className="flex-1 space-y-5 mb-6">
+                  {plan.sections.map((section, si) => (
+                    <div key={si}>
+                      {section.title && (
+                        <h4 className="text-sm font-semibold text-foreground mb-2">{section.title}</h4>
+                      )}
+                      <ul className="space-y-2">
+                        {section.features.map((feat, fi) => (
+                          <li key={fi} className="flex items-start justify-between gap-2">
+                            <span className="text-xs text-muted-foreground leading-relaxed">{feat.text}</span>
+                            {feat.info && (
+                              <Info className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40 mt-0.5" />
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA */}
+                <PricingClient
+                  plan={{
+                    name: plan.badge,
+                    popular: plan.highlighted,
+                    variant: plan.highlighted ? "default" : "outline",
+                    cta: plan.cta,
+                    action: plan.action,
+                    checkoutPlan: (plan as { checkoutPlan?: string }).checkoutPlan,
+                    contactEmail: (plan as { contactEmail?: string }).contactEmail,
+                  }}
+                  isAuthenticated={isAuthenticated}
+                  highlighted={plan.highlighted}
+                />
+              </motion.div>
+            )
+          })}
         </div>
 
-        {/* FAQ Section */}
+        {/* Bottom note */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
-          className="mt-24"
+          className="mt-10 text-center"
         >
-          <h3 className="text-2xl font-bold text-center mb-12">Frequently Asked Questions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="space-y-4">
-              <h4 className="font-semibold">How fast can Dectra verify documents?</h4>
-              <p className="text-muted-foreground text-sm">
-                Typical verifications complete in under a minute with EDV automation. Bulk uploads and redirects run continuously with audit-ready logs.
-              </p>
-            </div>
-            <div className="space-y-4">
-              <h4 className="font-semibold">Is data secured during verification?</h4>
-              <p className="text-muted-foreground text-sm">
-                Yes. Token-based authentication, automatic deletion policies, and government-backed checks ensure every document remains tamper-proof.
-              </p>
-            </div>
-            <div className="space-y-4">
-              <h4 className="font-semibold">Can I integrate with my data lakes?</h4>
-              <p className="text-muted-foreground text-sm">
-                Absolutely. Dectra streams verified records to your databases or lakes and supports custom API pipelines for bespoke workflows.
-              </p>
-            </div>
-            <div className="space-y-4">
-              <h4 className="font-semibold">What kind of support do you provide?</h4>
-              <p className="text-muted-foreground text-sm">
-                Guided onboarding for EDV GO, priority support for EDV Premium, and dedicated account management with SLA for EDV Enterprise.
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Money Back Guarantee */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          viewport={{ once: true }}
-          className="text-center mt-16"
-        >
-          <div className="bg-muted/30 rounded-2xl p-8 border border-border">
-            <h3 className="text-xl font-bold mb-2">Compliance-first and cancellation friendly</h3>
-            <p className="text-muted-foreground">
-              Upgrade, downgrade, or cancel as your verification volume changes. Need something bespoke? Our team will tailor an EDV plan to fit.
-            </p>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            All prices are in USD and charged per site with applicable taxes added at checkout.
+          </p>
+          <button className="mt-4 inline-flex items-center gap-1 rounded-full border border-border/40 px-5 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors">
+            View all plan features
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+          </button>
         </motion.div>
       </div>
     </section>

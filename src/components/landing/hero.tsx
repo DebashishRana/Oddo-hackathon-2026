@@ -1,173 +1,158 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import {
-  ArrowRight,
-  ShieldCheck,
-  FileCheck2,
-  Workflow,
-  Github
-} from "lucide-react"
+import { ArrowRight, ShieldCheck, Workflow } from "lucide-react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 sm:pt-16" style={{backgroundImage: 'url(/hero-background.webp)', backgroundSize: 'cover', backgroundPosition: 'center'}}>
-      {/* Background overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/40"></div>
-      
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <section className="relative overflow-hidden pt-28 sm:pt-36">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        {/* ── Centred text block ── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="space-y-6 sm:space-y-8 pt-12 sm:pt-24"
+          transition={{ duration: 0.6 }}
+          className="mx-auto max-w-4xl text-center"
         >
-          {/* Main Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-tight"
-          >
-            Next Generation Documentation
-            <br />
-            <span className="bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 bg-clip-text text-transparent">
-              starts here
-            </span>
-            <br />
-            
-          </motion.h1>
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-[3.5rem] md:text-[4rem] lg:text-[4.5rem] lg:leading-[1.08]">
+            Dectra is a purpose‑built tool for instant document verification
+          </h1>
 
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-base sm:text-lg lg:text-xl text-white max-w-3xl mx-auto leading-relaxed px-4"
-          >
-            Manage, verify, and redirect documents all at once with Dectra Supercharged with verefied databases and QR. 
-          </motion.p>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Meet the system for modern verification operations. Streamline EDV checks, QR access, and compliant
+            redirects into a single, auditable workflow.
+          </p>
 
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4"
-          >
-            <Button
-              size="lg"
-              className="text-base font-medium px-6 py-3 h-12 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              asChild
-            >
-              <Link href="/auth/signup" className="flex items-center space-x-2">
-                <span>Get started</span>
-                <ArrowRight className="w-4 h-4" />
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button className="h-11 rounded-full px-6" size="lg" asChild>
+              <Link href="/auth/signup" className="flex items-center gap-2">
+                <span>Start verifying</span>
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button
+              variant="ghost"
+              className="h-11 px-2 text-muted-foreground hover:text-foreground"
               size="lg"
-              variant="outline"
-              className="text-base font-medium px-6 py-3 h-12 rounded-lg border-2 hover:bg-muted/50 transition-all duration-300 hover:scale-105"
               asChild
             >
-              <Link href="#features">Explore more</Link>
+              <Link href="#pricing">See pricing</Link>
             </Button>
-          </motion.div>
+          </div>
+        </motion.div>
+      </div>
 
-          {/* Live status */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.65 }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8"
-          >
-            {[
-              {
-                title: "EDV Verifying...",
-                description: "Automated validation under 60 seconds",
-                icon: <FileCheck2 className="w-5 h-5 text-primary" />
-              },
-              {
-                title: "Govt backed integrity",
-                description: "Double verification with trusted databases",
-                icon: <ShieldCheck className="w-5 h-5 text-primary" />
-              },
-              {
-                title: "Redirect and pipeline",
-                description: "Stream results to your lakes and APIs securely",
-                icon: <Workflow className="w-5 h-5 text-primary" />
-              }
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="flex items-start space-x-3 bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl px-4 py-3 text-left"
-              >
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
-                  {item.icon}
+      {/* ── Full-width product surface beneath the text ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.85, delay: 0.15 }}
+        className="relative mt-16 sm:mt-20"
+      >
+        {/* Glow behind the mockup */}
+        <div className="pointer-events-none absolute -inset-x-10 -top-20 bottom-0 -z-10 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(99,102,241,0.22),transparent_70%)]" />
+
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="relative overflow-hidden rounded-t-[2rem] border border-b-0 border-border/60 bg-card/20 shadow-2xl shadow-black/50 backdrop-blur sm:rounded-t-[2.5rem]">
+            {/* Browser chrome bar */}
+            <div className="flex items-center justify-between border-b border-border/40 px-6 py-3 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="h-2.5 w-2.5 rounded-full bg-white/20" />
+                <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
+                <div className="h-2.5 w-2.5 rounded-full bg-white/10" />
+              </div>
+              <div>dectra.app</div>
+              <div className="flex items-center gap-3">
+                <span className="rounded border border-border/40 px-2 py-0.5 text-[10px]">Delete notification</span>
+                <span className="rounded border border-border/40 px-2 py-0.5 text-[10px]">Share</span>
+              </div>
+            </div>
+
+            {/* Multi-pane mockup */}
+            <div className="grid grid-cols-12 divide-x divide-border/30" style={{ minHeight: "420px" }}>
+              {/* Sidebar */}
+              <div className="col-span-2 hidden bg-black/30 p-4 lg:block">
+                <div className="mb-6 flex items-center gap-2 text-sm font-medium">
+                  <ShieldCheck className="h-4 w-4 text-emerald-400/60" />
+                  <span className="text-foreground/80">Dectra</span>
                 </div>
-                <div>
-                  <p className="font-semibold text-sm">{item.title}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+                <div className="space-y-1 text-xs text-muted-foreground/70">
+                  {["Inbox", "My documents", "Verifications", "Reports", "Settings"].map((item, i) => (
+                    <div
+                      key={item}
+                      className={[
+                        "rounded-lg px-3 py-2",
+                        i === 0 ? "bg-white/5 text-foreground/80" : "",
+                      ].join(" ")}
+                    >
+                      {item}
+                      {i === 0 && (
+                        <span className="ml-auto inline-flex h-4 w-4 items-center justify-center rounded-full bg-primary/20 text-[9px] text-primary">
+                          3
+                        </span>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </motion.div>
 
-          {/* GitHub Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="flex items-center justify-center pt-4"
-          >
-            <Button
-              size="lg"
-              variant="ghost"
-              className="text-base font-medium px-6 py-3 h-12 rounded-lg hover:bg-muted/30 transition-all duration-300 hover:scale-105 border border-border/50"
-              asChild
-            >
-              <Link
-                href="https://github.com/zainulabedeen123/Best-Saas-Kit--V2"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2"
-              >
-                <Github className="w-5 h-5" />
-                <span>View on GitHub</span>
-              </Link>
-            </Button>
-          </motion.div>
-        </motion.div>
-      </div>
+              {/* Centre inbox list */}
+              <div className="col-span-12 bg-black/20 p-4 sm:col-span-5 lg:col-span-4">
+                <div className="mb-4 text-sm font-medium text-foreground/70">Inbox</div>
+                <div className="space-y-2">
+                  {[
+                    { title: "EDV-135 Verify batch #47", sub: "assigned to you", time: "2h", urgent: false },
+                    { title: "Compliance Bot", sub: "New report generated", time: "8h", urgent: false },
+                    { title: "EDV-159 Error uploading docs", sub: "SLA breached", time: "2d", urgent: true },
+                    { title: "DOC-498 Redesign verify flow", sub: "team mentioned you", time: "3d", urgent: false },
+                    { title: "EDV-160 QR redirect broken", sub: "Reminded about this task", time: "1w", urgent: false },
+                  ].map((item) => (
+                    <div key={item.title} className="flex items-start gap-3 rounded-xl px-3 py-2.5 text-xs hover:bg-white/[0.03]">
+                      <div className="mt-0.5 h-6 w-6 rounded-full bg-white/10" />
+                      <div className="flex-1">
+                        <div className="font-medium text-foreground/80">{item.title}</div>
+                        <div className="text-muted-foreground/60">{item.sub}</div>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-muted-foreground/50">
+                        {item.urgent && <span className="h-1.5 w-1.5 rounded-full bg-red-400/70" />}
+                        {item.time}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-6 h-10 border-2 border-muted-foreground/30 rounded-full flex justify-center"
-        >
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-1 h-3 bg-muted-foreground/50 rounded-full mt-2"
-          />
-        </motion.div>
+              {/* Right detail pane */}
+              <div className="col-span-12 hidden bg-black/10 p-6 sm:col-span-7 sm:block lg:col-span-6">
+                <div className="mb-1 flex items-center gap-2 text-[10px] text-muted-foreground/50">
+                  <Workflow className="h-3 w-3" />
+                  Verifications · EDV-135
+                </div>
+                <h3 className="text-lg font-semibold text-foreground/90">Verify batch #47</h3>
+                <div className="mt-6 space-y-2 text-xs text-muted-foreground/70">
+                  <div className="rounded-xl border border-border/30 bg-black/20 p-4 font-mono text-[11px] leading-relaxed">
+                    <span className="text-purple-400/70">Document.verificationStatus</span>{" "}
+                    <span className="text-muted-foreground/50">is defined correctly. It should be a</span>{" "}
+                    <span className="text-sky-400/70">OneToMany</span>{" "}
+                    <span className="text-muted-foreground/50">relation.</span>
+                    <br /><br />
+                    <span className="text-emerald-400/60">/** The verification result associated with this document */</span>
+                    <br />
+                    <span className="text-purple-400/70">@OneToMany</span>{"(() => "}
+                    <span className="text-sky-400/70">VerificationResult</span>{")"}
+                    <br />
+                    <span className="text-foreground/60">public verificationResult?: VerificationResult;</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom fade into background */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
       </motion.div>
     </section>
   )

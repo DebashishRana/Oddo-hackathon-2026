@@ -12,7 +12,7 @@ export default function ContactPage() {
             Get in Touch
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Have questions about Best SAAS Kit V2? We&apos;re here to help! Send us a message and we&apos;ll get back to you as soon as possible.
+            Have questions for us? We&apos;re here to help! Send us a message and we&apos;ll get back to you as soon as possible.
           </p>
         </div>
 
@@ -34,7 +34,7 @@ export default function ContactPage() {
                   <Mail className="h-5 w-5 text-blue-500 mt-1" />
                   <div>
                     <h4 className="font-semibold">Email Support</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">support@bestsaaskit.com</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">support@dectra.in</p>
                     <p className="text-xs text-gray-500">For technical support and general inquiries</p>
                   </div>
                 </div>
@@ -43,7 +43,7 @@ export default function ContactPage() {
                   <Clock className="h-5 w-5 text-green-500 mt-1" />
                   <div>
                     <h4 className="font-semibold">Response Time</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">Within 24 hours</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Within 6 hours</p>
                     <p className="text-xs text-gray-500">We typically respond much faster</p>
                   </div>
                 </div>
@@ -67,21 +67,21 @@ export default function ContactPage() {
                 <div>
                   <h4 className="font-semibold text-sm">How do I get started?</h4>
                   <p className="text-xs text-gray-600 dark:text-gray-300">
-                    Check out our comprehensive documentation at /docs for step-by-step setup instructions.
+                    Check out our documentation at /docs for step-by-step setup instructions.
                   </p>
                 </div>
 
                 <div>
                   <h4 className="font-semibold text-sm">Do you offer custom development?</h4>
                   <p className="text-xs text-gray-600 dark:text-gray-300">
-                    Yes! Contact us to discuss your specific requirements and we&apos;ll provide a custom quote.
+                    Yes! Contact us to discuss your specific requirements and we&apos;ll provide a c.
                   </p>
                 </div>
 
                 <div>
                   <h4 className="font-semibold text-sm">Is there a refund policy?</h4>
                   <p className="text-xs text-gray-600 dark:text-gray-300">
-                    We offer a 30-day money-back guarantee if you&apos;re not satisfied with the kit.
+                    We offer a 15-day refund if you&apos; subjected to terms and conditions.
                   </p>
                 </div>
               </CardContent>

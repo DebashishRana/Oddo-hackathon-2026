@@ -1,187 +1,142 @@
-"use client"
-
 import Link from "next/link"
 import Image from "next/image"
-import { Github, Twitter, Linkedin, Mail } from "lucide-react"
+
+const footerColumns = [
+  {
+    title: "Features",
+    links: [
+      { name: "Plan", href: "#features" },
+      { name: "Build", href: "#features" },
+      { name: "Insights", href: "#features" },
+      { name: "Customer Requests", href: "#features" },
+      { name: "Linear Asks", href: "#features" },
+      { name: "Security", href: "#features" },
+      { name: "Mobile", href: "#features" },
+    ],
+  },
+  {
+    title: "Product",
+    links: [
+      { name: "Pricing", href: "#pricing" },
+      { name: "Method", href: "/docs" },
+      { name: "Integrations", href: "#features" },
+      { name: "Changelog", href: "#" },
+      { name: "Documentation", href: "/docs" },
+      { name: "Download", href: "#" },
+      { name: "Switch", href: "#" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { name: "About", href: "#" },
+      { name: "Customers", href: "#" },
+      { name: "Careers", href: "#" },
+      { name: "Now", href: "#" },
+      { name: "README", href: "#" },
+      { name: "Quality", href: "#" },
+      { name: "Brand", href: "#" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { name: "Developers", href: "/docs" },
+      { name: "Status", href: "#" },
+      { name: "Startups", href: "#" },
+      { name: "Report vulnerability", href: "#" },
+      { name: "DPA", href: "#" },
+      { name: "Privacy", href: "#" },
+      { name: "Terms", href: "#" },
+    ],
+  },
+  {
+    title: "Connect",
+    links: [
+      { name: "Contact us", href: "/contact" },
+      { name: "Community", href: "#" },
+      { name: "X (Twitter)", href: "#" },
+      { name: "GitHub", href: "#" },
+      { name: "YouTube", href: "#" },
+    ],
+  },
+]
 
 const Footer = () => {
-  const footerLinks = {
-    product: [
-      { name: "Solutions", href: "#features" },
-      { name: "Pricing", href: "#pricing" },
-      { name: "Why Dectra", href: "#testimonials" },
-      { name: "Documentation", href: "/docs" },
-      { name: "Roadmap", href: "/roadmap" }
-    ],
-    company: [
-      { name: "About", href: "/about" },
-      { name: "Blog", href: "/blog" },
-      { name: "Careers", href: "/careers" },
-      { name: "Contact", href: "/contact" },
-      { name: "Press Kit", href: "/press" }
-    ],
-    resources: [
-      { name: "Compliance Center", href: "/compliance" },
-      { name: "Help Center", href: "/help" },
-      { name: "API Reference", href: "/api" },
-      { name: "Examples", href: "/examples" },
-      { name: "Templates", href: "/templates" }
-    ],
-    legal: [
-      { name: "Privacy Policy", href: "/privacy" },
-      { name: "Terms of Service", href: "/terms" },
-      { name: "Cookie Policy", href: "/cookies" },
-      { name: "GDPR", href: "/gdpr" },
-      { name: "Security", href: "/security" }
-    ]
-  }
-
-  const socialLinks = [
-    { name: "GitHub", href: "https://github.com/Dectra", icon: Github },
-    { name: "Twitter", href: "https://twitter.com", icon: Twitter },
-    { name: "LinkedIn", href: "https://linkedin.com/company/dectra", icon: Linkedin },
-    { name: "Email", href: "mailto:hello@dectra.com", icon: Mail }
-  ]
-
   return (
-    <footer className="bg-background border-t border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
-          {/* Brand Section */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
+    <footer className="bg-[#0a0a0b]">
+      {/* CTA Banner */}
+      <div className="border-b border-border/10">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+          <h2 className="text-3xl sm:text-4xl md:text-[42px] font-medium tracking-tight text-foreground leading-tight">
+            Proof first, profit faster.
+          </h2>
+          <div className="flex items-center gap-3 shrink-0">
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center rounded-full border border-border/40 bg-white/5 px-5 py-2.5 text-sm font-medium text-foreground hover:bg-white/10 transition-colors"
+            >
+              Contact sales
+            </Link>
+            <Link
+              href="/auth/signup"
+              className="inline-flex items-center justify-center rounded-full bg-[#f5f0eb] px-5 py-2.5 text-sm font-medium text-[#0a0a0b] hover:bg-[#ede6df] transition-colors"
+            >
+              Get started
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer links */}
+      <div className="border-t border-border/10">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-6 lg:gap-12">
+          {/* Logo */}
+          <div className="col-span-2 sm:col-span-3 md:col-span-1">
+            <Link href="/" className="inline-block">
               <Image
                 src="/Logo.png"
                 alt="Dectra Logo"
-                width={32}
-                height={32}
-                className="w-8 h-8 rounded-lg"
+                width={28}
+                height={28}
+                className="h-7 w-7 rounded-lg opacity-80 hover:opacity-100 transition-opacity"
               />
-              <span className="text-xl font-bold text-foreground">Dectra</span>
+            </Link>
+          </div>
+
+          {/* Link columns */}
+          {footerColumns.map((column) => (
+            <div key={column.title}>
+              <h3 className="text-sm font-medium text-foreground/90">
+                {column.title}
+              </h3>
+              <ul className="mt-4 space-y-3">
+                {column.links.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground/70 hover:text-foreground transition-colors"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="text-muted-foreground mb-6 max-w-sm">
-              Instant document verification, QR access, and government-backed integrity. Manage, verify, and redirect documents from one secure workspace.
-            </p>
-            <div className="flex space-x-4">
-              {socialLinks.map((social) => {
-                const Icon = social.icon
-                return (
-                  <Link
-                    key={social.name}
-                    href={social.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                    aria-label={social.name}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
+          ))}
+        </div>
+      </div>
 
-          {/* Product Links */}
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Product</h3>
-            <ul className="space-y-3">
-              {footerLinks.product.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Company Links */}
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Company</h3>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources Links */}
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Resources</h3>
-            <ul className="space-y-3">
-              {footerLinks.resources.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Legal Links */}
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Legal</h3>
-            <ul className="space-y-3">
-              {footerLinks.legal.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    href={link.href}
-                    className="text-muted-foreground hover:text-foreground transition-colors duration-200"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+      {/* Bottom legal bar */}
+      <div className="border-t border-border/10">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6">
+          <div className="flex flex-col gap-2 text-xs text-muted-foreground/60">
+            <p>© 2026 Dectra Labs Pvt lmtd. &ldquo;Dectra&rdquo; and the Dectra logo are registered trademarks of the company.</p>
+            <p>Indian Residents: +91-930-4211-754</p>
           </div>
         </div>
-
-        {/* Newsletter Signup */}
-        <div className="mt-12 pt-8 border-t border-border">
-          <div className="max-w-md">
-            <h3 className="font-semibold text-foreground mb-2">Stay Updated</h3>
-            <p className="text-muted-foreground text-sm mb-4">
-              Get the latest updates, tutorials, and announcements delivered to your inbox.
-            </p>
-            <div className="flex space-x-2">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-3 py-2 bg-background border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-              <button className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">
-          <div className="text-muted-foreground text-sm">
-            © 2026 Dectra. All rights reserved.
-          </div>
-          <div className="flex items-center space-x-6 mt-4 md:mt-0">
-            <span className="text-muted-foreground text-sm">Built with ❤️ from D</span>
-            <div className="flex items-center space-x-2 text-muted-foreground text-sm">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>All systems operational</span>
-            </div>
-          </div>
-        </div>
+      </div>
       </div>
     </footer>
   )

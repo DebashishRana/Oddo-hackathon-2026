@@ -1,188 +1,199 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  FileCheck2,
-  ServerCog,
-  QrCode,
-  ShieldCheck,
-  Leaf,
-  Smartphone,
-  Lock,
-  Workflow,
-  Puzzle
-} from "lucide-react"
-import { motion } from "framer-motion"
+import { Lock, ShieldCheck, Workflow } from "lucide-react"
+import { motion } from "motion/react"
 import Image from "next/image"
 
+type TabId = "accessibility" | "security" | "compliance"
+
+const tabs: { id: TabId; label: string; title: string; description: string }[] = [
+  {
+    id: "accessibility",
+    label: "Accessibility",
+    title: "Accessible from any device, in seconds.",
+    description:
+      "Upload, verify, and share documents from desktop or mobile. QR-based access makes every verification just a scan away.",
+  },
+  {
+    id: "security",
+    label: "Security",
+    title: "Security-first by design.",
+    description:
+      "Token-based access, encryption at rest and in transit, and detailed audit logs keep every verification traceable.",
+  },
+  {
+    id: "compliance",
+    label: "Compliance",
+    title: "Compliance that keeps pace with operations.",
+    description:
+      "Policy-driven retention, EDV thresholds, and exportable reports help you stay aligned with regulatory requirements.",
+  },
+]
+
 const Features = () => {
-  const features = [
-    {
-      icon: <FileCheck2 className="w-8 h-8" />,
-      title: "Instant Document Verification",
-      description: "Verify identification and sensitive documents within seconds using automated validation — no manual checking or delays.",
-      color: "text-primary"
-    },
-    {
-      icon: <ServerCog className="w-8 h-8" />,
-      title: "Enterprise-Level Savings & Automation",
-      description: "Supports bulk uploads, metadata extraction, audit logs, and integrations to streamline workflows while cutting costs by up to 30%.",
-      color: "text-amber-500"
-    },
-    {
-      icon: <QrCode className="w-8 h-8" />,
-      title: "QR-Based Access",
-      description: "Generate secure QR codes for every uploaded document, enabling fast retrieval and verification from any device.",
-      color: "text-blue-500"
-    },
-    {
-      icon: <ShieldCheck className="w-8 h-8" />,
-      title: "Govt Backed Integrity",
-      description: "Integrity checks backed by verified government databases ensure every document is tamper-proof and trusted.",
-      color: "text-green-500"
-    },
-    {
-      icon: <Leaf className="w-8 h-8" />,
-      title: "Eco-Friendly & Paperless",
-      description: "Digitize verification to reduce printing costs and keep operations sustainable without sacrificing security.",
-      color: "text-emerald-500"
-    },
-    {
-      icon: <Smartphone className="w-8 h-8" />,
-      title: "Free to Use Anywhere",
-      description: "Access Dectra on laptops or phones to upload and verify with QR validation at no cost.",
-      color: "text-indigo-500"
-    },
-    {
-      icon: <Lock className="w-8 h-8" />,
-      title: "Token-Based Security",
-      description: "Token authentication, automatic deletion, and audit-ready logs keep every verification session secure.",
-      color: "text-slate-500"
-    },
-    {
-      icon: <Workflow className="w-8 h-8" />,
-      title: "Pipelining & Storage",
-      description: "Redirect and forward verification records to your databases or lakes securely with built-in pipelines.",
-      color: "text-cyan-500"
-    },
-    {
-      icon: <Puzzle className="w-8 h-8" />,
-      title: "Custom API Support",
-      description: "Plug Dectra into your stack for bespoke workflows, verified databases, and automated redirection.",
-      color: "text-orange-500"
-    }
-  ]
+  const [activeTab, setActiveTab] = useState<TabId>("accessibility")
+  const active = tabs.find((t) => t.id === activeTab)!
 
   return (
-    <section id="features" className="py-24 bg-muted/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Hero Image Section */}
+    <section id="features" className="py-24">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        {/* Featured logos strip */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.7 }}
           viewport={{ once: true }}
-          className="text-center mb-20"
+          className="mb-16 text-center"
         >
-          <div className="relative max-w-5xl mx-auto">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-2">
+          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+            Trusted by teams and programs
+          </p>
+          <p className="mt-3 text-sm text-muted-foreground">
+            From innovation labs to enterprise accelerators.
+          </p>
+          <div className="mt-8 flex items-center justify-center">
+            <div className="inline-flex max-w-full overflow-hidden rounded-2xl border border-border/60 bg-card/20 px-6 py-4">
               <Image
                 src="/best saas kit.png"
-                alt="Dectra workspace showing instant document verification"
+                alt="Programs and institutions featuring Dectra"
                 width={1200}
-                height={800}
-                className="w-full h-auto rounded-xl"
-                priority
-                quality={95}
+                height={360}
+                className="h-14 w-auto object-contain opacity-90"
               />
-              {/* Overlay gradient for better text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent rounded-xl" />
             </div>
-
-            {/* Floating elements for visual appeal */}
-            <div className="absolute -top-4 -left-4 w-8 h-8 bg-primary/20 rounded-full blur-sm" />
-            <div className="absolute -top-2 -right-6 w-6 h-6 bg-secondary/30 rounded-full blur-sm" />
-            <div className="absolute -bottom-3 left-8 w-5 h-5 bg-accent/25 rounded-full blur-sm" />
-            <div className="absolute -bottom-4 -right-3 w-7 h-7 bg-primary/15 rounded-full blur-sm" />
           </div>
         </motion.div>
 
+        {/* Three main pillars as large interactive cards */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.7 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="mb-10 max-w-2xl"
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-            Because validity is{" "}
-            <span className="bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 bg-clip-text text-transparent">
-              proven
-            </span>
+          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+            Product
+          </p>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">
+            Made for modern verification teams.
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Instant verification, government-backed integrity, and QR access in one place. Manage, verify,
-            and redirect documents without manual delays or fragmented tools.
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Three pillars — accessibility, security, and compliance — keep every document flow reliable and auditable.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 bg-card/50 backdrop-blur-sm">
-                <CardHeader>
-                  <div className={`${feature.color} mb-4`}>
-                    {feature.icon}
-                  </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base leading-relaxed">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {tabs.map((tab) => {
+            const isActive = tab.id === activeTab
+            const Icon =
+              tab.id === "accessibility" ? Workflow : tab.id === "security" ? Lock : ShieldCheck
+
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className="text-left"
+              >
+                <Card
+                  className={[
+                    "h-full rounded-2xl border-border/60 bg-card/25 backdrop-blur transition-all duration-300",
+                    isActive ? "border-primary/40 bg-card/35" : "hover:bg-card/30",
+                  ].join(" ")}
+                >
+                  <CardHeader>
+                    <div className="mb-4 inline-flex h-9 items-center gap-2 rounded-full border border-border/60 px-3 text-xs text-muted-foreground">
+                      <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Icon className="h-3 w-3" />
+                      </span>
+                      {tab.label}
+                    </div>
+                    <CardTitle className="text-lg">{tab.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-sm leading-relaxed">{tab.description}</CardDescription>
+                  </CardContent>
+                </Card>
+              </button>
+            )
+          })}
         </div>
 
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          viewport={{ once: true }}
-          className="text-center mt-16"
-        >
-          <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-2xl p-8 border border-primary/20">
-            <h3 className="text-2xl font-bold mb-4">Ready for instant document verification?</h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Use Dectra to verify documents within seconds, generate QR access, and stream results into your existing data lakes.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-orange-500 via-orange-400 to-orange-300 text-white px-8 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity"
-              >
-                Start verifying now
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="border border-border px-8 py-3 rounded-lg font-medium hover:bg-muted/50 transition-colors"
-              >
-                See how Dectra works
-              </motion.button>
+        {/* Tab detail area: image/text layout, with security-focused metrics for that tab */}
+        <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+          <motion.div
+            key={active.id}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="space-y-4"
+          >
+            <h3 className="text-xl font-semibold">{active.title}</h3>
+            <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{active.description}</p>
+
+            {active.id === "security" && (
+              <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+                {[
+                  { label: "Uptime", value: "99.9%" },
+                  { label: "EDV checks < ", value: "60s" },
+                  { label: "Audit events / mo", value: "100k+" },
+                  { label: "Encryption", value: "AES‑256" },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-2xl border border-border/60 bg-card/25 px-3 py-4 text-left"
+                  >
+                    <div className="text-2xl font-semibold">{item.value}</div>
+                    <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                      {item.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {active.id !== "security" && (
+              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                {active.id === "accessibility" && (
+                  <>
+                    <li>Upload and verify from desktop or mobile without new installs.</li>
+                    <li>Share QR codes instead of attachments for instant re-validation.</li>
+                    <li>Readable layouts and contrast tuned for busy operations teams.</li>
+                  </>
+                )}
+                {active.id === "compliance" && (
+                  <>
+                    <li>Policy-driven document lifecycles with configurable retention.</li>
+                    <li>Export-ready reports for audits, internal reviews, and regulators.</li>
+                    <li>Immutable verification trails for every EDV check and redirect.</li>
+                  </>
+                )}
+              </ul>
+            )}
+          </motion.div>
+
+          <motion.div
+            key={`${active.id}-surface`}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.05 }}
+            className="relative"
+          >
+            <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-[radial-gradient(closest-side,rgba(99,102,241,0.18),transparent)] blur-2xl" />
+            <div className="h-64 rounded-[1.75rem] border border-border/60 bg-card/25 shadow-xl shadow-black/40 backdrop-blur">
+              {/* Placeholder for an isometric UI tile */}
+              <div className="relative h-full w-full overflow-hidden rounded-[1.75rem]">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/4 via-white/0 to-transparent" />
+                <div className="absolute -left-10 bottom-6 h-32 w-56 rotate-[-16deg] rounded-2xl border border-white/12 bg-gradient-to-tr from-emerald-400/25 via-sky-500/10 to-transparent" />
+                <div className="absolute right-0 top-8 h-28 w-40 rotate-[-10deg] rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-transparent" />
+                <div className="absolute left-6 top-6 h-9 w-40 rounded-xl border border-white/10 bg-black/30" />
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </section>
   )

@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Zap, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { redirectToCheckout } from "@/lib/stripe-client";
+import { cn } from "@/lib/utils";
 
 interface PricingClientProps {
   plan: {
@@ -16,9 +17,10 @@ interface PricingClientProps {
     contactEmail?: string;
   };
   isAuthenticated: boolean;
+  highlighted?: boolean;
 }
 
-export function PricingClient({ plan, isAuthenticated }: PricingClientProps) {
+export function PricingClient({ plan, isAuthenticated, highlighted }: PricingClientProps) {
   const [isLoading, setIsLoading] = useState(false);
   // const [appliedDiscount, setAppliedDiscount] = useState<{ code: string } | null>(null);
   // const [showDiscountInput] = useState(false);
@@ -77,8 +79,13 @@ export function PricingClient({ plan, isAuthenticated }: PricingClientProps) {
 
   return (
     <Button 
-      className="w-full" 
-      variant={plan.variant}
+      className={cn(
+        "w-full rounded-lg font-medium",
+        highlighted
+          ? "bg-[#d4854e] hover:bg-[#c07843] text-white border-0"
+          : "bg-muted/50 hover:bg-muted text-foreground border border-border/40"
+      )}
+      variant={highlighted ? "default" : "outline"}
       size="lg"
       onClick={handlePurchase}
       disabled={isLoading}
@@ -89,10 +96,7 @@ export function PricingClient({ plan, isAuthenticated }: PricingClientProps) {
           Processing...
         </>
       ) : (
-        <>
-          {plan.popular && <Zap className="w-4 h-4 mr-2" />}
-          {plan.cta}
-        </>
+        plan.cta
       )}
     </Button>
   );
