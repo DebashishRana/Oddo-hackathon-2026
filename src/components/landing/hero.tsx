@@ -138,7 +138,7 @@ const Hero = () => {
                     <span className="text-sky-400/70">OneToMany</span>{" "}
                     <span className="text-muted-foreground/50">relation.</span>
                     <br /><br />
-                    <span className="text-emerald-400/60">/** The verification result associated with this document */</span>
+                    <span className="text-emerald-400/60">{"/** The verification result associated with this document */"}</span>
                     <br />
                     <span className="text-purple-400/70">@OneToMany</span>{"(() => "}
                     <span className="text-sky-400/70">VerificationResult</span>{")"}

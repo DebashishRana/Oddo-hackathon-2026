@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Info } from "lucide-react"
+import { Info } from "lucide-react"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
 import { PricingClient } from "./pricing-client"

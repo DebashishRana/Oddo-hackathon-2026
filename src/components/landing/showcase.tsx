@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "motion/react"
-import { ArrowRight, Bot, Zap, Shield, BarChart3, Layers, FileCheck2, Clock, Globe, CheckCircle2, AlertTriangle, Sparkles, FileText, Settings } from "lucide-react"
+import { ArrowRight, Bot, Zap, Shield, Layers, FileCheck2, Clock, Globe, CheckCircle2, AlertTriangle, Sparkles, FileText } from "lucide-react"
 import Link from "next/link"
 
 /* ──────────────────────────────────────────────────────────
@@ -185,7 +185,7 @@ function SmartTriageCards() {
         <div className="mt-6 flex-1 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/20 p-6 shadow-xl shadow-black/30 backdrop-blur">
           {/* Code snippet */}
           <div className="mb-5 rounded-xl border border-border/40 bg-black/30 px-4 py-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
-            <div className="text-white/30">// api.dectra.app/v1</div>
+            <div className="text-white/30">{"// api.dectra.app/v1"}</div>
             <div className="mt-1">
               <span className="text-purple-400/80">&quot;endpoints&quot;</span>: {"{"}
             </div>
