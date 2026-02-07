@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import { authConfig } from "@/lib/auth.config"
 
+// Use a separate auth instance for middleware to avoid Edge Runtime issues with pg
 const { auth } = NextAuth(authConfig)
 
 export default auth((req) => {

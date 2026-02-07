@@ -4,6 +4,10 @@ type NextAuthInitParam = Parameters<typeof import("next-auth").default>[0]
 type NextAuthConfigObject = Exclude<NextAuthInitParam, (request: never) => unknown>
 
 export const authConfig: NextAuthConfigObject = {
+  // Required for production deployments (especially non-Vercel platforms)
+  trustHost: true,
+  // Explicitly set the secret (NextAuth v5 uses AUTH_SECRET, but NEXTAUTH_SECRET also works)
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,

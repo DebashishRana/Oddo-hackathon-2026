@@ -29,7 +29,7 @@ The Best SAAS Kit V2 includes a comprehensive discount code system that allows a
 
 1. **Navigate to Admin Panel**
    ```
-   https://yourdomain.com/admin/discounts
+   https://dectra-two.vercel.app/admin/discounts
    ```
 
 2. **Click "Create New Discount"**
@@ -79,7 +79,7 @@ The Best SAAS Kit V2 includes a comprehensive discount code system that allows a
 
 1. **Navigate to Billing Page**
    ```
-   https://yourdomain.com/dashboard/billing
+   https://dectra-two.vercel.app/dashboard/billing
    ```
 
 2. **Locate Discount Input**

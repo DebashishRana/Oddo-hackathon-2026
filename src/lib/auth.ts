@@ -1,6 +1,6 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import { getUserByEmail } from "./database"
+import { getUserByEmail, upsertUser } from "./database"
 import { verifyPassword } from "./auth-utils"
 import { authConfig } from "./auth.config"
 
@@ -49,4 +49,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    async signIn({ user, account, profile }) {
+      // Sync Google users to database on sign-in
+      if (account?.provider === "google" && user.email) {
+        try {
+          await upsertUser({
+            google_id: profile?.sub || account.providerAccountId,
+            email: user.email,
+            name: user.name || undefined,
+            image_url: user.image || undefined,
+          })
+          console.log("[Auth] Google user synced to database:", user.email)
+        } catch (error) {
+          console.error("[Auth] Failed to sync Google user to database:", error)
+          // Don't block sign-in if DB sync fails, but log the error
+        }
+      }
+      return true
+    },
+  },
 })

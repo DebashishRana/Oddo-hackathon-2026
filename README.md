@@ -165,7 +165,7 @@ Open [http://localhost:3000](http://localhost:3000) to see your application.
    - Choose "Web application"
    - Add authorized redirect URIs:
      - `http://localhost:3000/api/auth/callback/google` (development)
-     - `https://yourdomain.com/api/auth/callback/google` (production)
+     - `https://dectra-two.vercel.app/api/auth/callback/google` (production)
 
 3. **Add to Environment**
    ```env
@@ -190,7 +190,7 @@ Open [http://localhost:3000](http://localhost:3000) to see your application.
 
 3. **Setup Webhooks**
    - Go to Developers → Webhooks
-   - Add endpoint: `https://yourdomain.com/api/stripe/webhook`
+   - Add endpoint: `https://dectra-two.vercel.app/api/stripe/webhook`
    - Select events: `checkout.session.completed`, `payment_intent.succeeded`
    - Copy webhook secret to `.env.local`:
    ```env
@@ -487,8 +487,8 @@ The application can be deployed to any platform that supports Next.js:
 
 | Variable | Description | Required | Example |
 |----------|-------------|----------|---------|
-| `NEXTAUTH_URL` | Your site URL | ✅ | `http://localhost:3000` |
-| `NEXTAUTH_SECRET` | NextAuth secret key | ✅ | `your-secret-key` |
+| `AUTH_SECRET` | NextAuth v5 secret key (or use `NEXTAUTH_SECRET`) | ✅ | `your-secret-key` |
+| `NEXTAUTH_URL` | Your site URL (required for production) | ✅ | `https://dectra-two.vercel.app` |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID | ✅ | `123456789.apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret | ✅ | `GOCSPX-...` |
 | `DATABASE_URL` | Neon PostgreSQL connection string | ✅ | `postgresql://user:pass@host/db` |
@@ -497,6 +497,18 @@ The application can be deployed to any platform that supports Next.js:
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook secret | ✅ | `whsec_...` |
 | `OPENROUTER_API_KEY` | OpenRouter API key | ✅ | `sk-or-v1-...` |
 | `OPENROUTER_MODEL` | AI model to use | ✅ | `qwen/qwen3-235b-a22b-2507` |
+
+### Critical Deployment Notes
+
+1. **AUTH_SECRET**: Must be a secure random string (min 32 chars). Generate with:
+   ```bash
+   openssl rand -base64 32
+   ```
+
+2. **Google OAuth Redirect URIs**: In Google Cloud Console, add your production URL:
+   - `https://dectra-two.vercel.app/api/auth/callback/google`
+
+3. **NEXTAUTH_URL**: Must match your production domain exactly (include `https://`)
 
 ## 🐛 Troubleshooting
 

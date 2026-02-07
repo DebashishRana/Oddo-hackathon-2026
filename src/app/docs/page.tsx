@@ -502,7 +502,7 @@ export default function DocsPage() {
                             <li>• Choose &quot;Web application&quot;</li>
                             <li>• Add authorized redirect URIs:</li>
                             <li className="ml-4">- <code>http://localhost:3000/api/auth/callback/google</code> (development)</li>
-                            <li className="ml-4">- <code>https://yourdomain.com/api/auth/callback/google</code> (production)</li>
+                            <li className="ml-4">- <code>https://dectra-two.vercel.app/api/auth/callback/google</code> (production)</li>
                           </ul>
                         </div>
 
@@ -551,7 +551,7 @@ export default function DocsPage() {
                           <h4 className="font-medium mb-2">3. Setup Webhooks</h4>
                           <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
                             <li>• Go to Developers → Webhooks</li>
-                            <li>• Add endpoint: <code>https://yourdomain.com/api/stripe/webhook</code></li>
+                            <li>• Add endpoint: <code>https://dectra-two.vercel.app/api/stripe/webhook</code></li>
                             <li>• Select events: <code>checkout.session.completed</code>, <code>payment_intent.succeeded</code></li>
                             <li>• Copy webhook secret to <code>.env.local</code></li>
                           </ul>

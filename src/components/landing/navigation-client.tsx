@@ -137,7 +137,7 @@ export function NavigationClient({ session }: NavigationClientProps) {
   }
 
   const navItems = [
-    { name: "Pricing", href: "#pricing" },
+    { name: "Pricing", href: "/pricing" },
     { name: "Docs", href: "/docs" },
     { name: "Solutions", href: "/demo" },
     { name: "Contact", href: "/contact" },

@@ -55,7 +55,7 @@ const Hero = () => {
                 size="lg"
                 asChild
               >
-                <Link href="#pricing">See pricing</Link>
+                <Link href="/pricing">See pricing</Link>
               </Button>
             </motion.div>
           </motion.div>

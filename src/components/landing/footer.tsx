@@ -20,7 +20,7 @@ const footerColumns = [
   {
     title: "Product",
     links: [
-      { name: "Pricing", href: "#pricing" },
+      { name: "Pricing", href: "/pricing" },
       { name: "Method", href: "/docs" },
       { name: "Integrations", href: "#features" },
       { name: "Changelog", href: "#" },
