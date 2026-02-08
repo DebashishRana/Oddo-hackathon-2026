@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { upsertUser } from '@/lib/database';
 
 export const runtime = 'nodejs';
 
-export async function POST(_request: NextRequest) {
+export async function POST() {
   try {
     // Check authentication
     const session = await auth();

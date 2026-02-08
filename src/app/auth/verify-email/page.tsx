@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2, Mail, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const email = searchParams.get("email") || ""
@@ -232,4 +232,17 @@ export default function VerifyEmailPage() {
       </div>
     </div>
   )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <Loader2 className="h-8 w-8 animate-spin text-[#d4854e]" />
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
+  )
+}
 }

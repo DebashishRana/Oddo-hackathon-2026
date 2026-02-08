@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
               if (parsed.choices?.[0]?.delta?.content) {
                 controller.enqueue(new TextEncoder().encode(`data: ${data}\n\n`));
               }
-            } catch (_e) {
+            } catch {
               // Skip invalid JSON
             }
           }

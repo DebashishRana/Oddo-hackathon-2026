@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
         if (dbUser) {
           databaseUserId = dbUser.id;
         }
-      } catch (_error) {
+      } catch {
         console.log('Could not find database user ID, proceeding without created_by');
       }
 

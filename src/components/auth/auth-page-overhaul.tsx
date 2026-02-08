@@ -10,6 +10,7 @@ import { Icons } from "@/components/ui/icons"
 import { useToast } from "@/hooks/use-toast"
 import { Eye, EyeOff, ChevronDown } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 const COUNTRIES = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia",
@@ -112,10 +113,12 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
       {/* Left Side - Dark promo panel */}
       <div className="relative w-full lg:w-[45%] text-white flex flex-col justify-between overflow-hidden min-h-[300px] lg:min-h-screen">
         {/* Background image */}
-        <img
+        <Image
           src="/signup.webp"
           alt="Signup background"
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="object-cover"
+          priority
         />
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-black/50" />

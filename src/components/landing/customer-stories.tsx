@@ -3,6 +3,7 @@
 import { useState, useRef } from "react"
 import { motion } from "motion/react"
 import { Play, ChevronLeft, ChevronRight } from "lucide-react"
+import Image from "next/image"
 
 interface CustomerStory {
   id: number
@@ -84,10 +85,11 @@ function StoryCard({ story }: { story: CustomerStory }) {
     >
       {/* Thumbnail */}
       <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-neutral-900">
-        <img
+        <Image
           src={story.thumbnail}
           alt={`${story.company} customer story`}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
         {/* Dark overlay on hover */}

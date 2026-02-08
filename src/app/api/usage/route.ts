@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { formatUsageForAPI } from '@/lib/usage-tracking';
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     // Check authentication
     const session = await auth();

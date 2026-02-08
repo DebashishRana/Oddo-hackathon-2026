@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { requireAdminAccess } from '@/lib/admin-auth';
 import { getAnalyticsData, getGrowthMetrics } from '@/lib/database';
 
 export const runtime = 'nodejs';
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     // Check admin access
     await requireAdminAccess();
