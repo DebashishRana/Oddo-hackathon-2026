@@ -67,7 +67,7 @@ const footerColumns = [
 
 const Footer = () => {
   return (
-    <footer className="bg-[#0a0a0b]">
+    <footer className="bg-background dark:bg-[#0a0a0b]">
       {/* CTA Banner */}
       <div className="border-b border-border/10">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
@@ -95,7 +95,7 @@ const Footer = () => {
             </Link>
             <Link
               href="/auth/signup"
-              className="inline-flex items-center justify-center rounded-full bg-[#f5f0eb] px-5 py-2.5 text-sm font-medium text-[#0a0a0b] hover:bg-[#ede6df] hover:scale-105 transition-all duration-200"
+              className="inline-flex items-center justify-center rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background hover:opacity-90 hover:scale-105 transition-all duration-200"
             >
               Get started
             </Link>

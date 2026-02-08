@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 import { Menu, X, ChevronDown, FileCheck, QrCode, Shield, BarChart3, Workflow, Globe, Sparkles, Code2, ClipboardList, FileSearch, Handshake, GitBranch, Users } from "lucide-react"
 import { UserButtonClient } from "@/components/auth/user-button-client"
 import { CreditsDisplay } from "@/components/credits/credits-display"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 interface Session {
   user: {
@@ -187,7 +188,7 @@ export function NavigationClient({ session }: NavigationClientProps) {
                       : "opacity-0 -translate-y-2 pointer-events-none"
                   )}
                 >
-                  <div className="w-[680px] rounded-xl border border-border/40 bg-[#1a1a1e] shadow-2xl p-6">
+                  <div className="w-[680px] rounded-xl border border-border/40 bg-popover shadow-2xl p-6">
                     <div className="grid grid-cols-12 gap-6">
                       {/* Core Features column */}
                       <div className="col-span-4">
@@ -269,20 +270,20 @@ export function NavigationClient({ session }: NavigationClientProps) {
                       : "opacity-0 -translate-y-2 pointer-events-none"
                   )}
                 >
-                  <div className="w-[250px] rounded-xl border border-border/40 bg-[#1a1a1e] shadow-2xl p-4">
+                  <div className="w-[250px] rounded-xl border border-border/40 bg-popover shadow-2xl p-4">
                     <div className="space-y-3">
                       {partnerItems.map((item) => (
                         <Link
                           key={item.title}
                           href={item.href}
                           onClick={() => setPartnersOpen(false)}
-                          className="group block rounded-md p-2 transition-colors duration-150 hover:bg-white/5"
+                          className="group block rounded-md p-2 transition-colors duration-150 hover:bg-muted/50"
                         >
                           <div className="flex items-center gap-3">
                             <item.icon className="h-4 w-4 text-muted-foreground" />
                             <div>
                               <div className="text-sm font-semibold text-foreground">{item.title}</div>
-                              <div className="mt-0.5 text-xs text-muted-foreground/80 leading-snug">{item.description}</div>
+                              <div className="mt-0.5 text-xs text-muted-foreground leading-snug">{item.description}</div>
                             </div>
                           </div>
                         </Link>
@@ -306,6 +307,7 @@ export function NavigationClient({ session }: NavigationClientProps) {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
             {!session ? (
               <>
                 <Button variant="ghost" className="h-9 px-3 text-sm text-muted-foreground hover:text-foreground" asChild>
