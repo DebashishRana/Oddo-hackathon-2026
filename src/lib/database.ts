@@ -1110,6 +1110,113 @@ export async function getDiscountAnalytics() {
   }
 }
 
+// =============================================================================
+// EMAIL VERIFICATION
+// =============================================================================
+
+/**
+ * Generate a random 6-digit OTP code
+ */
+export function generateVerificationCode(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString()
+}
+
+/**
+ * Store a verification code for a user (expires in 10 minutes)
+ */
+export async function setVerificationCode(email: string): Promise<string> {
+  const client = await pool.connect()
+  try {
+    const code = generateVerificationCode()
+    const expires = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+
+    await client.query(
+      `UPDATE users
+       SET verification_code = $1,
+           verification_code_expires = $2,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE email = $3`,
+      [code, expires, email]
+    )
+
+    return code
+  } finally {
+    client.release()
+  }
+}
+
+/**
+ * Verify the OTP code for a user.
+ * Returns true if valid, false otherwise.
+ * Clears the code on success.
+ */
+export async function verifyEmailCode(email: string, code: string): Promise<boolean> {
+  const client = await pool.connect()
+  try {
+    const result = await client.query(
+      `UPDATE users
+       SET email_verified = TRUE,
+           verification_code = NULL,
+           verification_code_expires = NULL,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE email = $1
+         AND verification_code = $2
+         AND verification_code_expires > NOW()
+       RETURNING id`,
+      [email, code]
+    )
+
+    return result.rowCount !== null && result.rowCount > 0
+  } finally {
+    client.release()
+  }
+}
+
+/**
+ * Check if a user's email is verified.
+ * Returns true if the email_verified column doesn't exist yet (migration not run).
+ */
+export async function isEmailVerified(email: string): Promise<boolean> {
+  const client = await pool.connect()
+  try {
+    const result = await client.query(
+      `SELECT email_verified FROM users WHERE email = $1`,
+      [email]
+    )
+    return result.rows[0]?.email_verified === true
+  } catch (error) {
+    const pgError = error as { code?: string }
+    // Column doesn't exist yet — migration hasn't been run, allow sign-in
+    if (pgError.code === '42703') {
+      return true
+    }
+    throw error
+  } finally {
+    client.release()
+  }
+}
+
+/**
+ * Mark a user's email as verified (e.g., for Google OAuth users).
+ * Silently skips if the email_verified column doesn't exist yet.
+ */
+export async function markEmailVerified(email: string): Promise<void> {
+  const client = await pool.connect()
+  try {
+    await client.query(
+      `UPDATE users SET email_verified = TRUE, updated_at = CURRENT_TIMESTAMP WHERE email = $1`,
+      [email]
+    )
+  } catch (error) {
+    const pgError = error as { code?: string }
+    // Column doesn't exist yet — migration hasn't been run, skip silently
+    if (pgError.code === '42703') return
+    throw error
+  } finally {
+    client.release()
+  }
+}
+
 // Close the pool (for cleanup)
 export async function closePool(): Promise<void> {
   await pool.end()

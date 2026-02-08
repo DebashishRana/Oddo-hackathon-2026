@@ -176,7 +176,7 @@ const plans = [
 ]
 
 const Pricing = ({ isAuthenticated = false }: PricingProps) => {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly")
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
 
   return (
     <section id="pricing" className="py-24">

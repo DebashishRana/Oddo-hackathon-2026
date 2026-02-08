@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { signInAction, signUpAction, signInWithCredentialsAction } from "@/lib/auth-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -43,6 +44,7 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
   const [showIncluded, setShowIncluded] = useState(false)
   const [isSignUp, setIsSignUp] = useState(defaultIsSignUp)
   const { toast } = useToast()
+  const router = useRouter()
 
   async function handleSignUp(formData: FormData) {
     setIsLoading(true)
@@ -55,6 +57,10 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
           description: result.error,
           variant: "destructive",
         })
+      } else if (result?.redirectTo) {
+        // Redirect to email verification page
+        router.push(result.redirectTo)
+        return
       }
     } catch (error) {
       if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
@@ -81,6 +87,11 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
           description: result.error,
           variant: "destructive",
         })
+        // If email not verified, redirect to verification page
+        if (result?.redirectTo) {
+          router.push(result.redirectTo)
+          return
+        }
       }
     } catch (error) {
       if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {

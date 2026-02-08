@@ -1,125 +1,171 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Minus, ChevronDown, ChevronUp } from "lucide-react"
+import { Check, Minus, ChevronDown, ChevronUp, Info } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import Navigation from "@/components/landing/navigation"
+import Footer from "@/components/landing/footer"
 
-// Pricing tiers data
-const pricingTiers = [
+// Plans matching the landing page pricing component
+const plans = [
   {
-    id: "free",
-    badge: "AI-assisted",
-    badgeStyle: "bg-white border border-gray-300 text-gray-700",
-    name: "Free",
-    price: "$0",
-    priceNote: "/mo/user",
-    description: "Best for smaller teams who want to simplify verification.",
-    cta: "Get started for free",
-    ctaStyle: "bg-gray-100 hover:bg-gray-200 text-gray-900",
-    features: {
-      title: "Key features:",
-      categories: [
-        {
-          name: "Verification",
-          items: [
-            "50 verifications/month",
-            "Basic document checks",
-          ],
-        },
-        {
-          name: "Analytics",
-          items: [
-            "Basic reports",
-            "7-day data retention",
-          ],
-        },
-        {
-          name: "Support",
-          items: [
-            "Email support",
-            "Community access",
-          ],
-        },
-      ],
-    },
+    id: "starter",
+    badge: "STARTER",
+    name: "Free Trial",
+    price: { monthly: "Free Trial", yearly: "Free Trial" },
+    period: "",
+    billedLabel: "",
+    description: "For those just getting started with verification",
+    sections: [
+      {
+        title: null,
+        features: [
+          { text: "Dectra subdomain", info: true },
+          { text: "An entry-level site", info: false },
+          { text: "2 pages", info: false },
+          { text: "15 documents", info: false },
+          { text: "50 verifications (lifetime)", info: false },
+        ],
+      },
+      {
+        title: "Limited traffic",
+        features: [
+          { text: "1 GB bandwidth", info: false },
+          { text: "1k visitors", info: false },
+          { text: "Standard speeds", info: false },
+        ],
+      },
+    ],
+    cta: "Start for free",
+    ctaHref: "/auth/signup",
     highlighted: false,
   },
   {
-    id: "plus",
-    badge: "AI-powered",
-    badgeStyle: "bg-[#D4F903] border-[#D4F903] text-gray-900",
-    name: "Plus",
-    price: "$15",
-    priceNote: "/mo/user",
-    priceSubnote: "+ Platform fee based on team size",
-    savings: "Save 20% with annual billing",
-    description: "Perfect for teams who want to use AI-driven automation to eliminate busywork.",
-    cta: "Get started for free",
-    ctaStyle: "bg-[#D4F903] hover:bg-[#c5e802] text-gray-900",
-    features: {
-      title: "All the features of Free, and:",
-      categories: [
-        {
-          name: "Advanced Verification",
-          items: [
-            "AI-driven verification reviews",
-            "Automated fraud detection",
-            "Priority processing",
-          ],
-        },
-        {
-          name: "Analytics & Automation",
-          items: [
-            "Custom reports and insights",
-            "Automated workflows",
-            "API access",
-          ],
-        },
-        {
-          name: "Global Coverage",
-          items: [
-            "Multi-region support",
-            "International document types",
-            "Localized compliance",
-          ],
-        },
-      ],
-    },
+    id: "basic",
+    badge: "BASIC",
+    name: "Basic",
+    price: { monthly: "₹1,900", yearly: "₹21,000" },
+    period: "/mo",
+    billedLabel: "billed yearly",
+    description: "For relatively simple, static sites",
+    sections: [
+      {
+        title: null,
+        features: [
+          { text: "Custom domain", info: true },
+          { text: "A basic site", info: false },
+          { text: "150 pages", info: false },
+          { text: "500 documents", info: false },
+          { text: "500 verifications (monthly)", info: false },
+        ],
+      },
+      {
+        title: "Moderate traffic",
+        features: [
+          { text: "50 GB bandwidth", info: false },
+          { text: "250k visitors", info: false },
+          { text: "Blazing fast speeds", info: false },
+        ],
+      },
+    ],
+    cta: "Add Site plan",
+    ctaHref: "/auth/signup",
+    highlighted: false,
+  },
+  {
+    id: "business",
+    badge: "BUSINESS",
+    name: "Business",
+    price: { monthly: "₹2,900", yearly: "₹34,000" },
+    period: "/mo",
+    billedLabel: "billed yearly",
+    description: "For blogs or other content-driven sites",
+    sections: [
+      {
+        title: null,
+        features: [
+          { text: "Custom domain", info: true },
+          { text: "A content-rich site", info: false },
+          { text: "150 pages", info: false },
+          { text: "2k documents", info: false },
+          { text: "1k verifications (monthly)", info: false },
+          { text: "3 Content editors", info: false },
+          { text: "Site search", info: false },
+        ],
+      },
+      {
+        title: "Generous traffic",
+        features: [
+          { text: "200 GB bandwidth", info: false },
+          { text: "250k visitors", info: false },
+          { text: "Blazing fast speeds", info: false },
+        ],
+      },
+    ],
+    cta: "Add Site plan",
+    ctaHref: "/auth/signup",
     highlighted: true,
   },
   {
+    id: "organization",
+    badge: "ORGANIZATIONZ",
+    name: "Organization",
+    price: { monthly: "₹49,000", yearly: "₹56,000" },
+    period: "/mo",
+    billedLabel: "billed yearly",
+    description: "For larger sites",
+    sections: [
+      {
+        title: null,
+        features: [
+          { text: "Custom domain", info: true },
+          { text: "A business site", info: false },
+          { text: "150 pages", info: false },
+          { text: "10k documents", info: false },
+          { text: "2.5k verifications (monthly)", info: false },
+          { text: "10 Content editors", info: false },
+          { text: "Site search", info: false },
+          { text: "Form file upload", info: false },
+        ],
+      },
+      {
+        title: "Expanded traffic",
+        features: [
+          { text: "400 GB bandwidth", info: false },
+          { text: "300k visitors", info: false },
+          { text: "Accelerated speeds", info: true },
+        ],
+      },
+    ],
+    cta: "Add Site plan",
+    ctaHref: "/auth/signup",
+    highlighted: false,
+  },
+  {
     id: "enterprise",
-    badge: "AI-tailored",
-    badgeStyle: "bg-gray-900 text-white",
+    badge: "ENTERPRISE",
     name: "Enterprise",
-    price: "Custom",
-    priceNote: "Annual billing",
-    description: "Specifically made for teams who need full customization.",
+    price: { monthly: "Contact us", yearly: "Contact us" },
+    period: "",
+    billedLabel: "",
+    description: "For those needing an enterprise-grade solution",
+    sections: [
+      {
+        title: null,
+        features: [
+          { text: "Unlimited users", info: true },
+          { text: "Enterprise-ready scale", info: true },
+          { text: "Advanced collaboration", info: true },
+          { text: "Guaranteed SLA", info: true },
+          { text: "Enterprise security", info: true },
+          { text: "Customer success", info: true },
+        ],
+      },
+    ],
     cta: "Contact sales",
-    ctaStyle: "bg-gray-900 hover:bg-gray-800 text-white",
-    features: {
-      title: "All the features of Plus, and:",
-      categories: [
-        {
-          name: "Implementation Services",
-          items: [
-            "Custom implementation scoping",
-            "Integration setup and testing",
-            "Employee training",
-          ],
-        },
-        {
-          name: "Enterprise Services",
-          items: [
-            "Custom development",
-            "Advanced configurations",
-            "Dedicated support",
-          ],
-        },
-      ],
-    },
+    ctaHref: "/contact",
     highlighted: false,
   },
 ]
@@ -130,144 +176,104 @@ const compareCategories = [
     name: "Verification",
     features: [
       {
-        name: "Monthly verification limit",
-        free: "50",
-        plus: "Unlimited",
+        name: "Verification limit",
+        starter: "50 (lifetime)",
+        basic: "500/mo",
+        business: "1k/mo",
+        organization: "2.5k/mo",
         enterprise: "Unlimited",
       },
       {
-        name: "Document verification",
-        free: true,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "Identity verification",
-        free: true,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "AI-powered fraud detection",
-        free: false,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "Custom verification workflows",
-        free: false,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "Batch processing",
-        free: false,
-        plus: true,
-        enterprise: true,
-      },
-    ],
-  },
-  {
-    name: "Analytics & Reporting",
-    features: [
-      {
-        name: "Basic analytics dashboard",
-        free: true,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "Custom reports",
-        free: false,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "Real-time insights",
-        free: false,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "Data export",
-        free: false,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "Advanced reporting API",
-        free: false,
-        plus: false,
-        enterprise: true,
-      },
-    ],
-  },
-  {
-    name: "Automation",
-    features: [
-      {
-        name: "Basic automation rules",
-        free: true,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "Advanced workflow automation",
-        free: false,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "Webhook integrations",
-        free: false,
-        plus: true,
-        enterprise: true,
-      },
-      {
-        name: "Custom API integrations",
-        free: false,
-        plus: "+ API access included",
-        enterprise: "+ Full API suite",
-      },
-      {
-        name: "Automated approval workflows",
-        free: false,
-        plus: true,
-        enterprise: true,
-      },
-    ],
-  },
-  {
-    name: "User Management",
-    features: [
-      {
-        name: "Team members",
-        free: "Up to 3",
-        plus: "Unlimited",
+        name: "Document storage",
+        starter: "15",
+        basic: "500",
+        business: "2k",
+        organization: "10k",
         enterprise: "Unlimited",
       },
       {
-        name: "Role-based access",
-        free: false,
-        plus: true,
+        name: "Pages",
+        starter: "2",
+        basic: "150",
+        business: "150",
+        organization: "150",
+        enterprise: "Unlimited",
+      },
+      {
+        name: "Custom domain",
+        starter: false,
+        basic: true,
+        business: true,
+        organization: true,
         enterprise: true,
       },
       {
-        name: "Custom user roles",
-        free: false,
-        plus: false,
+        name: "Content editors",
+        starter: false,
+        basic: false,
+        business: "3",
+        organization: "10",
+        enterprise: "Unlimited",
+      },
+      {
+        name: "Site search",
+        starter: false,
+        basic: false,
+        business: true,
+        organization: true,
         enterprise: true,
       },
       {
-        name: "Audit log",
-        free: false,
-        plus: true,
+        name: "Form file upload",
+        starter: false,
+        basic: false,
+        business: false,
+        organization: true,
+        enterprise: true,
+      },
+    ],
+  },
+  {
+    name: "Traffic & Performance",
+    features: [
+      {
+        name: "Bandwidth",
+        starter: "1 GB",
+        basic: "50 GB",
+        business: "200 GB",
+        organization: "400 GB",
+        enterprise: "Unlimited",
+      },
+      {
+        name: "Monthly visitors",
+        starter: "1k",
+        basic: "250k",
+        business: "250k",
+        organization: "300k",
+        enterprise: "Unlimited",
+      },
+      {
+        name: "Speed tier",
+        starter: "Standard",
+        basic: "Blazing fast",
+        business: "Blazing fast",
+        organization: "Accelerated",
+        enterprise: "Accelerated",
+      },
+      {
+        name: "CDN",
+        starter: false,
+        basic: true,
+        business: true,
+        organization: true,
         enterprise: true,
       },
       {
-        name: "SSO/SAML",
-        free: false,
-        plus: false,
+        name: "DDoS protection",
+        starter: false,
+        basic: true,
+        business: true,
+        organization: true,
         enterprise: true,
       },
     ],
@@ -277,57 +283,117 @@ const compareCategories = [
     features: [
       {
         name: "Email support",
-        free: true,
-        plus: true,
+        starter: true,
+        basic: true,
+        business: true,
+        organization: true,
         enterprise: true,
       },
       {
         name: "Priority support",
-        free: false,
-        plus: true,
+        starter: false,
+        basic: false,
+        business: true,
+        organization: true,
         enterprise: true,
       },
       {
         name: "Dedicated account manager",
-        free: false,
-        plus: false,
+        starter: false,
+        basic: false,
+        business: false,
+        organization: false,
         enterprise: true,
       },
       {
         name: "Custom onboarding",
-        free: false,
-        plus: false,
+        starter: false,
+        basic: false,
+        business: false,
+        organization: false,
         enterprise: true,
       },
       {
         name: "SLA guarantee",
-        free: false,
-        plus: false,
+        starter: false,
+        basic: false,
+        business: false,
+        organization: false,
+        enterprise: true,
+      },
+    ],
+  },
+  {
+    name: "Security & Compliance",
+    features: [
+      {
+        name: "SSL certificate",
+        starter: true,
+        basic: true,
+        business: true,
+        organization: true,
+        enterprise: true,
+      },
+      {
+        name: "Role-based access",
+        starter: false,
+        basic: false,
+        business: true,
+        organization: true,
+        enterprise: true,
+      },
+      {
+        name: "Audit logs",
+        starter: false,
+        basic: false,
+        business: false,
+        organization: true,
+        enterprise: true,
+      },
+      {
+        name: "SSO / SAML",
+        starter: false,
+        basic: false,
+        business: false,
+        organization: false,
+        enterprise: true,
+      },
+      {
+        name: "Enterprise security",
+        starter: false,
+        basic: false,
+        business: false,
+        organization: false,
         enterprise: true,
       },
     ],
   },
 ]
 
+type FeatureRow = {
+  name: string;
+  starter: boolean | string;
+  basic: boolean | string;
+  business: boolean | string;
+  organization: boolean | string;
+  enterprise: boolean | string;
+}
+
 function FeatureValue({ value }: { value: boolean | string }) {
   if (typeof value === "string") {
-    return <span className="text-sm text-gray-600">{value}</span>
+    return <span className="text-sm text-muted-foreground">{value}</span>
   }
   if (value) {
-    return <Check className="h-5 w-5 text-green-600" />
+    return <Check className="h-5 w-5 text-[#d4854e]" />
   }
-  return <Minus className="h-5 w-5 text-gray-300" />
+  return <Minus className="h-5 w-5 text-muted-foreground/30" />
 }
 
 export default function PricingPage() {
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
     compareCategories.map((c) => c.name)
   )
-  const [emails, setEmails] = useState<Record<string, string>>({
-    free: "",
-    plus: "",
-    enterprise: "",
-  })
 
   const toggleCategory = (name: string) => {
     setExpandedCategories((prev) =>
@@ -338,194 +404,188 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navigation placeholder - uses existing nav */}
-      <header className="border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-gray-900">
-            Dectra
-          </Link>
-          <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-sm text-gray-600 hover:text-gray-900">
-              Home
-            </Link>
-            <Link href="/pricing" className="text-sm text-gray-900 font-medium">
-              Pricing
-            </Link>
-            <Link href="/docs" className="text-sm text-gray-600 hover:text-gray-900">
-              Docs
-            </Link>
-            <Link href="/contact" className="text-sm text-gray-600 hover:text-gray-900">
-              Contact
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/auth/signin"
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/auth/signup"
-              className="text-sm bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800"
-            >
-              Get started
-            </Link>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background text-foreground">
+      <Navigation />
 
       {/* Hero Section */}
-      <section className="py-20 px-6">
+      <section className="pt-32 pb-16 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
-            Start for free.
-            <br />
-            Scale with Intelligence.
-          </h1>
-          <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-            Whether you&apos;re a startup, global enterprise, or somewhere in between, 
-            Dectra is designed to save you time and money.
-          </p>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-5xl md:text-6xl font-bold tracking-tight leading-tight"
+          >
+            Site plans
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto"
+          >
+            Our site plans provide easy 1-click publishing and hosting, right from inside our powerful visual designer.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Billing Toggle */}
+      <section className="pb-8 px-6">
+        <div className="max-w-7xl mx-auto flex justify-center md:justify-end">
+          <div className="flex items-center gap-3">
+            <span className={cn("text-sm", billingCycle === "monthly" ? "text-foreground" : "text-muted-foreground")}>
+              Billed monthly
+            </span>
+            <button
+              onClick={() => setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")}
+              className={cn(
+                "relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
+                billingCycle === "yearly" ? "bg-[#d4854e]" : "bg-muted"
+              )}
+            >
+              <span
+                className={cn(
+                  "pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out",
+                  billingCycle === "yearly" ? "translate-x-5" : "translate-x-0"
+                )}
+              />
+            </button>
+            <div className="flex flex-col">
+              <span className={cn("text-sm font-medium", billingCycle === "yearly" ? "text-foreground" : "text-muted-foreground")}>
+                Billed yearly
+              </span>
+              {billingCycle === "yearly" && (
+                <span className="text-xs text-[#d4854e]">(Save up to 22%)</span>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Pricing Cards */}
       <section className="pb-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-6">
-            {pricingTiers.map((tier) => (
-              <motion.div
-                key={tier.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className={cn(
-                  "relative rounded-2xl border p-6 flex flex-col",
-                  tier.highlighted
-                    ? "border-[#D4F903] border-2 shadow-lg"
-                    : "border-gray-200"
-                )}
-              >
-                {/* Badge */}
-                <div className="flex justify-center -mt-10 mb-4">
-                  <span
-                    className={cn(
-                      "px-4 py-1.5 rounded-full text-sm font-medium border",
-                      tier.badgeStyle
-                    )}
-                  >
-                    {tier.badge}
-                  </span>
-                </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {plans.map((plan, index) => {
+              const displayPrice = plan.price[billingCycle]
+              const isContact = displayPrice === "Contact us"
+              const isFree = displayPrice === "Free Trial"
 
-                {/* Name & Price */}
-                <div className="mb-4">
-                  <h3 className="text-2xl font-bold text-gray-900">{tier.name}</h3>
-                  <div className="mt-1">
-                    <span className="text-3xl font-bold text-gray-900">
-                      {tier.price}
-                    </span>
-                    <span className="text-gray-600">{tier.priceNote}</span>
-                  </div>
-                  {tier.priceSubnote && (
-                    <p className="text-xs text-gray-500 mt-1">{tier.priceSubnote}</p>
-                  )}
-                  {tier.savings && (
-                    <p className="text-xs text-gray-500">{tier.savings}</p>
-                  )}
-                </div>
-
-                {/* Description */}
-                <p className="text-sm text-gray-600 mb-6">{tier.description}</p>
-
-                {/* Email Input */}
-                <div className="mb-3">
-                  <input
-                    type="email"
-                    placeholder="What's your work email?"
-                    value={emails[tier.id]}
-                    onChange={(e) =>
-                      setEmails({ ...emails, [tier.id]: e.target.value })
-                    }
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-400"
-                  />
-                </div>
-
-                {/* CTA Button */}
-                <Link
-                  href={tier.id === "enterprise" ? "/contact" : "/auth/signup"}
+              return (
+                <motion.div
+                  key={plan.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.08 }}
+                  whileHover={{ y: -6, transition: { duration: 0.25 } }}
                   className={cn(
-                    "w-full py-2.5 rounded-md text-sm font-medium text-center transition-colors",
-                    tier.ctaStyle
+                    "relative flex flex-col rounded-2xl border p-6 transition-shadow duration-300",
+                    plan.highlighted
+                      ? "border-[#d4854e]/50 bg-gradient-to-b from-[#d4854e]/10 to-transparent hover:shadow-xl hover:shadow-[#d4854e]/10"
+                      : "border-border/40 bg-card/20 hover:shadow-lg hover:shadow-black/20"
                   )}
                 >
-                  {tier.cta}
-                </Link>
+                  {/* Badge */}
+                  <div className="mb-4">
+                    <span
+                      className={cn(
+                        "inline-block rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider",
+                        plan.highlighted
+                          ? "bg-[#d4854e] text-white"
+                          : "bg-muted text-muted-foreground border border-border/40"
+                      )}
+                    >
+                      {plan.badge}
+                    </span>
+                  </div>
 
-                {/* Divider */}
-                <div className="border-t border-gray-200 my-6" />
+                  {/* Price */}
+                  <div className="mb-1">
+                    {isContact || isFree ? (
+                      <span className="text-3xl font-bold tracking-tight">{displayPrice}</span>
+                    ) : (
+                      <div className="flex items-baseline gap-0.5">
+                        <span className="text-3xl font-bold tracking-tight">{displayPrice}</span>
+                        <span className="text-sm text-muted-foreground">{plan.period}</span>
+                      </div>
+                    )}
+                  </div>
 
-                {/* Features */}
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-gray-900 mb-4">
-                    {tier.features.title}
+                  {plan.billedLabel && billingCycle === "yearly" && (
+                    <p className="text-xs text-muted-foreground mb-3">{plan.billedLabel}</p>
+                  )}
+
+                  {/* Description */}
+                  <p className="text-sm text-muted-foreground mb-6 leading-relaxed min-h-[40px]">
+                    {plan.description}
                   </p>
-                  <div className="space-y-4">
-                    {tier.features.categories.map((category) => (
-                      <div key={category.name}>
-                        <p className="text-sm font-medium text-gray-900 mb-2">
-                          {category.name}
-                        </p>
-                        <ul className="space-y-1.5">
-                          {category.items.map((item) => (
-                            <li
-                              key={item}
-                              className="text-sm text-gray-600 flex items-start gap-2"
-                            >
-                              <Check className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                              {item}
+
+                  {/* Feature sections */}
+                  <div className="flex-1 space-y-5 mb-6">
+                    {plan.sections.map((section, si) => (
+                      <div key={si}>
+                        {section.title && (
+                          <h4 className="text-sm font-semibold text-foreground mb-2">{section.title}</h4>
+                        )}
+                        <ul className="space-y-2">
+                          {section.features.map((feat, fi) => (
+                            <li key={fi} className="flex items-start justify-between gap-2">
+                              <span className="text-xs text-muted-foreground leading-relaxed">{feat.text}</span>
+                              {feat.info && (
+                                <Info className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40 mt-0.5" />
+                              )}
                             </li>
                           ))}
                         </ul>
                       </div>
                     ))}
                   </div>
-                </div>
 
-                {/* View all features link */}
-                <button className="mt-6 text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1">
-                  View all features <ChevronDown className="h-4 w-4" />
-                </button>
-              </motion.div>
-            ))}
+                  {/* CTA */}
+                  <Link
+                    href={plan.ctaHref}
+                    className={cn(
+                      "w-full py-2.5 rounded-lg text-sm font-medium text-center transition-colors block",
+                      plan.highlighted
+                        ? "bg-[#d4854e] hover:bg-[#c5773f] text-white"
+                        : plan.id === "enterprise"
+                          ? "bg-foreground text-background hover:opacity-90"
+                          : "bg-muted hover:bg-muted/80 text-foreground border border-border/40"
+                    )}
+                  >
+                    {plan.cta}
+                  </Link>
+                </motion.div>
+              )
+            })}
           </div>
         </div>
       </section>
 
       {/* Compare Features Section */}
-      <section className="py-20 px-6 bg-white border-t border-gray-100">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="grid grid-cols-4 gap-4 mb-8 items-end">
+      <section className="py-20 px-6 border-t border-border/40">
+        <div className="max-w-7xl mx-auto">
+          {/* Header row */}
+          <div className="grid grid-cols-6 gap-4 mb-8 items-end">
             <div>
-              <h2 className="text-4xl font-bold text-gray-900">Compare</h2>
-              <p className="text-4xl font-bold text-gray-900">Features</p>
+              <h2 className="text-4xl font-bold">Compare</h2>
+              <p className="text-4xl font-bold">Features</p>
             </div>
-            {pricingTiers.map((tier) => (
-              <div key={tier.id} className="text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  {tier.name}
-                </h3>
+            {plans.map((plan) => (
+              <div key={plan.id} className="text-center">
+                <h3 className="text-sm font-semibold mb-3">{plan.name}</h3>
                 <Link
-                  href={tier.id === "enterprise" ? "/contact" : "/auth/signup"}
+                  href={plan.ctaHref}
                   className={cn(
-                    "inline-block w-full max-w-[180px] py-2 rounded-md text-sm font-medium transition-colors",
-                    tier.ctaStyle
+                    "inline-block w-full max-w-[160px] py-2 rounded-lg text-xs font-medium transition-colors",
+                    plan.highlighted
+                      ? "bg-[#d4854e] hover:bg-[#c5773f] text-white"
+                      : plan.id === "enterprise"
+                        ? "bg-foreground text-background hover:opacity-90"
+                        : "bg-muted hover:bg-muted/80 text-foreground border border-border/40"
                   )}
                 >
-                  {tier.cta}
+                  {plan.cta}
                 </Link>
               </div>
             ))}
@@ -534,22 +594,17 @@ export default function PricingPage() {
           {/* Feature Categories */}
           <div className="space-y-0">
             {compareCategories.map((category) => (
-              <div
-                key={category.name}
-                className="border-t border-gray-200"
-              >
+              <div key={category.name} className="border-t border-border/40">
                 {/* Category Header */}
                 <button
                   onClick={() => toggleCategory(category.name)}
-                  className="w-full py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                  className="w-full py-4 flex items-center justify-between text-left hover:bg-muted/20 transition-colors rounded-lg px-2"
                 >
-                  <h4 className="text-base font-semibold text-gray-900">
-                    {category.name}
-                  </h4>
+                  <h4 className="text-base font-semibold">{category.name}</h4>
                   {expandedCategories.includes(category.name) ? (
-                    <ChevronUp className="h-5 w-5 text-gray-400" />
+                    <ChevronUp className="h-5 w-5 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-gray-400" />
+                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
                   )}
                 </button>
 
@@ -563,23 +618,28 @@ export default function PricingPage() {
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      {category.features.map((feature, idx) => (
+                      {category.features.map((feature: FeatureRow, idx: number) => (
                         <div
                           key={feature.name}
                           className={cn(
-                            "grid grid-cols-4 gap-4 py-3 items-center",
-                            idx !== category.features.length - 1 &&
-                              "border-b border-gray-100"
+                            "grid grid-cols-6 gap-4 py-3 px-2 items-center",
+                            idx !== category.features.length - 1 && "border-b border-border/20"
                           )}
                         >
-                          <div className="text-sm text-gray-600 hover:text-gray-900 cursor-pointer underline decoration-dotted underline-offset-4">
+                          <div className="text-sm text-muted-foreground">
                             {feature.name}
                           </div>
                           <div className="flex justify-center">
-                            <FeatureValue value={feature.free} />
+                            <FeatureValue value={feature.starter} />
                           </div>
                           <div className="flex justify-center">
-                            <FeatureValue value={feature.plus} />
+                            <FeatureValue value={feature.basic} />
+                          </div>
+                          <div className="flex justify-center">
+                            <FeatureValue value={feature.business} />
+                          </div>
+                          <div className="flex justify-center">
+                            <FeatureValue value={feature.organization} />
                           </div>
                           <div className="flex justify-center">
                             <FeatureValue value={feature.enterprise} />
@@ -595,25 +655,23 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* Footer CTA */}
-      <section className="py-20 px-6 bg-gray-50">
+      {/* Bottom CTA */}
+      <section className="py-20 px-6 border-t border-border/40">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Ready to get started?
-          </h2>
-          <p className="text-gray-600 mb-8">
+          <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
+          <p className="text-muted-foreground mb-8">
             Join thousands of teams using Dectra to streamline their verification workflows.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link
               href="/auth/signup"
-              className="bg-[#D4F903] hover:bg-[#c5e802] text-gray-900 px-6 py-3 rounded-md font-medium"
+              className="bg-[#d4854e] hover:bg-[#c5773f] text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
               Start for free
             </Link>
             <Link
               href="/contact"
-              className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 rounded-md font-medium"
+              className="bg-foreground text-background px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-colors"
             >
               Contact sales
             </Link>
@@ -621,22 +679,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 py-8 px-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <p className="text-sm text-gray-500">
-            © 2026 Dectra. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6">
-            <Link href="/terms" className="text-sm text-gray-500 hover:text-gray-700">
-              Terms
-            </Link>
-            <Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-700">
-              Privacy
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

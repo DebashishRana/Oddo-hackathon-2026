@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useFormStatus } from "react-dom"
 import { signInAction, signInWithCredentialsAction, signUpAction } from "@/lib/auth-actions"
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,7 @@ export function AuthForm({ defaultIsSignUp = false }: { defaultIsSignUp?: boolea
   const [isLoading, setIsLoading] = useState(false)
   const [isSignUp, setIsSignUp] = useState(defaultIsSignUp)
   const { toast } = useToast()
+  const router = useRouter()
 
   async function handleSubmit(formData: FormData) {
     setIsLoading(true)
@@ -39,6 +41,10 @@ export function AuthForm({ defaultIsSignUp = false }: { defaultIsSignUp?: boolea
           description: result.error,
           variant: "destructive",
         })
+      } else if (result?.redirectTo) {
+        // Redirect to email verification page
+        router.push(result.redirectTo)
+        return
       }
     } catch (error) {
       // NextAuth redirects throw errors, so we ignore those

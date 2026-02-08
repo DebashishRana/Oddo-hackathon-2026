@@ -199,6 +199,55 @@ export function createPasswordResetEmail(userName: string, userEmail: string, re
   return { to: userEmail, subject, html };
 }
 
+// Email verification OTP template
+export function createVerificationEmail(userEmail: string, code: string) {
+  const subject = `${code} is your ${EMAIL_CONFIG.SITE_NAME} verification code`;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Verify your email</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 500px; margin: 0 auto; padding: 20px; background: #f7f7f7; }
+        .container { background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .header { background: #0a0a0b; color: white; padding: 32px; text-align: center; }
+        .header h1 { margin: 0; font-size: 22px; font-weight: 600; }
+        .content { padding: 32px; text-align: center; }
+        .code-box { display: inline-block; background: #f0f0f0; border: 2px dashed #d4854e; border-radius: 12px; padding: 20px 40px; margin: 24px 0; }
+        .code { font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #0a0a0b; font-family: 'Courier New', monospace; }
+        .note { color: #666; font-size: 14px; margin-top: 16px; }
+        .footer { text-align: center; padding: 20px 32px; color: #999; font-size: 12px; border-top: 1px solid #eee; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>${EMAIL_CONFIG.SITE_NAME}</h1>
+        </div>
+        <div class="content">
+          <p style="font-size: 16px; margin-bottom: 8px;">Verify your email address</p>
+          <p style="color: #666; font-size: 14px;">Enter this code to complete your sign-up:</p>
+          
+          <div class="code-box">
+            <div class="code">${code}</div>
+          </div>
+          
+          <p class="note">This code expires in <strong>10 minutes</strong>.</p>
+          <p class="note">If you didn't create an account with ${EMAIL_CONFIG.SITE_NAME}, you can safely ignore this email.</p>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} ${EMAIL_CONFIG.SITE_NAME}. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return { to: userEmail, subject, html };
+}
+
 // Contact form email template
 export function createContactFormEmail(name: string, email: string, message: string) {
   const subject = `New contact form submission from ${name}`;

@@ -1,6 +1,6 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import { getUserByEmail, upsertUser } from "./database"
+import { getUserByEmail, upsertUser, markEmailVerified } from "./database"
 import { verifyPassword } from "./auth-utils"
 import { authConfig } from "./auth.config"
 
@@ -61,6 +61,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             name: user.name || undefined,
             image_url: user.image || undefined,
           })
+          // Google OAuth implicitly verifies email
+          await markEmailVerified(user.email)
           console.log("[Auth] Google user synced to database:", user.email)
         } catch (error) {
           console.error("[Auth] Failed to sync Google user to database:", error)
