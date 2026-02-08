@@ -4,7 +4,7 @@ import { stripe } from '@/lib/stripe';
 
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check admin access
     await requireAdminAccess();
