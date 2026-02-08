@@ -1183,8 +1183,7 @@ export async function isEmailVerified(email: string): Promise<boolean> {
   const client = await pool.connect()
   try {
     const result = await client.query(
-      `SELECT email_verified FROM users WHERE email = $1`,
-      [email]
+      `SELECT email_verified FROM users WHERE email = $1`, [email]
     )
     return result.rows[0]?.email_verified === true
   } catch (error) {
