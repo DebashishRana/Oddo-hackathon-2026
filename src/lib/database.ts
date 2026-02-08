@@ -26,6 +26,9 @@ export interface User {
   stripe_customer_id?: string
   subscription_id?: string
   subscription_end_date?: Date
+  email_verified?: boolean
+  verification_code?: string | null
+  verification_code_expires?: Date | null
 }
 
 export interface CreateUserData {

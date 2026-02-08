@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Briefcase, Newspaper, TrendingUp } from "lucide-react";
+import { ArrowRight, Newspaper } from "lucide-react";
 import Navigation from "@/components/landing/navigation";
 import Footer from "@/components/landing/footer";
 

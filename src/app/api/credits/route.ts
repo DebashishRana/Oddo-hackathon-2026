@@ -4,7 +4,7 @@ import { getUserCredits } from '@/lib/database';
 
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Check authentication
     const session = await auth();

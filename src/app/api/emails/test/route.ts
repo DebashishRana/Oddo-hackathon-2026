@@ -3,7 +3,7 @@ import { sendEmail, createWelcomeEmail } from '@/lib/resend';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // Test email data
     const testEmailData = createWelcomeEmail('Test User', 'test@example.com');
