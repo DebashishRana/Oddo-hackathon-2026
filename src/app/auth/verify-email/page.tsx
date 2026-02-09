@@ -2,10 +2,17 @@
 
 import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2, Mail, ArrowLeft } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import Link from "next/link"
+
+// Helper to mask email
+function maskEmail(email: string): string {
+  const [local, domain] = email.split("@")
+  if (!local || !domain) return email
+  const masked = local.charAt(0) + "•••••"
+  return `${masked}@${domain}`
+}
 
 function VerifyEmailContent() {
   const router = useRouter()
@@ -136,100 +143,128 @@ function VerifyEmailContent() {
 
   if (!email) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background px-4">
-        <div className="text-center space-y-4">
-          <h1 className="text-2xl font-bold">Missing email</h1>
-          <p className="text-muted-foreground">No email address provided for verification.</p>
-          <Link href="/auth/signup">
-            <Button>Go to Sign Up</Button>
-          </Link>
+      <div className="min-h-screen flex flex-col bg-[#0a0a0a]">
+        {/* Header */}
+        <header className="border-b border-zinc-800">
+          <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <Link href="/" className="text-xl font-semibold text-white">
+              Dectra
+            </Link>
+            <nav className="flex items-center gap-6">
+              <Link href="/auth/signin" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                Sign In
+              </Link>
+              <Link href="/auth/signup" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                Create Your Veri-Q Account
+              </Link>
+              <Link href="/docs" className="text-sm text-zinc-400 hover:text-white transition-colors">
+                FAQ
+              </Link>
+            </nav>
+          </div>
+        </header>
+
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="text-center space-y-4">
+            <h1 className="text-2xl font-bold text-white">Missing email</h1>
+            <p className="text-zinc-400">No email address provided for verification.</p>
+            <Link 
+              href="/auth/signup"
+              className="inline-block text-[#d4854e] hover:text-[#e5965f] font-medium transition-colors"
+            >
+              Go to Sign Up
+            </Link>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md space-y-8">
-        {/* Back link */}
-        <Link
-          href="/auth/signin"
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to sign in
-        </Link>
+    <div className="min-h-screen flex flex-col bg-white">
+      {/* Header */}
+      <header className="border-b border-zinc-200 bg-white">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="text-xl font-semibold text-black">
+            Dectra
+          </Link>
+          <nav className="flex items-center gap-6">
+            <Link href="/auth/signin" className="text-sm text-zinc-500 hover:text-black transition-colors">
+              Sign In
+            </Link>
+            <Link href="/auth/signup" className="text-sm text-zinc-500 hover:text-black transition-colors">
+              Create Your Dectra Account
+            </Link>
+            <Link href="/docs" className="text-sm text-zinc-500 hover:text-black transition-colors">
+              FAQ
+            </Link>
+          </nav>
+        </div>
+      </header>
 
-        {/* Icon */}
-        <div className="flex justify-center">
-          <div className="h-16 w-16 rounded-full bg-[#d4854e]/10 flex items-center justify-center">
-            <Mail className="h-8 w-8 text-[#d4854e]" />
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center px-4 bg-white">
+        <div className="w-full max-w-lg text-center">
+          {/* Heading */}
+          <h1 className="text-3xl font-semibold text-black mb-10">
+            Please enter the verification code
+          </h1>
+
+          {/* Code inputs */}
+          <div className="flex justify-center gap-3 mb-8" onPaste={handlePaste}>
+            {code.map((digit, i) => (
+              <input
+                key={i}
+                ref={(el) => { inputRefs.current[i] = el }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleInput(i, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(i, e)}
+                className={`w-14 h-16 text-center text-2xl font-medium rounded-xl 
+                           bg-white border-2 text-black
+                           focus:outline-none transition-all
+                           ${i === 0 && code.every(d => d === "") 
+                             ? "border-[#d4854e] ring-1 ring-[#d4854e]" 
+                             : "border-zinc-300 focus:border-[#d4854e] focus:ring-1 focus:ring-[#d4854e]"
+                           }`}
+                disabled={isVerifying}
+              />
+            ))}
           </div>
-        </div>
 
-        {/* Heading */}
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Check your email</h1>
-          <p className="text-muted-foreground text-sm">
-            We sent a 6-digit verification code to
+          {/* Description */}
+          <p className="text-zinc-500 text-base mb-6">
+            An email with a verification code has been sent to<br />
+            <span className="text-black font-semibold">{maskEmail(email)}</span>. Please enter the code to continue.
           </p>
-          <p className="font-medium">{email}</p>
-        </div>
 
-        {/* Code inputs */}
-        <div className="flex justify-center gap-3" onPaste={handlePaste}>
-          {code.map((digit, i) => (
-            <input
-              key={i}
-              ref={(el) => { inputRefs.current[i] = el }}
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => handleInput(i, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(i, e)}
-              className="w-12 h-14 text-center text-xl font-bold rounded-lg border border-border bg-card
-                         focus:outline-none focus:ring-2 focus:ring-[#d4854e] focus:border-[#d4854e]
-                         transition-all"
-              disabled={isVerifying}
-            />
-          ))}
-        </div>
-
-        {/* Verify button */}
-        <Button
-          onClick={() => handleVerify()}
-          disabled={isVerifying || code.some((d) => d === "")}
-          className="w-full bg-[#d4854e] hover:bg-[#c5773f] text-white"
-        >
-          {isVerifying ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Verifying...
-            </>
-          ) : (
-            "Verify email"
+          {/* Loading indicator */}
+          {isVerifying && (
+            <div className="flex items-center justify-center gap-2 mb-6 text-zinc-500">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Verifying...</span>
+            </div>
           )}
-        </Button>
 
-        {/* Resend */}
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
-            Didn&apos;t receive the email?{" "}
+          {/* Resend link */}
+          <div className="space-y-3">
             <button
               onClick={handleResend}
               disabled={isResending || resendCooldown > 0}
-              className="text-[#d4854e] hover:underline font-medium disabled:opacity-50 disabled:no-underline"
+              className="text-[#d4854e] hover:text-[#e5965f] text-base font-medium transition-colors 
+                         disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isResending
                 ? "Sending..."
                 : resendCooldown > 0
-                  ? `Resend in ${resendCooldown}s`
-                  : "Resend code"}
+                  ? `Did not get a verification code? (${resendCooldown}s)`
+                  : "Did not get a verification code?"}
             </button>
-          </p>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
@@ -237,8 +272,21 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-background px-4">
-        <Loader2 className="h-8 w-8 animate-spin text-[#d4854e]" />
+      <div className="min-h-screen flex flex-col bg-white">
+        {/* Header */}
+        <header className="border-b border-zinc-200 bg-white">
+          <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <span className="text-xl font-semibold text-black">Dectra</span>
+            <nav className="flex items-center gap-6">
+              <span className="text-sm text-zinc-500">Sign In</span>
+              <span className="text-sm text-zinc-500">Create Your Dectra Account</span>
+              <span className="text-sm text-zinc-500">FAQ</span>
+            </nav>
+          </div>
+        </header>
+        <div className="flex-1 flex items-center justify-center bg-white">
+          <Loader2 className="h-8 w-8 animate-spin text-[#d4854e]" />
+        </div>
       </div>
     }>
       <VerifyEmailContent />
