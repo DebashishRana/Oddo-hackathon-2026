@@ -31,13 +31,12 @@
 ## Table of Contents
 
 1. [Introduction](#1-introduction)
-2. [Model Summary](#2-Application summary)
-3. [Model Downloads](#3-Models information and training )
-4. [Evaluation Results](#4-Model and application results)
-5. [Chat Website & API Platform](# 5Dectra --api-platform)
-6. [How to Run Locally](#6-how-to-run-locally)
-7. [License](#7-license)
-8. [Contact](#9-contact)
+2. [Model Summary](#2-Modelsummary)
+3. [Evaluation Results](#3-MainWebsite&API Platform)
+4. [Chat Website & API Platform](# MainWebsite)
+5. [How to Run Locally](#6-how-to-run-locally)
+6. [License](#7-license)
+7. [Contact](#9-contact)
 
 
 ## 1. Introduction
@@ -51,12 +50,13 @@ Unlike traditional OCR pipelines, Dectra combines document understanding, valida
   <img width="80%" src="C:\Users\simon\Documents\Dectra\Logos.jpg">
 </p>
 
-## 2. Model Summary
-
----
-
+# 2. Model Summary
 
 **Architecture: Document Intelligence + Validation Engine**
+
+<img width="1920" height="1080" alt="Blue Green Professional Flowchart Template Brainstorm" src="https://github.com/user-attachments/assets/a302c955-e86d-4125-ab14-0579d4be3b42" />
+
+
 
 Dectra combines multiple AI components into a unified pipeline designed for real-world document verification:
 
@@ -99,6 +99,7 @@ Cross-field validation (e.g., format checks, logical consistency)
 Error correction and normalization
 Output standardization for downstream systems
 ---
+
 
 
 
