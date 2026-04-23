@@ -98,12 +98,16 @@ After extraction, Dectra applies:
 Cross-field validation (e.g., format checks, logical consistency)
 Error correction and normalization
 Output standardization for downstream systems
+
 ---
 
 
 
 
 ## 4. Main Website & API Platform
+
+<img width="1869" height="903" alt="image" src="https://github.com/user-attachments/assets/3741b640-3cb4-4eeb-b498-cb78c319955a" />
+
 You can access Dectra on our official website: [dectra-two.vercel.app](https://dectra-two.vercel.app/)
 
 We also provide : [platform.dectra.com](https://platform.dectra.com/)
