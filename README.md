@@ -3,7 +3,8 @@
 <!-- markdownlint-disable no-duplicate-header -->
 
 <div align="center">
-  <img src="#adding image here" width="60%" alt="Dectra V3.2" />
+  <img src="https://github.com/user-attachments/assets/31ba39d0-2752-4db8-8701-8561b33ff7dc" />
+   
 </div>
 <hr>
 <div align="center" style="line-height: 1;">
