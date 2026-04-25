@@ -1,24 +1,135 @@
-# 🏠 Dectra: Local Deployment Guide
 
-Welcome to Dectra! This guide will help you set up and run Dectra locally on your machine.
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/31ba39d0-2752-4db8-8701-8561b33ff7dc" />
+   
+</div>
+<hr>
+<div align="center" style="line-height: 1;">
+  <a href="https://www.deepseek.com/"><img alt="Homepage"
+    src="https://github.com/deepseek-ai/DeepSeek-V2/blob/main/figures/badge.svg?raw=true"/></a>
+  <a href="https://chat.deepseek.com/"><img alt="API"
+    src="https://img.shields.io/badge/🤖%20Chat-DeepSeek%20V3-536af5?color=536af5&logoColor=white"/></a>
+  <a href="https://huggingface.co/deepseek-ai"><img alt="Hugging Face"
+    src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-DeepSeek%20AI-ffc107?color=ffc107&logoColor=white"/></a>
+  <br>
+  <a href="https://discord.gg/Tc7c45Zzu5"><img alt="Discord"
+    src="https://img.shields.io/badge/Discord-DeepSeek%20AI-7289da?logo=discord&logoColor=white&color=7289da"/></a>
+  <a href="https://twitter.com/deepseek_ai"><img alt="Twitter Follow"
+    src="https://img.shields.io/badge/Twitter-deepseek_ai-white?logo=x&logoColor=white"/></a>
+  <br>
+  <a href="https://github.com/deepseek-ai/DeepSeek-V3/blob/main/LICENSE-CODE"><img alt="Code License"
+    src="https://img.shields.io/badge/Code_License-MIT-f5de53?&color=f5de53"/></a>
+  <a href="https://github.com/deepseek-ai/DeepSeek-V3/blob/main/LICENSE-MODEL"><img alt="Model License"
+    src="https://img.shields.io/badge/Model_License-Model_Agreement-f5de53?&color=f5de53"/></a>
+  <br>
+  <a href="https://1drv.ms/p/c/efd2dbbfc9e2248f/IQBsWKMXM_pPTLdMKi1ilpHrATarO8GMZ8A1mTBzYax9wYE?e=HQfx1c"><b>Case paper</b></a>
+</div>
+
+## Table of Contents
+
+1. [Introduction](#1-introduction)
+2. [Model Summary](#2-Modelsummary)
+3. [Evaluation Results](#3-MainWebsite&API Platform)
+4. [Chat Website & API Platform](# MainWebsite)
+5. [How to Run Locally](#6-how-to-run-locally)
+6. [License](#7-license)
+7. [Contact](#9-contact)
+
+
+## 1. Introduction
+
+Dectra is a AI-first API that enables instant verification, extraction, and validation of identity documents such as Aadhaar and PAN.
+
+Built for real-world reliability, Dectra transforms unstructured documents into structured, verifiable data in a single API call.
+
+Unlike traditional OCR pipelines, Dectra combines document understanding, validation logic, and confidence scoring to deliver production-ready outputs — not just raw text.
+<p align="center">
+  <img width="80%" src="C:\Users\simon\Documents\Dectra\Logos.jpg">
+</p>
+
+# 2. Model Summary
+
+**Architecture: Document Intelligence + Validation Engine**
+
+<img width="1920" height="1080" alt="Blue Green Professional Flowchart Template Brainstorm" src="https://github.com/user-attachments/assets/a302c955-e86d-4125-ab14-0579d4be3b42" />
+
+
+
+Dectra combines multiple AI components into a unified pipeline designed for real-world document verification:
+
+📄 Document Understanding — extracts structured fields from unstructured inputs (PDFs, images)
+🧾 Entity Recognition — identifies key attributes such as name, DOB, ID numbers
+✅ Validation Layer — applies rule-based and learned checks to verify authenticity
+📊 Confidence Scoring — assigns reliability scores to each extracted field
+
+Unlike traditional OCR systems, Dectra is built to understand and verify, not just read.
 
 ---
 
-## 🚀 Quick Local Start
+**⚡ Inference Optimization: Fast & Scalable**
+
+Dectra is optimized for production use:
+
+Low-latency responses suitable for real-time workflows
+Efficient processing of large documents and low-quality images
+Designed for horizontal scaling across API workloads
+
+This ensures consistent performance even under high request volumes.
+
+---
+
+**🧪 Training Approach: Real-World Robustness**
+
+The system is trained and refined using:
+
+Diverse document formats (scanned, photographed, compressed)
+Noisy and imperfect inputs (blur, glare, partial data)
+Iterative feedback loops to improve extraction accuracy
+
+This makes Dectra reliable in non-ideal, real-world conditions—not just clean datasets.
+
+🔍 Post-Processing: Intelligence Layer
+
+After extraction, Dectra applies:
+
+Cross-field validation (e.g., format checks, logical consistency)
+Error correction and normalization
+Output standardization for downstream systems
+
+---
+
+
+
+
+## 4. Main Website & API Platform
+
+<img width="1869" height="903" alt="image" src="https://github.com/user-attachments/assets/3741b640-3cb4-4eeb-b498-cb78c319955a" />
+
+You can access Dectra on our official website: [dectra-two.vercel.app](https://dectra-two.vercel.app/)
+
+We also provide : [platform.dectra.com](https://platform.dectra.com/)
+
+yarn install
+## 5. How to Run Locally
+
+Dectra can be deployed and run locally using the following steps:
 
 ### 1. Prerequisites
 
-- **Node.js** (v18 or higher)
-- **npm** (comes with Node.js) or **yarn** or **pnpm**
-- **Git**
+- Node.js (v18 or higher)
+- npm (comes with Node.js), yarn, or pnpm
+- Git
 
 ### 2. Clone the Repository
 
 ```bash
 git clone https://github.com/DebashishRana/Dectra.git
 cd Dectra
+git clone https://github.com/DebashishRana/Dectra.git
+cd Dectra
 ```
 
+### 3. Install Dependencies
 ### 3. Install Dependencies
 
 ```bash
@@ -30,7 +141,9 @@ pnpm install
 ```
 
 ### 4. Environment Variables
+### 4. Environment Variables
 
+Copy the example environment file and fill in your secrets:
 Copy the example environment file and fill in your secrets:
 
 ```bash
@@ -38,6 +151,10 @@ cp .env.example .env.local
 ```
 Edit `.env.local` and provide your database, Stripe, and OpenRouter credentials as needed.
 
+### 5. Database Setup
+Edit `.env.local` and provide your database, Stripe, and OpenRouter credentials as needed.
+
+You can use any local or remote PostgreSQL database. To initialize the schema and sample data, run:
 ### 5. Database Setup
 
 You can use any local or remote PostgreSQL database. To initialize the schema and sample data, run:
@@ -47,6 +164,9 @@ npm run db:setup
 ```
 
 Or manually execute the SQL files in `sql-queries/` using your preferred SQL client.
+
+### 6. Start the Development Server
+Or manually execute the SQL files in `sql-queries` using your preferred SQL client.
 
 ### 6. Start the Development Server
 
@@ -73,67 +193,7 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 - [X](https://x.com/dectra)
 - [GitHub](https://github.com/DebashishRana/Dectra)
 
-For more details, see the `docs/` folder or open an issue on GitHub.
-- **Analytics**: Usage statistics and insights
-- **Billing**: Subscription management and payment history
-- **Profile**: User profile management
-- **Settings**: Account preferences
-
-### 👑 Admin Panel
-Admin users (configured via email) get access to:
-- **User Management**: View and manage user accounts
-- **Discount Management**: Create and manage promotional codes
-- **Revenue Tracking**: Monitor subscription revenue and payments
-- **System Analytics**: View system-wide statistics and insights
-- **Settings**: Configure system settings and environment status
-- **User Activity**: Monitor user activity and engagement
-
-### 💬 AI Chat
-- Interactive chat interface
-- Multiple AI models via OpenRouter
-- Credit-based usage system
-- Real-time streaming responses
-
-## 🎟️ Discount Code System
-
-The Best SAAS Kit V2 includes a comprehensive discount code system that allows administrators to create and manage promotional codes for users.
-
-### 🔧 **Admin Features**
-
-#### Creating Discount Codes
-1. **Access Admin Panel**: Navigate to `/admin/discounts`
-2. **Create New Discount**: Click "Create New Discount" button
-3. **Configure Discount**:
-   - **Code**: Enter unique discount code (e.g., `SAVE20`, `WELCOME10`)
-   - **Type**: Choose between Percentage or Fixed Amount
-   - **Value**: Set discount value (1-100 for percentage, dollar amount for fixed)
-   - **Max Uses**: Set usage limit (optional, leave empty for unlimited)
-   - **Expiration**: Set expiration date (optional)
-
-#### Discount Types
-- **Percentage Discount**: Reduces price by percentage (e.g., 20% off)
-- **Fixed Amount Discount**: Reduces price by fixed dollar amount (e.g., $10 off)
-
-#### Managing Discount Codes
-- **View All Codes**: See all created discount codes with usage statistics
-- **Edit Codes**: Modify existing discount codes
-- **Delete Codes**: Remove discount codes (also deletes from Stripe)
-- **Usage Analytics**: Track how many times each code has been used
-
-### 👤 **User Experience**
-
-#### Applying Discount Codes
-1. **Navigate to Billing**: Go to `/dashboard/billing`
-2. **Enter Discount Code**: Use the discount input field
-3. **Validate Code**: Click "Apply" to validate the discount
-4. **See Price Update**: View original and discounted prices
-5. **Complete Purchase**: Proceed to Stripe checkout with discount applied
-
-#### Real-time Validation
-- **Instant Feedback**: Codes are validated in real-time
-- **Error Messages**: Clear error messages for invalid codes
-- **Success Confirmation**: Visual confirmation when code is applied
-- **Price Calculation**: Automatic price updates with discount applied
+Fotes with discount applied
 
 ### 🛠️ **Technical Implementation**
 
@@ -403,3 +463,22 @@ If you find this project helpful, please consider:
 **Built with ❤️ by the Best SAAS Kit team**
 
 [Website](https://dectra-two.vercel.app/) • [LinkedIn](https://linkedin.com/company/dectra-sf) • [X](https://x.com/dectra) • [GitHub](https://github.com/DebashishRana/Dectra)
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+
+# 📜 License & Usage
+
+This repository is private and proprietary.
+
+All code, models, and associated assets under Dectra are protected under copyright law and are not open-source.
+
+Access is granted on an invite-only basis for evaluation and development purposes.
+Unauthorized use, distribution, modification, or reproduction of any part of this repository is strictly prohibited.
+
+Commercial usage of Dectra is subject to separate agreements and licensing terms.
+
+For access requests or partnership inquiries, please contact the maintainers.
+
+
+## 9. Contact
+If you have any questions, please raise an issue or contact us at [hi@dectra.in](hi@dectra.in).
