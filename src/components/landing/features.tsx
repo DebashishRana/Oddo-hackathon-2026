@@ -4,13 +4,14 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Lock, ShieldCheck, Workflow } from "lucide-react"
 import { motion } from "motion/react"
-import Image from "next/image"
+import OrgLogoWall from "@/components/ui/OrgLogoWall"
+import Image from "next/image";
 
 type TabId = "accessibility" | "security" | "compliance"
 
 const tabs: { id: TabId; label: string; title: string; description: string }[] = [
   {
-    id: "accessibility",
+    id: "accessibility",  
     label: "Accessibility",
     title: "Accessible from any device, in seconds.",
     description:
@@ -39,32 +40,8 @@ const Features = () => {
   return (
     <section id="features" className="py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        {/* Featured logos strip */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-          className="mb-16 text-center"
-        >
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-            Trusted by teams and programs
-          </p>
-          <p className="mt-3 text-sm text-muted-foreground">
-            From innovation labs to enterprise accelerators.
-          </p>
-          <div className="mt-8 flex items-center justify-center">
-            <div className="inline-flex max-w-full overflow-hidden rounded-2xl border border-border/60 bg-card/20 px-6 py-4">
-              <Image
-                src="/best saas kit.png"
-                alt="Programs and institutions featuring Dectra"
-                width={1200}
-                height={360}
-                className="h-14 w-auto object-contain opacity-90"
-              />
-            </div>
-          </div>
-        </motion.div>
+        {/* Logo wall section */}
+        <OrgLogoWall />
 
         {/* Three main pillars as large interactive cards */}
         <motion.div

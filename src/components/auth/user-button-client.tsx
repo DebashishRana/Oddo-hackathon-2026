@@ -20,6 +20,13 @@ interface UserButtonClientProps {
 }
 
 export function UserButtonClient({ user }: UserButtonClientProps) {
+  if (!user) {
+    return (
+      <Avatar className="cursor-pointer">
+        <AvatarFallback>U</AvatarFallback>
+      </Avatar>
+    );
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -45,5 +52,5 @@ export function UserButtonClient({ user }: UserButtonClientProps) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

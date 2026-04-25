@@ -1,284 +1,79 @@
-# 🚀 Best SAAS Kit V2
+# 🏠 Dectra: Local Deployment Guide
 
-**The Ultimate AI-Powered SAAS Starter Kit**
-
-A production-ready, feature-complete SAAS starter kit built with Next.js 15, designed to help developers launch AI-powered applications quickly and efficiently.
-
-> **Version**: 2.0.1 - Stable Release
+Welcome to Dectra! This guide will help you set up and run Dectra locally on your machine.
 
 ---
 
-## 📺 **Follow The Creator**
+## 🚀 Quick Local Start
 
-[![YouTube Channel](https://img.shields.io/badge/YouTube-The%20Metaverse%20Guy-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/@TheMetaverseGuy)
+### 1. Prerequisites
 
-**🎥 Subscribe to [The Metaverse Guy](https://www.youtube.com/@TheMetaverseGuy)** for tutorials, updates, and insights about this SAAS kit and other cutting-edge development content!
-
----
-
-![Best SAAS Kit V2](https://img.shields.io/badge/Next.js-15.4.4-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-
-## ✨ Features
-
-### 🔐 **Authentication & User Management**
-- **NextAuth.js** integration with Google OAuth
-- Protected routes and middleware
-- User profiles and session management
-- Admin panel with user analytics
-
-### 💳 **Payment & Billing**
-- **Stripe** integration for payments
-- Pro plan subscription ($99 one-time payment)
-- **Discount Code System** with admin management
-- Real-time discount validation and price calculation
-- Billing dashboard and payment history
-- Webhook handling for payment events
-
-### 🤖 **AI Integration**
-- **OpenRouter API** for multiple AI models
-- Interactive chat interface
-- Credit-based usage system
-- AI response streaming
-
-### 📊 **Analytics & Dashboard**
-- User analytics and insights
-- Revenue tracking
-- Credit usage monitoring
-- Admin analytics panel
-
-### 🎨 **Modern UI/UX**
-- **Tailwind CSS v4** for styling
-- **ShadCN UI** components
-- Dark/Light theme support
-- Responsive design
-- Smooth animations with Framer Motion
-
-### 🗄️ **Database**
-- **Neon PostgreSQL** database
-- Custom database functions
-- User management and analytics
-- Subscription tracking
-
-## 🛠️ Tech Stack
-
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS v4 + ShadCN UI
-- **Authentication**: NextAuth.js
-- **Database**: Neon PostgreSQL
-- **Payments**: Stripe
-- **AI**: OpenRouter API
-- **Deployment**: Vercel (recommended)
-
-## 📋 Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- **Node.js** (version 18 or higher)
-- **npm** or **yarn** or **pnpm**
+- **Node.js** (v18 or higher)
+- **npm** (comes with Node.js) or **yarn** or **pnpm**
 - **Git**
 
-You'll also need accounts for:
-- [Google Cloud Console](https://console.cloud.google.com/) (for OAuth)
-- [Neon](https://neon.tech/) (for database)
-- [Stripe](https://stripe.com/) (for payments)
-- [OpenRouter](https://openrouter.ai/) (for AI features)
-
-## 🚀 Quick Start
-
-### 1. Clone the Repository
+### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/best-saas-kit-v2.git
-cd best-saas-kit-v2
+git clone https://github.com/DebashishRana/Dectra.git
+cd Dectra
 ```
 
-### 2. Install Dependencies
+### 3. Install Dependencies
 
 ```bash
 npm install
 # or
-yarn install
+- **Chat**: AI-powered chat interface
 # or
 pnpm install
 ```
 
-### 3. Environment Setup
+### 4. Environment Variables
 
-Copy the example environment file:
+Copy the example environment file and fill in your secrets:
 
 ```bash
 cp .env.example .env.local
 ```
+Edit `.env.local` and provide your database, Stripe, and OpenRouter credentials as needed.
 
-Fill in your environment variables in `.env.local` (see detailed setup below).
+### 5. Database Setup
 
-### 4. Database Setup
-
-1. Create a Neon database (instructions below)
-2. Run the database initialization script:
+You can use any local or remote PostgreSQL database. To initialize the schema and sample data, run:
 
 ```bash
 npm run db:setup
 ```
 
-### 5. Start Development Server
+Or manually execute the SQL files in `sql-queries/` using your preferred SQL client.
+
+### 6. Start the Development Server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see your application.
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 🔧 Detailed Setup Guide
+---
 
-### 🗄️ Database Setup (Neon)
+## 🛠️ Additional Local Commands
 
-1. **Create Neon Account**
-   - Go to [neon.tech](https://neon.tech/)
-   - Sign up for a free account
-   - Create a new project
+- `npm run build` – Build for production
+- `npm run start` – Start production server
+- `npm run lint` – Run ESLint
 
-2. **Get Connection String**
-   - In your Neon dashboard, go to "Connection Details"
-   - Copy the connection string
-   - Add it to your `.env.local` as `DATABASE_URL`
+---
 
-3. **Initialize Database**
-   ```bash
-   # The database tables will be created automatically when you first run the app
-   npm run dev
-   ```
+## 📚 Documentation & Support
 
-### 🔐 Google OAuth Setup
+- [Website](https://dectra-two.vercel.app/)
+- [LinkedIn](https://linkedin.com/company/dectra-sf)
+- [X](https://x.com/dectra)
+- [GitHub](https://github.com/DebashishRana/Dectra)
 
-1. **Google Cloud Console Setup**
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select existing one
-   - Enable the Google+ API
-
-2. **Create OAuth Credentials**
-   - Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client IDs"
-   - Choose "Web application"
-   - Add authorized redirect URIs:
-     - `http://localhost:3000/api/auth/callback/google` (development)
-     - `https://dectra-two.vercel.app/api/auth/callback/google` (production)
-
-3. **Add to Environment**
-   ```env
-   GOOGLE_CLIENT_ID=your-google-client-id
-   GOOGLE_CLIENT_SECRET=your-google-client-secret
-   ```
-
-### 💳 Stripe Setup
-
-1. **Create Stripe Account**
-   - Sign up at [stripe.com](https://stripe.com/)
-   - Complete account verification
-
-2. **Get API Keys**
-   - Go to Developers → API Keys
-   - Copy your publishable and secret keys
-   - Add to `.env.local`:
-   ```env
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-   STRIPE_SECRET_KEY=sk_test_...
-   ```
-
-3. **Setup Webhooks**
-   - Go to Developers → Webhooks
-   - Add endpoint: `https://dectra-two.vercel.app/api/stripe/webhook`
-   - Select events: `checkout.session.completed`, `payment_intent.succeeded`
-   - Copy webhook secret to `.env.local`:
-   ```env
-   STRIPE_WEBHOOK_SECRET=whsec_...
-   ```
-
-### 🤖 OpenRouter Setup
-
-1. **Create OpenRouter Account**
-   - Sign up at [openrouter.ai](https://openrouter.ai/)
-   - Add credits to your account
-
-2. **Get API Key**
-   - Go to Keys section
-   - Create a new API key
-   - Add to `.env.local`:
-   ```env
-   OPENROUTER_API_KEY=sk-or-v1-...
-   OPENROUTER_MODEL=qwen/qwen3-235b-a22b-2507
-   ```
-
-## 📁 Project Structure
-
-```
-best-saas-kit-v2/
-├── docs/                      # Documentation
-│   └── DISCOUNT_SYSTEM.md     # Discount system guide
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── admin/             # Admin panel pages
-│   │   │   ├── discounts/     # Discount management
-│   │   │   └── settings/      # Admin settings
-│   │   ├── api/               # API routes
-│   │   │   ├── admin/         # Admin API routes
-│   │   │   │   └── discounts/ # Discount CRUD operations
-│   │   │   ├── discounts/     # User discount validation
-│   │   │   └── stripe/        # Stripe integration
-│   │   ├── auth/              # Authentication pages
-│   │   ├── dashboard/         # User dashboard
-│   │   ├── demo/              # Demo page
-│   │   └── page.tsx           # Landing page
-│   ├── components/            # React components
-│   │   ├── admin/             # Admin components
-│   │   │   ├── discount-form.tsx      # Discount creation form
-│   │   │   └── discount-management.tsx # Discount management UI
-│   │   ├── auth/              # Auth components
-│   │   ├── billing/           # Billing components
-│   │   ├── chat/              # AI chat components
-│   │   ├── checkout/          # Checkout components
-│   │   │   └── discount-input.tsx     # Discount code input
-│   │   ├── dashboard/         # Dashboard components
-│   │   ├── landing/           # Landing page components
-│   │   └── ui/                # UI components (ShadCN)
-│   ├── lib/                   # Utility functions
-│   │   ├── auth.ts            # NextAuth configuration
-│   │   ├── database.ts        # Database functions
-│   │   ├── stripe.ts          # Stripe utilities
-│   │   └── ...
-│   ├── hooks/                 # Custom React hooks
-│   ├── types/                 # TypeScript type definitions
-│   └── middleware.ts          # Next.js middleware
-├── public/                    # Static assets
-├── .env.example              # Environment variables template
-├── .env.local                # Your environment variables (not in git)
-├── package.json              # Dependencies and scripts
-├── tailwind.config.js        # Tailwind CSS configuration
-└── tsconfig.json             # TypeScript configuration
-```
-
-## 🎯 Usage Guide
-
-### 🏠 Landing Page
-The landing page includes:
-- Hero section with call-to-action
-- Features showcase
-- Pricing section
-- Testimonials
-- Footer with links
-
-### 👤 User Authentication
-- Users can sign in with Google OAuth
-- Automatic user creation in database
-- Session management with NextAuth
-- Protected routes for authenticated users
-
-### 📊 Dashboard Features
-- **Overview**: User stats and quick actions
-- **Chat**: AI-powered chat interface
+For more details, see the `docs/` folder or open an issue on GitHub.
 - **Analytics**: Usage statistics and insights
 - **Billing**: Subscription management and payment history
 - **Profile**: User profile management
@@ -607,4 +402,4 @@ If you find this project helpful, please consider:
 
 **Built with ❤️ by the Best SAAS Kit team**
 
-[Website](https://bestsaaskit.com) • [Documentation](https://docs.bestsaaskit.com) • [YouTube](https://www.youtube.com/@TheMetaverseGuy) • [Discord](https://discord.gg/bestsaaskit) • [Twitter](https://twitter.com/bestsaaskit)
+[Website](https://dectra-two.vercel.app/) • [LinkedIn](https://linkedin.com/company/dectra-sf) • [X](https://x.com/dectra) • [GitHub](https://github.com/DebashishRana/Dectra)
