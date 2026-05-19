@@ -421,49 +421,6 @@ OpenRouter API error
 - **Admin Settings**: `/admin/settings` - System configuration and status
 - **User Billing**: `/dashboard/billing` - Subscription and discount code application
 
-### 🔧 **Configuration Files**
-- **Environment Variables**: `.env.example` - Template for required environment variables
-- **Database Schema**: `sql-queries/` - Database setup and migration files
-- **Stripe Configuration**: `src/lib/stripe.ts` - Payment processing setup
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Next.js](https://nextjs.org/) - The React framework for production
-- [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework
-- [ShadCN UI](https://ui.shadcn.com/) - Beautiful UI components
-- [NextAuth.js](https://next-auth.js.org/) - Authentication for Next.js
-- [Stripe](https://stripe.com/) - Payment processing
-- [Neon](https://neon.tech/) - Serverless PostgreSQL
-- [OpenRouter](https://openrouter.ai/) - AI model access
-
-## 📞 Support
-
-If you find this project helpful, please consider:
-- ⭐ Starring the repository
-- 🐛 Reporting bugs
-- 💡 Suggesting new features
-- 📢 Sharing with others
-
----
-
-**Built with ❤️ by the Best SAAS Kit team**
-
-[Website](https://dectra-two.vercel.app/) • [LinkedIn](https://linkedin.com/company/dectra-sf) • [X](https://x.com/dectra) • [GitHub](https://github.com/DebashishRana/Dectra)
-Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 
 # 📜 License & Usage

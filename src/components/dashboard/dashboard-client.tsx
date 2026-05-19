@@ -6,7 +6,6 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { UserButtonClient } from "@/components/auth/user-button-client"
-import { CreditsDisplay } from "@/components/credits/credits-display"
 import { isAdminEmail } from "@/lib/admin-config"
 import { cn } from "@/lib/utils"
 import {
@@ -17,7 +16,6 @@ import {
   BarChart3,
   Menu,
   X,
-  MessageSquare,
   CreditCard,
   AlertTriangle
 } from "lucide-react"
@@ -29,7 +27,6 @@ const regularUserItems = [
   { name: "Tickets", href: "/dashboard/tickets", icon: CreditCard },
   { name: "Flagged Cases", href: "/dashboard/flagged", icon: AlertTriangle },
   { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-  { name: "Support", href: "/dashboard/chat", icon: MessageSquare },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
   { name: "Profile", href: "/dashboard/profile", icon: User },
 ]
@@ -41,7 +38,6 @@ const adminUserItems = [
   { name: "Tickets", href: "/dashboard/tickets", icon: CreditCard },
   { name: "Flagged Cases", href: "/dashboard/flagged", icon: AlertTriangle },
   { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-  { name: "Support", href: "/dashboard/chat", icon: MessageSquare },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
   { name: "Profile", href: "/dashboard/profile", icon: User },
 ]
@@ -163,7 +159,6 @@ export function DashboardClient({ children, session }: DashboardClientProps) {
               {/* Removed welcome back text */}
             </div>
             <div className="flex items-center space-x-4">
-              <CreditsDisplay showRefresh />
               <ThemeToggle />
               <UserButtonClient user={session.user} />
             </div>

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Menu, X, ChevronDown, FileCheck, QrCode, Shield, BarChart3, Workflow, Globe, Sparkles, Code2, ClipboardList, FileSearch, Handshake, GitBranch, Users } from "lucide-react"
 import { UserButtonClient } from "@/components/auth/user-button-client"
-import { CreditsDisplay } from "@/components/credits/credits-display"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 interface Session {
@@ -319,7 +318,6 @@ export function NavigationClient({ session }: NavigationClientProps) {
               </>
             ) : (
               <>
-                <CreditsDisplay />
                 <Button variant="ghost" className="h-9 px-3 text-sm text-muted-foreground hover:text-foreground" asChild>
                   <Link href="/dashboard">Dashboard</Link>
                 </Button>

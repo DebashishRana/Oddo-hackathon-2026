@@ -21,7 +21,6 @@ export interface User {
   created_at: Date
   updated_at: Date
   last_login: Date
-  credits: number
   subscription_status: string
   stripe_customer_id?: string
   subscription_id?: string

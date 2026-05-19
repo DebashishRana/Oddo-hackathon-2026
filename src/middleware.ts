@@ -6,7 +6,7 @@ const { auth } = NextAuth(authConfig)
 
 export default auth((req) => {
   // Define protected routes
-  const protectedPaths = ['/dashboard', '/api/chat', '/api/usage', '/api/test-ai']
+  const protectedPaths = ['/dashboard']
   const isProtectedPath = protectedPaths.some(path =>
     req.nextUrl.pathname.startsWith(path)
   )

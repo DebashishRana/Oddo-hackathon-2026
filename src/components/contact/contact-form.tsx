@@ -4,27 +4,32 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Mail, Send, CheckCircle, AlertCircle } from "lucide-react"
+import { CheckCircle, AlertCircle } from "lucide-react"
 
 interface ContactFormData {
-  name: string
+  firstName: string
+  lastName: string
   email: string
+  phone: string
   message: string
+  companysize: string
 }
 
 export function ContactForm() {
   const [formData, setFormData] = useState<ContactFormData>({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
-    message: ''
+    phone: '',
+    message: '',
+    companysize: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
@@ -39,19 +44,34 @@ export function ContactForm() {
     setErrorMessage('')
 
     try {
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim()
       const response = await fetch('/api/emails/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: fullName,
+          email: formData.email,
+          company: formData.firstName,
+          phone: formData.phone,
+          companysize: formData.companysize,
+          message: formData.message
+        }),
       })
 
       const result = await response.json()
 
       if (response.ok && result.success) {
         setSubmitStatus('success')
-        setFormData({ name: '', email: '', message: '' })
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          message: '',
+          companysize: ''
+        })
       } else {
         setSubmitStatus('error')
         setErrorMessage(result.error || 'Failed to send message')
@@ -65,103 +85,132 @@ export function ContactForm() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Mail className="h-5 w-5" />
-          Contact Us
-        </CardTitle>
-        <CardDescription>
-          Send us a message and we&apos;ll get back to you as soon as possible.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {submitStatus === 'success' ? (
-          <div className="text-center py-8">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-green-700 mb-2">Message Sent Successfully!</h3>
-            <p className="text-gray-600 mb-4">
-              Thank you for contacting us. We&apos;ll get back to you within 24 hours.
-            </p>
-            <Button 
-              onClick={() => setSubmitStatus('idle')}
-              variant="outline"
-            >
-              Send Another Message
-            </Button>
+    <>
+      {submitStatus === 'success' ? (
+        <div className="text-center py-8">
+          <div className="flex justify-center mb-4">
+            <CheckCircle className="h-16 w-16 text-green-500" />
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name *</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="Your full name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="your.email@example.com"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  disabled={isSubmitting}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="message">Message *</Label>
-              <Textarea
-                id="message"
-                name="message"
-                placeholder="Tell us how we can help you..."
-                value={formData.message}
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">Thank You!</h3>
+          <p className="text-gray-600 mb-6">
+            We&apos;ve received your message and will get back to you soon.
+          </p>
+          <Button 
+            onClick={() => setSubmitStatus('idle')}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8"
+          >
+            Send Another Message
+          </Button>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* First Name and Last Name */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Label htmlFor="firstName" className="text-sm text-gray-700 font-medium">First Name</Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                type="text"
+                placeholder="Enter your first name..."
+                value={formData.firstName}
                 onChange={handleInputChange}
                 required
                 disabled={isSubmitting}
-                rows={6}
+                className="bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 rounded-xl h-11"
               />
             </div>
+            <div className="space-y-1">
+              <Label htmlFor="lastName" className="text-sm text-gray-700 font-medium">Last Name</Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                type="text"
+                placeholder="Enter your last name..."
+                value={formData.lastName}
+                onChange={handleInputChange}
+                required
+                disabled={isSubmitting}
+                className="bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 rounded-xl h-11"
+              />
+            </div>
+          </div>
 
-            {submitStatus === 'error' && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
-                <AlertCircle className="h-4 w-4" />
-                <span className="text-sm">{errorMessage}</span>
-              </div>
-            )}
-
-            <Button 
-              type="submit" 
-              className="w-full" 
+          {/* Email Address */}
+          <div className="space-y-1">
+            <Label htmlFor="email" className="text-sm text-gray-700 font-medium">Email Address</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Enter your email address..."
+              value={formData.email}
+              onChange={handleInputChange}
+              required
               disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4 mr-2" />
-                  Send Message
-                </>
-              )}
-            </Button>
-          </form>
-        )}
-      </CardContent>
-    </Card>
+              className="bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 rounded-xl h-11"
+            />
+          </div>
+
+          {/* Phone Number */}
+          <div className="space-y-1">
+            <Label htmlFor="phone" className="text-sm text-gray-700 font-medium">Phone Number</Label>
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              placeholder="+44 (000) 000-0000"
+              value={formData.phone}
+              onChange={handleInputChange}
+              required
+              disabled={isSubmitting}
+              className="bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 rounded-xl h-11"
+            />
+          </div>
+
+          {/* Message */}
+          <div className="space-y-1">
+            <Label htmlFor="message" className="text-sm text-gray-700 font-medium">Message</Label>
+            <Textarea
+              id="message"
+              name="message"
+              placeholder="Enter your main text here..."
+              value={formData.message}
+              onChange={handleInputChange}
+              required
+              disabled={isSubmitting}
+              rows={5}
+              className="bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500 resize-none rounded-xl p-3"
+            />
+            <p className="text-xs text-gray-400 text-right">300/300</p>
+          </div>
+
+          {/* Company Size (Hidden but sent) */}
+          <input
+            type="hidden"
+            name="companysize"
+            value={formData.companysize || "not-specified"}
+          />
+
+          {/* Error Message */}
+          {submitStatus === 'error' && (
+            <div className="flex items-center gap-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+              <span className="text-red-600 text-sm">{errorMessage}</span>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <Button 
+            type="submit" 
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-full transition-all duration-200 mt-6"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Form'}
+            {!isSubmitting && ' →'}
+          </Button>
+        </form>
+      )}
+    </>
   )
 }
