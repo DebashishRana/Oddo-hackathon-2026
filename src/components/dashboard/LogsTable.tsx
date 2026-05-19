@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react"
 
+interface LogMetadata {
+  document_type?: string
+  status?: string
+  confidence?: string | number
+}
+
 interface Log {
   id: number
   method: string
@@ -8,7 +14,7 @@ interface Log {
   scanner_version?: string | null
   source?: string | null
   scanner_timestamp?: string | null
-  metadata?: any
+  metadata?: LogMetadata
   received_at: string
 }
 

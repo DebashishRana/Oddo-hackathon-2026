@@ -98,8 +98,8 @@ export async function GET(request: NextRequest) {
     const client = await pool.connect()
     try {
       // Build query with optional filters
-      let whereConditions = ["metadata->>'pii_deleted' = 'true'"] // Only fetch PII-deleted events
-      const params: any[] = []
+      const whereConditions = ["metadata->>'pii_deleted' = 'true'"] // Only fetch PII-deleted events
+      const params: string[] = []
 
       if (startDate) {
         whereConditions.push('created_at >= $' + (params.length + 1))

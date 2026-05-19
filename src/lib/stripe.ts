@@ -1,9 +1,24 @@
 import Stripe from 'stripe';
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-08-27.basil',
-  typescript: true,
-});
+let stripeClient: Stripe | null = null;
+
+export function getStripe() {
+  if (stripeClient) {
+    return stripeClient;
+  }
+
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) {
+    throw new Error('STRIPE_SECRET_KEY is not configured');
+  }
+
+  stripeClient = new Stripe(secretKey, {
+    apiVersion: '2025-08-27.basil',
+    typescript: true,
+  });
+
+  return stripeClient;
+}
 
 export const STRIPE_CONFIG = {
   PRO_PLAN: {
@@ -16,7 +31,7 @@ export const STRIPE_CONFIG = {
 
 // Create Stripe customer
 export async function createStripeCustomer(email: string, name?: string) {
-  return await stripe.customers.create({
+  return await getStripe().customers.create({
     email,
     name: name || undefined,
   });
@@ -30,7 +45,7 @@ export async function createCheckoutSession(
   successUrl: string,
   cancelUrl: string
 ) {
-  return await stripe.checkout.sessions.create({
+  return await getStripe().checkout.sessions.create({
     customer: customerId,
     payment_method_types: ['card'],
     line_items: [
@@ -82,7 +97,7 @@ export async function createStripeCoupon(
     }
 
     console.log('Creating Stripe coupon with data:', couponData);
-    return await stripe.coupons.create(couponData);
+    return await getStripe().coupons.create(couponData);
   } catch (error) {
     console.error('Stripe coupon creation error:', error);
     throw error;
@@ -92,7 +107,7 @@ export async function createStripeCoupon(
 // Delete Stripe coupon
 export async function deleteStripeCoupon(couponId: string) {
   try {
-    return await stripe.coupons.del(couponId);
+    return await getStripe().coupons.del(couponId);
   } catch (error) {
     console.error('Error deleting Stripe coupon:', error);
     throw error;
@@ -143,12 +158,12 @@ export async function createCheckoutSessionWithDiscount(
     ];
   }
 
-  return await stripe.checkout.sessions.create(sessionData);
+  return await getStripe().checkout.sessions.create(sessionData);
 }
 
 // Verify webhook signature
 export function verifyWebhookSignature(body: string, signature: string) {
-  return stripe.webhooks.constructEvent(
+  return getStripe().webhooks.constructEvent(
     body,
     signature,
     process.env.STRIPE_WEBHOOK_SECRET!

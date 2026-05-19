@@ -10,6 +10,24 @@ export interface MaskedDocumentInfo {
   full_id?: string // Optional: only in non-compliant mode
 }
 
+interface CompliantMetadataInput {
+  status?: string
+  document_type?: string
+  confidence?: number
+  risk_score?: string
+  masked_document_id?: string
+  scanner_version?: string
+  received_at?: string
+  scanner_timestamp?: string
+  [key: string]: unknown
+}
+
+interface CrossVerificationResult {
+  cross_verified: boolean
+  api_source?: string
+  verification_timestamp?: string
+}
+
 /**
  * Extract last 4 digits and mask the rest of a document ID
  * Aadhaar: 123456789012 → XXXX-XXXX-9012
@@ -62,13 +80,9 @@ export function maskDocumentId(documentId: string, docType: string): MaskedDocum
  * Keeps only verification facts
  */
 export function createCompliantMetadata(
-  originalMetadata: Record<string, any>,
-  crossVerificationResult: {
-    cross_verified: boolean
-    api_source?: string
-    verification_timestamp?: string
-  }
-): Record<string, any> {
+  originalMetadata: CompliantMetadataInput,
+  crossVerificationResult: CrossVerificationResult
+): Record<string, unknown> {
   return {
     // Core verification facts (keep)
     status: originalMetadata.status,

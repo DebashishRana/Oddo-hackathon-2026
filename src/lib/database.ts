@@ -18,6 +18,7 @@ export interface User {
   password_hash?: string | null
   name?: string
   image_url?: string
+  credits: number
   created_at: Date
   updated_at: Date
   last_login: Date
