@@ -16,28 +16,27 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dectra.in"),
-  title: {
-    default: "Dectra",
-    template: "%s | Dectra",
-  },
-  description: "Dectra is a document verification platform for secure onboarding, QR-based access, and compliance-aware identity workflows.",
+  title: "Dectra - Instant Document Verification",
+  description: "Manage, verify, and redirect documents all at once with Dectra. Instant EDV validation, QR-based access, and secure redirects.",
   keywords: ["Document Verification", "EDV", "QR Access", "Compliance", "Identity Verification", "SAAS"],
   authors: [{ name: "Dectra Team" }],
   creator: "Dectra",
   publisher: "Dectra",
+  icons: {
+    icon: "/Logo.png",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://dectra.in",
-    title: "Dectra",
-    description: "Dectra is a document verification platform for secure onboarding, QR-based access, and compliance-aware identity workflows.",
+    url: "https://dectra.com",
+    title: "Dectra - Instant Document Verification",
+    description: "Manage, verify, and redirect documents all at once with Dectra. Instant EDV validation, QR-based access, and secure redirects.",
     siteName: "Dectra",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dectra",
-    description: "Dectra is a document verification platform for secure onboarding, QR-based access, and compliance-aware identity workflows.",
+    title: "Dectra - Instant Document Verification",
+    description: "Manage, verify, and redirect documents all at once with Dectra. Instant EDV validation, QR-based access, and secure redirects.",
     creator: "@dectra",
   },
   robots: {
@@ -64,9 +63,6 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" href="/Logo.png" />
-        <link rel="apple-touch-icon" href="/Logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <ThemeScript />

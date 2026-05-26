@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import Navigation from "@/components/landing/navigation"
 import Hero from "@/components/landing/hero"
 import Features from "@/components/landing/features"
@@ -12,26 +11,6 @@ import CustomerStories from "@/components/landing/customer-stories"
 import Footer from "@/components/landing/footer"
 import { SmoothScroll } from "@/components/ui/smooth-scroll"
 import { ScrollToTop } from "@/components/ui/scroll-to-top"
-
-export const metadata: Metadata = {
-  title: "Dectra | AI Document Verification & Cross-Verification",
-  description: "Verify Aadhaar XML, PAN, bank, and business documents with AI-powered cross-verification and fraud checks.",
-  alternates: {
-    canonical: "https://dectra.in",
-  },
-  openGraph: {
-    type: "website",
-    url: "https://dectra.in",
-    title: "Dectra | AI Document Verification & Cross-Verification",
-    description: "Verify Aadhaar XML, PAN, bank, and business documents with AI-powered cross-verification and fraud checks.",
-    siteName: "Dectra",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Dectra | AI Document Verification & Cross-Verification",
-    description: "Verify Aadhaar XML, PAN, bank, and business documents with AI-powered cross-verification and fraud checks.",
-  },
-}
 
 export default function Home() {
   return (

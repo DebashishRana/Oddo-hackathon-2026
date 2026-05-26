@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Crown, Loader2 } from "lucide-react";
-import { openRazorpayCheckout } from "@/lib/razorpay-client";
+import { redirectToCheckout } from "@/lib/stripe-client";
 import { DiscountInput, PriceDisplay } from "@/components/checkout/discount-input";
 
 interface DiscountDetails {
