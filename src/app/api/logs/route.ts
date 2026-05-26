@@ -11,6 +11,8 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0', 10)
     const status = searchParams.get('status')
     const documentType = searchParams.get('document_type')
+    const source = searchParams.get('source')
+    const risk = searchParams.get('risk')
     const sort = searchParams.get('sort') || 'latest'
 
     const client = await pool.connect()
@@ -27,6 +29,14 @@ export async function GET(request: NextRequest) {
       if (documentType) {
         conditions.push(`metadata->>'document_type' = $${conditions.length + 1}`)
         values.push(documentType)
+      }
+      if (source) {
+        conditions.push(`COALESCE(metadata->>'api_source', 'Pending') = $${conditions.length + 1}`)
+        values.push(source)
+      }
+      if (risk) {
+        conditions.push(`metadata->>'risk_score' = $${conditions.length + 1}`)
+        values.push(risk)
       }
 
       if (conditions.length > 0) {
@@ -51,7 +61,9 @@ export async function GET(request: NextRequest) {
           COUNT(*) as total,
           COUNT(CASE WHEN metadata->>'status' = 'verified' THEN 1 END) as verified,
           COUNT(CASE WHEN metadata->>'status' = 'flagged' THEN 1 END) as flagged,
-          COUNT(CASE WHEN metadata->>'status' = 'pending' THEN 1 END) as pending
+          COUNT(CASE WHEN metadata->>'status' = 'pending' THEN 1 END) as pending,
+          COUNT(CASE WHEN metadata->>'status' = 'failed' THEN 1 END) as failed,
+          COUNT(CASE WHEN metadata->>'risk_score' = 'High' THEN 1 END) as high_risk
         FROM verification_events
       `
       const statsResult = await client.query(statsQuery)
@@ -64,6 +76,8 @@ export async function GET(request: NextRequest) {
           verified: parseInt(stats.verified),
           flagged: parseInt(stats.flagged),
           pending: parseInt(stats.pending),
+          failed: parseInt(stats.failed),
+          high_risk: parseInt(stats.high_risk),
         },
         pagination: {
           limit,

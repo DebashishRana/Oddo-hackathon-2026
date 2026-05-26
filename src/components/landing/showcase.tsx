@@ -1,474 +1,161 @@
-"use client"
+﻿"use client"
 
 import { motion } from "motion/react"
-import { ArrowRight, Bot, Zap, Shield, Layers, FileCheck2, Clock, Globe, CheckCircle2, AlertTriangle, Sparkles, FileText } from "lucide-react"
+import { ArrowRight, Shield, Trash2, Download, PenLine, Cookie, HelpCircle, XCircle } from "lucide-react"
 import Link from "next/link"
 
-/* ──────────────────────────────────────────────────────────
-   Section 1 — AI-assisted verification  (full-width hero)
-   ────────────────────────────────────────────────────────── */
-
-function AIVerificationSection() {
-  return (
-    <div className="mb-24">
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        viewport={{ once: true }}
-        className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center"
-      >
-        {/* Text */}
-        <div>
-          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/80" />
-            Artificial intelligence
-            <ArrowRight className="h-3 w-3" />
-          </div>
-
-          <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-5xl lg:text-[3.25rem]">
-            Industry grade <span className="bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 bg-clip-text text-transparent">models and compliance</span>, out of the box
-          </h2>
-
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            <span className="font-medium text-foreground">Dectra for AI.</span>{" "}
-            Leverage intelligent document analysis powered by industry leaders and automated workflow checks to verify documents with dual batch, not hours.
-          </p>
-
-          <Link
-            href="#features"
-            className="mt-6 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/30 px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-card/50"
-          >
-            Learn more
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-
-        {/* Mock UI — Agent assignment panel */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          viewport={{ once: true }}
-          className="relative"
-        >
-          <div className="absolute -inset-8 -z-10 rounded-[2.5rem] bg-[radial-gradient(closest-side,rgba(99,102,241,0.14),transparent)] blur-2xl" />
-          <div className="overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/20 p-6 shadow-2xl shadow-black/40 backdrop-blur">
-            {/* Top toolbar */}
-            <div className="mb-5 flex items-center gap-3 text-xs text-muted-foreground">
-              <div className="h-2.5 w-2.5 rounded-full bg-white/20" />
-              <div className="h-2.5 w-2.5 rounded-full bg-white/15" />
-              <div className="h-2.5 w-2.5 rounded-full bg-white/10" />
-              <span className="ml-auto">Assign verification to…</span>
-            </div>
-
-            {/* Search bar */}
-            <div className="mb-4 rounded-xl border border-border/60 bg-black/30 px-4 py-2.5 text-sm text-muted-foreground">
-              Assign to…
-            </div>
-
-            {/* Agent list */}
-            <div className="space-y-1">
-              {[
-                { name: "Document AI", badge: "Agent", active: true, icon: <Bot className="h-4 w-4" /> },
-                { name: "EDV Scanner", badge: "Agent", active: false, icon: <FileCheck2 className="h-4 w-4" /> },
-                { name: "Compliance Bot", badge: "Agent", active: false, icon: <Shield className="h-4 w-4" /> },
-                { name: "QR Validator", badge: null, active: false, icon: <Zap className="h-4 w-4" /> },
-                { name: "Batch Processor", badge: "Agent", active: false, icon: <Layers className="h-4 w-4" /> },
-              ].map((agent, i) => (
-                <motion.div
-                  key={agent.name}
-                  initial={{ opacity: 0, x: -12 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.35, delay: 0.4 + i * 0.07 }}
-                  viewport={{ once: true }}
-                  whileHover={{ x: 4, backgroundColor: "rgba(255,255,255,0.05)", transition: { duration: 0.15 } }}
-                  className={[
-                    "flex items-center gap-3 rounded-xl px-4 py-2.5 transition-colors cursor-pointer",
-                    agent.active ? "bg-white/5" : "",
-                  ].join(" ")}
-                >
-                  <motion.span
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/60"
-                    whileHover={{ rotate: 12, scale: 1.1 }}
-                  >
-                    {agent.icon}
-                  </motion.span>
-                  <span className="text-sm font-medium text-foreground">{agent.name}</span>
-                  {agent.badge && (
-                    <span className="rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                      {agent.badge}
-                    </span>
-                  )}
-                  {agent.active && (
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <CheckCircle2 className="ml-auto h-4 w-4 text-emerald-400/80" />
-                    </motion.div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-    </div>
-  )
-}
-
-/* ──────────────────────────────────────────────────────────
-   Section 2 — Two side-by-side cards (Smart Triage + API)
-   ────────────────────────────────────────────────────────── */
-
-function SmartTriageCards() {
-  return (
-    <div className="mb-24 grid gap-6 lg:grid-cols-2">
-      {/* Card A — Smart triage */}
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        viewport={{ once: true }}
-        className="flex flex-col"
-      >
-        <h3 className="text-xl font-semibold">Meet Victor</h3>
-        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Streamline your verification workflows with AI assistance for routine, manual document checks.
-        </p>
-
-        {/* Mock card */}
-        <div className="mt-6 flex-1 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/20 p-6 shadow-xl shadow-black/30 backdrop-blur">
-          <div className="mb-4 flex items-center gap-2 text-sm font-medium">
-            <motion.div
-              animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Sparkles className="h-4 w-4 text-muted-foreground" />
-            </motion.div>
-            Victor Intelligence
-          </div>
-
-          <div className="mb-4 flex flex-wrap gap-2 text-[11px] text-muted-foreground">
-            <span className="font-medium text-foreground">Suggestions</span>
-            <span className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-0.5">
-              <Bot className="h-3 w-3" /> Document AI
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-0.5">
-              <FileText className="h-3 w-3" /> EDV Module
-            </span>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-start gap-3 text-xs text-muted-foreground">
-              <span className="font-medium text-foreground">Route to</span>
-              <div className="inline-flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1">
-                <Bot className="h-3 w-3" /> Document AI
-              </div>
-            </div>
-            <div className="rounded-xl border border-border/40 bg-black/20 px-4 py-3 text-xs">
-              <div className="mb-1 font-medium text-foreground/80">Why this was suggested</div>
-              <p className="text-muted-foreground">
-                This document type was previously processed by the Document AI module with 99.2% accuracy.
-              </p>
-              <div className="mt-3 flex items-center gap-2 text-muted-foreground">
-                <span className="font-medium">Alternatives</span>
-                <span className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-0.5">Manual review</span>
-                <span className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-0.5">Batch queue</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-white/[0.03] px-4 py-2 text-xs font-medium">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400/80" />
-              Accept suggestion
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Card B — API / MCP Integration */}
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.08 }}
-        viewport={{ once: true }}
-        className="flex flex-col"
-      >
-        <h3 className="text-xl font-semibold">One for all</h3>
-        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Connect Dectra to your favorite compliance platforms, databases and pipelines, and custom integrations with full flexibility.
-        </p>
-
-        {/* Mock card */}
-        <div className="mt-6 flex-1 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/20 p-6 shadow-xl shadow-black/30 backdrop-blur">
-          {/* Code snippet */}
-          <div className="mb-5 rounded-xl border border-border/40 bg-black/30 px-4 py-3 font-mono text-[11px] leading-relaxed text-muted-foreground">
-            <div className="text-white/30">{"// api.dectra.app/v1"}</div>
-            <div className="mt-1">
-              <span className="text-purple-400/80">&quot;endpoints&quot;</span>: {"{"}
-            </div>
-            <div className="ml-4">
-              <span className="text-purple-400/80">&quot;verify&quot;</span>: {"{"}
-            </div>
-            <div className="ml-8">
-              <span className="text-purple-400/80">&quot;method&quot;</span>: <span className="text-emerald-400/80">&quot;POST&quot;</span>,
-            </div>
-            <div className="ml-8">
-              <span className="text-purple-400/80">&quot;path&quot;</span>: <span className="text-emerald-400/80">&quot;/documents/verify&quot;</span>
-            </div>
-            <div className="ml-4">{"}"}</div>
-            <div>{"}"}</div>
-          </div>
-
-          {/* Chat input */}
-          <div className="rounded-xl border border-border/60 bg-black/20 p-4">
-            <div className="mb-3 text-sm text-muted-foreground">Ask anything</div>
-            <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-              <span className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2.5 py-1">
-                <FileText className="h-3 w-3" /> Attach
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2.5 py-1">
-                <Globe className="h-3 w-3" /> Search
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-md border border-border/60 px-2.5 py-1">
-                <Sparkles className="h-3 w-3" /> Reason
-              </span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  )
-}
-
-/* ──────────────────────────────────────────────────────────
-   Section 3 — "Set the product direction" (full-width hero)
-   → Adapted: Verification pipeline / timeline
-   ────────────────────────────────────────────────────────── */
-
-function PipelineSection() {
-  return (
-    <div className="mb-24">
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        viewport={{ once: true }}
-        className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] lg:items-center"
-      >
-        {/* Text */}
-        <div>
-          <div className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/80" />
-            Pipeline &amp; tracking
-            <ArrowRight className="h-3 w-3" />
-          </div>
-
-          <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-5xl lg:text-[3.25rem]">
-            Track every verification <span className="bg-gradient-to-r from-amber-500 via-orange-600 to-amber-600 bg-clip-text text-transparent">end-to-end</span>
-          </h2>
-
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            <span className="font-medium text-foreground">Unified verification timeline.</span>{" "}
-            Plan, track, and manage all document verification pipelines with visual scheduling tools with zero compromise to security.
-          </p>
-        </div>
-
-        {/* Mock timeline */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          viewport={{ once: true }}
-          className="relative"
-        >
-          <div className="absolute -inset-8 -z-10 rounded-[2.5rem] bg-[radial-gradient(closest-side,rgba(52,211,153,0.10),transparent)] blur-2xl" />
-          <div className="overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/20 p-6 shadow-2xl shadow-black/40 backdrop-blur">
-            {/* Timeline header */}
-            <div className="mb-4 flex items-center justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
-              {["JAN 5", "JAN 22", "FEB"].map((label, i) => (
-                i === 1 ? (
-                  <motion.span
-                    key={label}
-                    animate={{ opacity: [0.7, 1, 0.7] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="rounded-md border border-border/60 bg-black/30 px-3 py-1 text-xs font-medium text-foreground"
-                  >
-                    {label}
-                  </motion.span>
-                ) : (
-                  <span key={label}>{label}</span>
-                )
-              ))}
-            </div>
-
-            {/* Timeline bars */}
-            <div className="relative space-y-3">
-              {/* Vertical indicator line */}
-              <div className="absolute left-[55%] top-0 h-full w-px bg-gradient-to-b from-white/20 via-white/10 to-transparent" />
-
-              {[
-                { label: "Batch EDV check", color: "from-emerald-400/20 via-emerald-400/10", width: "w-[75%]", offset: "ml-[5%]", hasIcon: true },
-                { label: "QR generation", color: "from-sky-400/15 via-sky-400/5", width: "w-[50%]", offset: "ml-[25%]", hasIcon: false },
-                { label: "Compliance review", color: "from-purple-400/15 via-purple-400/5", width: "w-[65%]", offset: "ml-[15%]", hasIcon: true },
-              ].map((bar, i) => (
-                <motion.div
-                  key={bar.label}
-                  className={`${bar.offset} ${bar.width}`}
-                  initial={{ scaleX: 0, originX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  transition={{ duration: 0.7, delay: 0.3 + i * 0.15, ease: [0.25, 0.4, 0.25, 1] }}
-                  viewport={{ once: true }}
-                >
-                  <motion.div
-                    className={`flex items-center gap-2 rounded-xl border border-white/8 bg-gradient-to-r ${bar.color} to-transparent px-4 py-3`}
-                    whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                  >
-                    {bar.hasIcon && (
-                      <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-white/10">
-                        <CheckCircle2 className="h-3 w-3 text-emerald-400/80" />
-                      </span>
-                    )}
-                    <span className="text-xs font-medium text-foreground/80">{bar.label}</span>
-                  </motion.div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Scale markers */}
-            <div className="mt-4 flex items-center justify-between text-[10px] text-muted-foreground/60">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-2 w-px bg-white/10" />
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-    </div>
-  )
-}
-
-/* ──────────────────────────────────────────────────────────
-   Section 4 — Two side-by-side cards (Dashboard + Status)
-   ────────────────────────────────────────────────────────── */
-
-function DashboardCards() {
-  return (
-    <div className="mb-24 grid gap-6 lg:grid-cols-2">
-      {/* Card A — Project overview */}
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        viewport={{ once: true }}
-        className="flex flex-col"
-      >
-        <h3 className="text-xl font-semibold">Manage verifications end‑to‑end</h3>
-        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Consolidate documents, verification statuses, and audit trails in one centralized location.
-        </p>
-
-        <div className="mt-6 flex-1 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/20 p-6 shadow-xl shadow-black/30 backdrop-blur">
-          <h4 className="mb-4 text-base font-semibold">Verification Overview</h4>
-
-          <div className="space-y-4 text-sm">
-            {[
-              { label: "Properties", items: [
-                { text: "In Progress", color: "text-amber-400", icon: <Clock className="h-3 w-3" /> },
-                { text: "EDV", color: "text-foreground", icon: <FileCheck2 className="h-3 w-3" /> },
-              ]},
-              { label: "Resources", items: [
-                { text: "Exploration", color: "text-purple-400", icon: <Sparkles className="h-3 w-3" /> },
-                { text: "Document scans", color: "text-foreground", icon: <FileText className="h-3 w-3" /> },
-              ]},
-            ].map((row) => (
-              <div key={row.label} className="flex items-start gap-4">
-                <span className="w-20 shrink-0 text-xs text-muted-foreground">{row.label}</span>
-                <div className="flex flex-wrap gap-2">
-                  {row.items.map((item) => (
-                    <span key={item.text} className={`inline-flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-0.5 text-xs ${item.color}`}>
-                      {item.icon} {item.text}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-5 space-y-2 border-t border-border/40 pt-4 text-sm">
-            <div className="font-medium">Milestones</div>
-            {[
-              { text: "Initial Review", pct: "100%", complete: true },
-              { text: "EDV Verification", pct: "100% of 10", complete: true },
-              { text: "Final Approval", pct: "25% of 53", complete: false },
-            ].map((m) => (
-              <div key={m.text} className="flex items-center gap-3">
-                <span className={`h-2 w-2 rounded-full ${m.complete ? "bg-emerald-400/80" : "bg-white/20"}`} />
-                <span className="text-xs font-medium">{m.text}</span>
-                <span className="text-xs text-muted-foreground">{m.pct}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Card B — Status updates */}
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.08 }}
-        viewport={{ once: true }}
-        className="flex flex-col"
-      >
-        <h3 className="text-xl font-semibold">Verification updates</h3>
-        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-          Communicate progress and verification health with built‑in status updates.
-        </p>
-
-        <div className="mt-6 flex-1 overflow-hidden rounded-[1.75rem] border border-border/60 bg-card/20 p-6 shadow-xl shadow-black/30 backdrop-blur">
-          {/* Stacked status cards */}
-          <div className="relative space-y-3">
-            {[
-              { status: "On track", message: "All documents verified and ready for final sign-off", date: "Feb 8", color: "text-emerald-400", icon: <CheckCircle2 className="h-4 w-4 text-emerald-400" />, opacity: "opacity-100" },
-              { status: "At risk", message: "3 documents pending re-verification", date: "Feb 5", color: "text-amber-400", icon: <AlertTriangle className="h-4 w-4 text-amber-400" />, opacity: "opacity-70" },
-              { status: "Under review", message: "Batch #47 submitted for compliance check", date: "Feb 2", color: "text-sky-400", icon: <Clock className="h-4 w-4 text-sky-400" />, opacity: "opacity-50" },
-            ].map((card, i) => (
-              <motion.div
-                key={card.status}
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: i * 6 }}
-                transition={{ duration: 0.5, delay: i * 0.12 }}
-                viewport={{ once: true }}
-                whileHover={{ x: 0, opacity: 1, transition: { duration: 0.2 } }}
-                className={`rounded-xl border border-border/40 bg-black/20 px-4 py-3 ${card.opacity} cursor-pointer`}
-              >
-                <div className="flex items-center gap-2">
-                  {card.icon}
-                  <span className={`text-sm font-semibold ${card.color}`}>{card.status}</span>
-                </div>
-                <p className="mt-1 text-xs text-muted-foreground">{card.message}</p>
-                <p className="mt-2 text-[10px] text-muted-foreground/60">{card.date}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-    </div>
-  )
-}
-
-/* ──────────────────────────────────────────────────────────
-   Main Showcase Export
-   ────────────────────────────────────────────────────────── */
+const privacyCards = [
+  {
+    icon: Shield,
+    title: "Learn about data practices",
+    description: "See what data Dectra may process, how it may be used, and the steps we take to protect it.",
+    action: "Learn more",
+  },
+  {
+    icon: Trash2,
+    title: "Delete my data",
+    description: "Ask Dectra to delete personal data associated with you.",
+    action: "Request deletion",
+  },
+  {
+    icon: Download,
+    title: "Access my data",
+    description: "Request a copy of personal data associated with you and learn more about how it may have been processed.",
+    action: "Request access",
+  },
+  {
+    icon: PenLine,
+    title: "Correct my data",
+    description: "Ask Dectra to correct personal data associated with you if you believe it is inaccurate.",
+    action: "Request correction",
+  },
+  {
+    icon: Cookie,
+    title: "Manage my cookie preferences",
+    description: "Manage requests related to cookie-based data sharing, advertising preferences, and similar privacy choices.",
+    action: "Manage preferences",
+  },
+  {
+    icon: HelpCircle,
+    title: "Other privacy request",
+    description: "Submit another type of request related to personal data or tell us more about a privacy concern that isn't covered above.",
+    action: "Submit request",
+  },
+]
 
 const Showcase = () => {
   return (
-    <section className="py-24">
+    <section className="py-24 bg-black text-foreground overflow-hidden">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <AIVerificationSection />
-        <SmartTriageCards />
-        <PipelineSection />
-        <DashboardCards />
+        
+        {/* Header Text */}
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-6"
+          >
+            We protect people,
+            <br />
+            not just data
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto"
+          >
+            At Dectra, privacy is our foundation. That&apos;s why we provide consumers with a secure, user-friendly portal to manage their privacy and personal data requests.
+          </motion.p>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-6"
+          >
+            <Link
+              href="#"
+              className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition-transform hover:scale-105"
+            >
+              Learn more <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+            <Link
+              href="#"
+              className="inline-flex items-center justify-center text-sm font-medium text-white transition-opacity hover:opacity-80"
+            >
+              Visit our privacy portal <ArrowRight className="ml-1 h-3.5 w-3.5" />
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Massive UI mock block */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="relative mx-auto max-w-5xl rounded-t-[2.5rem] border border-white/10 bg-slate-900/50 p-1 lg:p-2 overflow-hidden shadow-2xl"
+        >
+          {/* Subtle background gradient representing the purple/blue glow from the image */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-transparent pointer-events-none" />
+          
+          <div className="relative rounded-[2rem] bg-[#0A0A0A] p-6 lg:p-12 shadow-inner border border-white/5 h-full w-full">
+            {/* Mock UI Header */}
+            <div className="flex items-center justify-between mb-12">
+              <div className="flex items-center gap-2 text-white font-medium text-xl">
+                <Shield className="h-6 w-6 text-indigo-400" />
+                <span>dectra</span>
+              </div>
+              <div className="hidden md:flex items-center gap-6 text-sm font-medium text-white/70">
+                <span className="hover:text-white cursor-pointer">Help Center</span>
+                <span className="hover:text-white cursor-pointer">Privacy &amp; Security</span>
+                <button className="rounded-full bg-white/10 px-5 py-2 text-white hover:bg-white/20 transition-colors flex items-center gap-2">
+                  Get a demo <ArrowRight className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
+
+            {/* Mock UI Body */}
+            <div>
+              <h3 className="text-3xl font-medium text-white mb-4">Privacy portal</h3>
+              <p className="text-sm text-white/60 leading-relaxed max-w-3xl mb-12">
+                Understand and make requests about your personal data that Dectra processed directly, all in one place. Learn more about Dectra&apos;s data practices, request deletion or access to data, and manage other privacy-related requests.
+              </p>
+
+              {/* Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+                {privacyCards.map((card, idx) => {
+                  const Icon = card.icon;
+                  return (
+                    <div 
+                      key={idx} 
+                      className="flex flex-col bg-white/[0.03] border border-white/5 rounded-2xl p-6 hover:bg-white/[0.05] transition-colors cursor-pointer"
+                    >
+                      <div className="mb-6 h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <h4 className="text-lg font-medium text-white mb-3">{card.title}</h4>
+                      <p className="text-xs text-white/50 leading-relaxed mb-6 flex-grow">
+                        {card.description}
+                      </p>
+                      <div className="mt-auto flex items-center text-xs font-medium text-indigo-400 group">
+                        {card.action} <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+            
+            {/* Bottom fading edge to look cut-off like in the image */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />
+          </div>
+        </motion.div>
+
       </div>
     </section>
   )

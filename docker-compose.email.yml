@@ -1,0 +1,40 @@
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - dectra-email-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  email-api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    env_file:
+      - server/.env
+    ports:
+      - "4000:4000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: ["node", "server/dist/index.js"]
+
+  mail-worker:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    env_file:
+      - server/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: ["node", "server/dist/workers/mail.worker.js"]
+
+volumes:
+  dectra-email-redis:

@@ -19,6 +19,8 @@
 
 # production
 /build
+/server/dist
+/server/src/logs/*.log
 
 # misc
 .DS_Store

@@ -1,191 +1,214 @@
-"use client"
+﻿"use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Lock, ShieldCheck, Workflow } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Lock, ShieldCheck, Workflow, ArrowRight, Smartphone, Key, FileText, CheckCircle2, History, Link, BarChart3, Database } from "lucide-react"
 import { motion } from "motion/react"
 import OrgLogoWall from "@/components/ui/OrgLogoWall"
-import Image from "next/image";
+import Image from "next/image"
 
-type TabId = "accessibility" | "security" | "compliance"
-
-const tabs: { id: TabId; label: string; title: string; description: string }[] = [
+const featuresTop = [
   {
-    id: "accessibility",  
+    id: "accessibility",
     label: "Accessibility",
-    title: "Accessible from any device, in seconds.",
-    description:
-      "Upload, verify, and share documents from desktop or mobile. QR-based access makes every verification just a scan away.",
+    description: "Verify from any device, in seconds. QR-based access makes every verification just a scan away.",
+    image: "/2.webp",
   },
   {
     id: "security",
     label: "Security",
-    title: "Security-first by design.",
-    description:
-      "Token-based access, encryption at rest and in transit, and detailed audit logs keep every verification traceable.",
+    description: "Token-based access, encryption at rest, and detailed audit logs keep every check traceable.",
+    image: "/3.webp",
   },
+]
+
+const featuresBottom = [
   {
     id: "compliance",
     label: "Compliance",
-    title: "Compliance that keeps pace with operations.",
-    description:
-      "Policy-driven retention, EDV thresholds, and exportable reports help you stay aligned with regulatory requirements.",
+    description: "Policy-driven retention, and exportable reports help you stay aligned with regulatory requirements.",
+    image: "/4.webp",
+    bgColor: "bg-blue-500/10",
+  },
+  {
+    id: "workflows",
+    label: "Workflows",
+    description: "Automate identity processes around use cases like KYB and workforce verification.",
+    image: "/dashboard-mockup.webp",
+    bgColor: "bg-emerald-500/10",
+  },
+  {
+    id: "analytics",
+    label: "Analytics",
+    description: "Equip your team or platform agents to review cases and investigate activity.",
+    image: "/graph-mockup.webp",
+    bgColor: "bg-purple-500/10",
+  },
+]
+
+const stats = [
+  {
+    value: "50",
+    label: "Hours saved each month¹",
+  },
+  {
+    value: "6,000+",
+    label: "Teams using Dectra",
+  },
+  {
+    value: "2.3x",
+    label: "Verification times reduced²",
+  },
+  {
+    value: "4.75/5",
+    label: "Rating from 700+ G2 reviews",
   },
 ]
 
 const Features = () => {
-  const [activeTab, setActiveTab] = useState<TabId>("accessibility")
-  const active = tabs.find((t) => t.id === activeTab)!
-
   return (
-    <section id="features" className="py-24">
+    <section id="features" className="py-24 bg-black text-foreground overflow-hidden">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        {/* Logo wall section */}
         <OrgLogoWall />
 
-        {/* Three main pillars as large interactive cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
+        {/* Section Header */}
+        <div className="mt-24 mb-16 md:mt-32 md:mb-20 text-center max-w-3xl mx-auto">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-6"
+          >
+            Building blocks for your
+            <br />
+            <span className="text-white">ideal verification solution</span>
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-lg text-muted-foreground leading-relaxed"
+          >
+            Dectra&apos;s modular platform helps you verify, prevent fraud, and orchestrate compliance across the entire life cycle.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="mt-8"
+          >
+            <Button className="rounded-full px-8 bg-white hover:bg-white/90 text-black font-semibold h-12">
+              See the full platform <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </motion.div>
+        </div>
+
+        {/* Bento Grid layout */}
+        <div className="flex flex-col gap-6">
+          {/* Top Row (2 columns) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {featuresTop.map((feature, idx) => (
+              <motion.div 
+                key={feature.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="group flex flex-col"
+              >
+                <div className="aspect-[4/3] rounded-t-3xl overflow-hidden bg-slate-900 border border-white/10 relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/5 pointer-events-none" />
+                  {/* Placeholder for custom image */}
+                  <Image src={feature.image} alt={feature.label} fill className="object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" />
+                </div>
+                <div className="pt-6">
+                  <h3 className="text-xl font-medium mb-2">{feature.label}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Bottom Row (3 columns) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {featuresBottom.map((feature, idx) => (
+              <motion.div 
+                key={feature.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 + idx * 0.1 }}
+                className="group flex flex-col"
+              >
+                <div className={`aspect-[4/3] rounded-t-3xl overflow-hidden border border-white/10 relative ${feature.bgColor} bg-opacity-20`}>
+                  <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+                  {/* Placeholder for custom image */}
+                  <Image src={feature.image} alt={feature.label} fill className="object-cover opacity-60 mix-blend-overlay group-hover:scale-105 transition-transform duration-700" />
+                </div>
+                <div className="pt-6">
+                  <h3 className="text-lg font-medium mb-2">{feature.label}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Unified By Design Glowing Box Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-          className="mb-10 max-w-2xl"
+          viewport={{ once: true, margin: "-100px" }}
+          className="mt-32 md:mt-48 relative rounded-3xl overflow-hidden bg-black border border-white/5 py-24 md:py-32 flex flex-col items-center justify-center text-center px-4"
         >
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
-            Product
-          </p>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-5xl">
-            Made for modern verification teams.
-          </h2>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Three pillars — accessibility, security, and compliance — keep every document flow reliable and auditable.
-          </p>
+          {/* Intense Gradient Glow behind text */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg aspect-square bg-[radial-gradient(ellipse_at_center,rgba(56,189,248,0.4),rgba(59,130,246,0.2),transparent_70%)] blur-[80px] pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md aspect-square bg-[radial-gradient(ellipse_at_center,rgba(52,211,153,0.3),transparent_60%)] blur-[60px] pointer-events-none mix-blend-screen" />
+          
+          <div className="relative z-10 max-w-2xl mx-auto space-y-8">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-white">
+              Unified by design.
+              <br />
+              <span className="text-white/90">Built for the AI era.</span>
+            </h2>
+            <p className="text-base md:text-lg text-white/70 leading-relaxed font-medium">
+              Dectra AI is designed from the ground up to connect a grid of agents behind the scenes—across verifications, compliance, and user identities. Powered by our Context Model, it acts safely, intelligently, and in context.
+            </p>
+            <div className="pt-4">
+              <Button className="rounded-full px-8 bg-white hover:bg-white/90 text-black h-12 text-sm font-semibold transition-all hover:scale-105 active:scale-95">
+                Explore Dectra AI
+              </Button>
+            </div>
+          </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {tabs.map((tab, index) => {
-            const isActive = tab.id === activeTab
-            const Icon =
-              tab.id === "accessibility" ? Workflow : tab.id === "security" ? Lock : ShieldCheck
-
-            return (
-              <motion.button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className="text-left"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.12 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              >
-                <Card
-                  className={[
-                    "h-full rounded-2xl border-border/60 bg-card/25 backdrop-blur transition-all duration-300",
-                    isActive ? "border-primary/40 bg-card/35 shadow-lg shadow-primary/5" : "hover:bg-card/30 hover:shadow-md hover:shadow-black/20",
-                  ].join(" ")}
-                >
-                  <CardHeader>
-                    <div className="mb-4 inline-flex h-9 items-center gap-2 rounded-full border border-border/60 px-3 text-xs text-muted-foreground">
-                      <motion.span
-                        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary"
-                        animate={isActive ? { scale: [1, 1.2, 1] } : {}}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      >
-                        <Icon className="h-3 w-3" />
-                      </motion.span>
-                      {tab.label}
-                    </div>
-                    <CardTitle className="text-lg">{tab.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-sm leading-relaxed">{tab.description}</CardDescription>
-                  </CardContent>
-                </Card>
-              </motion.button>
-            )
-          })}
+        {/* Numbers Don't Lie Section */}
+        <div className="mt-32 md:mt-40 border-t border-white/10 pt-24 mb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-16 lg:gap-8">
+            <div>
+              <h2 className="text-4xl lg:text-5xl font-medium tracking-tight text-white">Numbers don&apos;t lie</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-16">
+              {stats.map((stat, i) => (
+                <div key={i} className="space-y-4 border-b border-white/10 pb-12">
+                  <div className="text-sm font-medium text-muted-foreground">{stat.label}</div>
+                  <div className="text-6xl lg:text-7xl font-medium tracking-tighter text-white">{stat.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-12 text-xs text-muted-foreground space-y-1">
+            <p>1 Customer case study average estimation 2025</p>
+            <p>2 Verification industry benchmark assessment 2025</p>
+          </div>
         </div>
 
-        {/* Tab detail area: image/text layout, with security-focused metrics for that tab */}
-        <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
-          <motion.div
-            key={active.id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-            className="space-y-4"
-          >
-            <h3 className="text-xl font-semibold">{active.title}</h3>
-            <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">{active.description}</p>
-
-            {active.id === "security" && (
-              <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-                {[
-                  { label: "Uptime", value: "99.9%" },
-                  { label: "EDV checks < ", value: "60s" },
-                  { label: "Audit events / mo", value: "100k+" },
-                  { label: "Encryption", value: "AES‑256" },
-                ].map((item, i) => (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.4, delay: i * 0.08 }}
-                    whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-                    className="rounded-2xl border border-border/60 bg-card/25 px-3 py-4 text-left"
-                  >
-                    <div className="text-2xl font-semibold">{item.value}</div>
-                    <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                      {item.label}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-
-            {active.id !== "security" && (
-              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                {active.id === "accessibility" && (
-                  <>
-                    <li>Upload and verify from desktop or mobile without new installs.</li>
-                    <li>Share QR codes instead of attachments for instant re-validation.</li>
-                    <li>Readable layouts and contrast tuned for busy operations teams.</li>
-                  </>
-                )}
-                {active.id === "compliance" && (
-                  <>
-                    <li>Policy-driven document lifecycles with configurable retention.</li>
-                    <li>Export-ready reports for audits, internal reviews, and regulators.</li>
-                    <li>Immutable verification trails for every EDV check and redirect.</li>
-                  </>
-                )}
-              </ul>
-            )}
-          </motion.div>
-
-          <motion.div
-            key={`${active.id}-surface`}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, delay: 0.05 }}
-            className="relative"
-          >
-            <div className="absolute -inset-6 -z-10 rounded-[2rem] bg-[radial-gradient(closest-side,rgba(99,102,241,0.18),transparent)] blur-2xl" />
-            <motion.div
-              className="h-64 rounded-[1.75rem] border border-border/60 bg-card/25 shadow-xl shadow-black/40 backdrop-blur overflow-hidden"
-              whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-            >
-              <Image
-                src={active.id === "accessibility" ? "/2.webp" : active.id === "security" ? "/3.webp" : "/4.webp"}
-                alt={active.title}
-                fill
-                className="object-cover"
-              />
-            </motion.div>
-          </motion.div>
-        </div>
       </div>
     </section>
   )

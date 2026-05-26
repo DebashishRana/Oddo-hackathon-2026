@@ -7,7 +7,6 @@ export interface MaskedDocumentInfo {
   masked_id: string // Last 4 digits: XXXX-XXXX-1234
   document_type: string
   last_4_digits: string
-  full_id?: string // Optional: only in non-compliant mode
 }
 
 interface CompliantMetadataInput {
@@ -17,8 +16,12 @@ interface CompliantMetadataInput {
   risk_score?: string
   masked_document_id?: string
   scanner_version?: string
+  source_app?: string
+  method?: string
   received_at?: string
   scanner_timestamp?: string
+  action_history?: unknown
+  audit_trail?: unknown
   [key: string]: unknown
 }
 
@@ -71,7 +74,6 @@ export function maskDocumentId(documentId: string, docType: string): MaskedDocum
     masked_id: masked,
     document_type: docType,
     last_4_digits: last4,
-    full_id: documentId, // For testing only, should be deleted in production
   }
 }
 
@@ -91,6 +93,8 @@ export function createCompliantMetadata(
     risk_score: originalMetadata.risk_score,
     masked_document_id: originalMetadata.masked_document_id,
     scanner_version: originalMetadata.scanner_version,
+    source_app: originalMetadata.source_app,
+    method: originalMetadata.method,
 
     // Cross-verification results (new)
     cross_verified: crossVerificationResult.cross_verified,
@@ -100,6 +104,8 @@ export function createCompliantMetadata(
     // Audit timestamps (keep for compliance)
     received_at_server: originalMetadata.received_at,
     scanner_timestamp: originalMetadata.scanner_timestamp,
+    action_history: Array.isArray(originalMetadata.action_history) ? originalMetadata.action_history : [],
+    audit_trail: Array.isArray(originalMetadata.audit_trail) ? originalMetadata.audit_trail : [],
 
     // Soft delete flag
     pii_deleted: true,

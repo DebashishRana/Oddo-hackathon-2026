@@ -16,32 +16,38 @@ import {
   Legend
 } from "recharts";
 
-const verificationTrends = [
-  { date: "Apr 19", verified: 120, flagged: 8, pending: 15 },
-  { date: "Apr 20", verified: 140, flagged: 6, pending: 12 },
-  { date: "Apr 21", verified: 160, flagged: 7, pending: 10 },
-  { date: "Apr 22", verified: 180, flagged: 5, pending: 8 },
-  { date: "Apr 23", verified: 170, flagged: 9, pending: 11 },
-  { date: "Apr 24", verified: 200, flagged: 4, pending: 7 },
-];
-
-const statusBreakdown = [
-  { name: "Verified", value: 1100 },
-  { name: "Flagged", value: 45 },
-  { name: "Pending", value: 89 },
-];
 const COLORS = ["#22c55e", "#facc15", "#64748b"];
 
-const flaggedTrends = [
-  { date: "Apr 19", flagged: 8 },
-  { date: "Apr 20", flagged: 6 },
-  { date: "Apr 21", flagged: 7 },
-  { date: "Apr 22", flagged: 5 },
-  { date: "Apr 23", flagged: 9 },
-  { date: "Apr 24", flagged: 4 },
+type TrendPoint = {
+  date: string
+  verified: number
+  flagged: number
+  pending: number
+  failed?: number
+}
+
+type DashboardAnalyticsProps = {
+  trends?: TrendPoint[]
+  stats?: {
+    verified?: number
+    flagged?: number
+    pending?: number
+  }
+}
+
+const fallbackTrends: TrendPoint[] = [
+  { date: "No data", verified: 0, flagged: 0, pending: 0 },
 ];
 
-export default function DashboardAnalytics() {
+export default function DashboardAnalytics({ trends = fallbackTrends, stats }: DashboardAnalyticsProps) {
+  const verificationTrends = trends.length > 0 ? trends : fallbackTrends
+  const statusBreakdown = [
+    { name: "Verified", value: Number(stats?.verified || 0) },
+    { name: "Flagged", value: Number(stats?.flagged || 0) },
+    { name: "Pending", value: Number(stats?.pending || 0) },
+  ]
+  const flaggedTrends = verificationTrends.map((item) => ({ date: item.date, flagged: item.flagged }))
+
   return (
     <div className="grid gap-6 md:grid-cols-3 w-full">
       {/* Verifications Over Time */}

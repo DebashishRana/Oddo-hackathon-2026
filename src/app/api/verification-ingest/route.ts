@@ -1,299 +1,288 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { pool } from '@/lib/database'
+import { appendAuditEvent } from '@/lib/verification/audit'
+import { displayDocumentType } from '@/lib/verification/normalization'
+import { enqueueCrossVerification } from '@/lib/verification/queue'
+import { calculateInitialRisk, determineInitialStatus, validateConfidence } from '@/lib/verification/scoring'
+import { validateScannerBearer, verifyScannerReplayNonce, verifyScannerSignature } from '@/lib/verification/signature'
+import type { ScannerPayload } from '@/lib/verification/types'
 import { maskDocumentId } from '@/lib/pii-utils'
 
 export const runtime = 'nodejs'
 
-interface VerificationEventPayload {
-  document_type: string
-  user_name: string
-  confidence: number
-  image_url: string
-  user_email?: string
-  document_id?: string
-  scanner_version?: string
-  method?: string
-  scanner_timestamp?: string
-  extracted_fields?: Record<string, unknown>
-  ocr_data?: Record<string, unknown>
+type VerificationEventResponse = {
+  success: boolean
+  message: string
+  data: {
+    event_id: number
+    scanner_event_id?: string
+    status: string
+    queue_mode: 'queued' | 'inline' | 'not_queued'
+    confidence: number
+    risk_score: string
+    created_at: string
+  }
 }
 
-interface VerificationEventResponse {
-  event_id: number
-  status: 'pending' | 'verified' | 'flagged'
-  confidence: number
-  risk_score: 'Low' | 'Medium' | 'High'
-  created_at: string
+function isObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
 }
 
-function validateBearerToken(authHeader: string | null): boolean {
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return false
+function parsePayload(rawBody: string): ScannerPayload {
+  const payload = JSON.parse(rawBody) as unknown
+  if (!isObject(payload)) {
+    throw new Error('Payload must be an object')
   }
 
-  const token = authHeader.substring(7)
-  const expectedToken = process.env.SCANNER_TOKEN
-
-  if (!expectedToken) {
-    console.error('[VerificationIngest] SCANNER_TOKEN environment variable not set')
-    return false
-  }
-
-  return token === expectedToken
+  return payload as ScannerPayload
 }
 
-function determineStatus(confidence: number): 'pending' | 'verified' | 'flagged' {
-  if (confidence >= 0.85) {
-    return 'verified'
+function validatePayload(payload: ScannerPayload): string | null {
+  if (!payload.document_type || typeof payload.document_type !== 'string') {
+    return 'Missing or invalid required field: document_type'
   }
-  if (confidence < 0.6) {
-    return 'flagged'
-  }
-  return 'pending'
-}
 
-function calculateRiskScore(confidence: number): 'Low' | 'Medium' | 'High' {
-  if (confidence >= 0.85) {
-    return 'Low'
+  if (!validateConfidence(payload.confidence)) {
+    return 'Invalid required field: confidence must be a number between 0 and 1'
   }
-  if (confidence >= 0.6) {
-    return 'Medium'
-  }
-  return 'High'
-}
 
-function validateConfidence(confidence: unknown): confidence is number {
-  return typeof confidence === 'number' && confidence >= 0 && confidence <= 1
+  if (payload.document_id && typeof payload.document_id !== 'string') {
+    return 'Invalid field: document_id'
+  }
+
+  if (payload.timestamp && Number.isNaN(Date.parse(payload.timestamp))) {
+    return 'Invalid field: timestamp'
+  }
+
+  return null
 }
 
 export async function POST(request: NextRequest) {
+  const rawBody = await request.text()
+
   try {
     const authHeader = request.headers.get('authorization')
-
-    if (!validateBearerToken(authHeader)) {
-      console.warn('[VerificationIngest] POST: Unauthorized access attempt')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!validateScannerBearer(authHeader)) {
+      console.warn('[VerificationIngest] Unauthorized scanner request')
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized', error: { code: 'UNAUTHORIZED' } },
+        { status: 401 }
+      )
     }
 
-    let payload: VerificationEventPayload
+    const signatureResult = verifyScannerSignature(request, rawBody)
+    if (!signatureResult.ok) {
+      console.warn('[VerificationIngest] Scanner signature rejected', { reason: signatureResult.reason })
+      return NextResponse.json(
+        { success: false, message: 'Invalid scanner signature', error: { code: 'INVALID_SIGNATURE' } },
+        { status: 401 }
+      )
+    }
+
+    const replayResult = await verifyScannerReplayNonce(signatureResult.timestamp, signatureResult.nonce)
+    if (!replayResult.ok) {
+      console.warn('[VerificationIngest] Scanner replay rejected', { reason: replayResult.reason })
+      return NextResponse.json(
+        { success: false, message: 'Replay detected', error: { code: 'REPLAY_DETECTED' } },
+        { status: 409 }
+      )
+    }
+
+    let payload: ScannerPayload
     try {
-      payload = await request.json()
+      payload = parsePayload(rawBody)
     } catch (err) {
-      console.error('[VerificationIngest] POST: Invalid JSON', err)
-      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 })
-    }
-
-    // Validate required fields
-    if (!payload.document_type || typeof payload.document_type !== 'string') {
+      console.error('[VerificationIngest] Invalid JSON', err)
       return NextResponse.json(
-        { error: 'Missing or invalid required field: document_type' },
+        { success: false, message: 'Invalid JSON payload', error: { code: 'INVALID_JSON' } },
         { status: 400 }
       )
     }
 
-    if (!payload.user_name || typeof payload.user_name !== 'string') {
+    const validationError = validatePayload(payload)
+    if (validationError) {
       return NextResponse.json(
-        { error: 'Missing or invalid required field: user_name' },
+        { success: false, message: validationError, error: { code: 'INVALID_PAYLOAD' } },
         { status: 400 }
       )
     }
 
-    if (!validateConfidence(payload.confidence)) {
-      return NextResponse.json(
-        { error: 'Invalid required field: confidence must be a number between 0 and 1' },
-        { status: 400 }
-      )
-    }
+    const documentType = displayDocumentType(payload.document_type)
+    const status = determineInitialStatus(payload.confidence)
+    const riskScore = calculateInitialRisk(payload.confidence)
+    const maskedInfo = maskDocumentId(payload.document_id || '', documentType)
 
-    if (!payload.image_url || typeof payload.image_url !== 'string') {
-      return NextResponse.json(
-        { error: 'Missing or invalid required field: image_url' },
-        { status: 400 }
-      )
-    }
-
-    const status = determineStatus(payload.confidence)
-    const riskScore = calculateRiskScore(payload.confidence)
-
-    // Mask sensitive document ID (keep last 4 digits only)
-    const maskedInfo = maskDocumentId(payload.document_id || '', payload.document_type)
-
-    const metadata = {
-      status,
-      document_type: payload.document_type,
-      // PII fields (to be deleted after cross-verification)
-      user_name: payload.user_name,
-      user_email: payload.user_email || null,
-      document_id: payload.document_id || null, // Full ID temporarily stored
-      // Masked ID for compliance
-      masked_document_id: maskedInfo.masked_id,
-      last_4_digits: maskedInfo.last_4_digits,
-      // Verification fields
-      confidence: payload.confidence,
-      risk_score: riskScore,
-      image_url: payload.image_url,
-      scanner_version: payload.scanner_version || null,
-      method: payload.method || null,
-      scanner_timestamp: payload.scanner_timestamp || new Date().toISOString(),
-      extracted_fields: payload.extracted_fields || null,
-      ocr_data: payload.ocr_data || null,
-      // Cross-verification (to be populated by /api/cross-verify)
-      cross_verified: false,
-      api_source: null,
-      api_verification_timestamp: null,
-      // Compliance tracking
-      pii_deleted: false,
-      pii_deleted_at: null,
-      cleaned_up: false,
-    }
+    const receivedMetadata = appendAuditEvent(
+      {
+        scanner_event_id: payload.event_id || null,
+        status,
+        document_type: documentType,
+        user_name: payload.user_name || null,
+        user_email: payload.user_email || null,
+        document_id: payload.document_id || null,
+        masked_document_id: maskedInfo.masked_id,
+        last_4_digits: maskedInfo.last_4_digits,
+        confidence: payload.confidence,
+        risk_score: riskScore,
+        image_url: payload.image_url || null,
+        source_app: payload.source_app || 'scanner',
+        scanner_version: payload.scanner_version || null,
+        method: payload.method || 'qr_scan',
+        scanner_timestamp: payload.scanner_timestamp || payload.timestamp || new Date().toISOString(),
+        request_timestamp: signatureResult.timestamp,
+        request_nonce: signatureResult.nonce,
+        extracted_fields: payload.extracted_fields || null,
+        ocr_data: payload.ocr_data || null,
+        cross_verified: false,
+        api_source: null,
+        api_verification_timestamp: null,
+        pii_deleted: false,
+        pii_deleted_at: null,
+        cleaned_up: false,
+        action_required: status === 'flagged' ? 'admin_review_required' : null,
+        action_history: [],
+      },
+      {
+        type: 'verification_received',
+        actor: payload.source_app || 'scanner',
+        details: {
+          scanner_event_id: payload.event_id || null,
+          document_type: documentType,
+          confidence: payload.confidence,
+          risk_score: riskScore,
+        },
+      }
+    )
 
     const client = await pool.connect()
     try {
-      const insertQuery = `
-        INSERT INTO verification_events (document_type, metadata, received_at, created_at, updated_at)
-        VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-        RETURNING id, created_at
-      `
+      const result = await client.query(
+        `INSERT INTO verification_events (document_type, metadata, received_at, created_at, updated_at)
+         VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+         RETURNING id, created_at`,
+        [documentType, JSON.stringify(receivedMetadata)]
+      )
 
-      const result = await client.query(insertQuery, [payload.document_type, JSON.stringify(metadata)])
+      const eventId = Number(result.rows[0].id)
+      const createdAt = result.rows[0].created_at as Date
+      let queueMode: 'queued' | 'inline' | 'not_queued' = 'not_queued'
 
-      const eventId = result.rows[0].id
-      const createdAt = result.rows[0].created_at
+      if (payload.document_id) {
+        queueMode = process.env.REDIS_URL ? 'queued' : 'inline'
 
-      console.log('[VerificationIngest] POST: Event created', {
-        event_id: eventId,
-        document_type: payload.document_type,
-        confidence: payload.confidence,
-        status,
-        risk_score: riskScore,
-        masked_id: maskedInfo.masked_id,
-      })
+        const queuedMetadata = appendAuditEvent(receivedMetadata, {
+          type: 'cross_verification_queued',
+          actor: 'verification-ingest',
+          details: {
+            queue_mode: queueMode,
+          },
+        })
 
-      // Trigger cross-verification in background (non-blocking)
-      if (payload.document_id && payload.document_type) {
-        triggerCrossVerification(eventId, payload.document_type, payload.document_id).catch((err) => {
-          console.error('[VerificationIngest] Background cross-verify failed:', err)
+        await client.query(
+          `UPDATE verification_events
+           SET metadata = $1, updated_at = CURRENT_TIMESTAMP
+           WHERE id = $2`,
+          [JSON.stringify(queuedMetadata), eventId]
+        )
+
+        queueMode = await enqueueCrossVerification({
+          event_id: eventId,
+          document_type: documentType,
+          document_id: payload.document_id,
+          confidence: payload.confidence,
         })
       }
 
       const response: VerificationEventResponse = {
-        event_id: eventId,
-        status,
-        confidence: payload.confidence,
-        risk_score: riskScore,
-        created_at: createdAt.toISOString(),
+        success: true,
+        message: payload.document_id
+          ? 'Verification accepted and queued for cross-check.'
+          : 'Verification accepted. Admin review is required because no document identifier was provided.',
+        data: {
+          event_id: eventId,
+          scanner_event_id: payload.event_id,
+          status,
+          queue_mode: queueMode,
+          confidence: payload.confidence,
+          risk_score: riskScore,
+          created_at: createdAt.toISOString(),
+        },
       }
 
-      return NextResponse.json(response, { status: 200 })
+      return NextResponse.json(response, { status: 202 })
     } finally {
       client.release()
     }
   } catch (err) {
-    console.error('[VerificationIngest] POST: Database error', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('[VerificationIngest] Error', err)
+    return NextResponse.json(
+      { success: false, message: 'Internal server error', error: { code: 'INTERNAL_ERROR' } },
+      { status: 500 }
+    )
   }
-}
-
-/**
- * Trigger cross-verification in the background without blocking the response
- */
-async function triggerCrossVerification(
-  eventId: number,
-  documentType: string,
-  documentId: string
-): Promise<void> {
-  try {
-    // Get base URL (works in both dev and production)
-    const baseUrl =
-      process.env.NEXTAUTH_URL || process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL || process.env.NEXTAUTH_URL}`
-        : 'http://localhost:3000'
-
-    const response = await fetch(`${baseUrl}/api/cross-verify`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        event_id: eventId,
-        document_type: documentType,
-        document_id: documentId,
-        confidence: 0.85, // Will be read from DB in a real implementation
-      }),
-    })
-
-    if (!response.ok) {
-      console.warn('[VerificationIngest] Cross-verify request failed:', response.status)
-      return
-    }
-
-    const result = await response.json()
-    console.log('[VerificationIngest] Cross-verification triggered:', {
-      event_id: eventId,
-      cross_verified: result.cross_verified,
-      api_source: result.api_source,
-    })
-  } catch (err) {
-    console.error('[VerificationIngest] Cross-verification background task failed:', err)
-  }
-}
-
-interface DeletePayload {
-  event_id: number
 }
 
 export async function DELETE(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization')
-
-    if (!validateBearerToken(authHeader)) {
-      console.warn('[VerificationIngest] DELETE: Unauthorized access attempt')
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!validateScannerBearer(request.headers.get('authorization'))) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized', error: { code: 'UNAUTHORIZED' } },
+        { status: 401 }
+      )
     }
 
-    let payload: DeletePayload
-    try {
-      payload = await request.json()
-    } catch (err) {
-      console.error('[VerificationIngest] DELETE: Invalid JSON', err)
-      return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 })
-    }
-
+    const payload = (await request.json()) as { event_id?: number }
     if (!payload.event_id || typeof payload.event_id !== 'number') {
       return NextResponse.json(
-        { error: 'Missing or invalid required field: event_id' },
+        { success: false, message: 'Missing or invalid required field: event_id', error: { code: 'INVALID_PAYLOAD' } },
         { status: 400 }
       )
     }
 
     const client = await pool.connect()
     try {
-      // Soft delete: mark as cleaned_up in metadata
-      const updateQuery = `
-        UPDATE verification_events
-        SET metadata = jsonb_set(metadata, '{cleaned_up}', 'true'), updated_at = CURRENT_TIMESTAMP
-        WHERE id = $1
-        RETURNING id, metadata
-      `
+      const eventResult = await client.query('SELECT metadata FROM verification_events WHERE id = $1', [
+        payload.event_id,
+      ])
 
-      const result = await client.query(updateQuery, [payload.event_id])
-
-      if (result.rows.length === 0) {
-        console.warn('[VerificationIngest] DELETE: Event not found', { event_id: payload.event_id })
-        return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+      if (eventResult.rows.length === 0) {
+        return NextResponse.json(
+          { success: false, message: 'Event not found', error: { code: 'NOT_FOUND' } },
+          { status: 404 }
+        )
       }
 
-      console.log('[VerificationIngest] DELETE: Event cleaned up', { event_id: payload.event_id })
-
-      return NextResponse.json(
-        { event_id: payload.event_id, cleaned_up: true },
-        { status: 200 }
+      const metadata = appendAuditEvent(
+        {
+          ...(eventResult.rows[0].metadata as Record<string, unknown>),
+          cleaned_up: true,
+        },
+        {
+          type: 'verification_cleaned_up',
+          actor: 'scanner',
+        }
       )
+
+      await client.query(
+        `UPDATE verification_events
+         SET metadata = $1, updated_at = CURRENT_TIMESTAMP
+         WHERE id = $2`,
+        [JSON.stringify(metadata), payload.event_id]
+      )
+
+      return NextResponse.json({
+        success: true,
+        message: 'Verification event cleaned up.',
+        data: { event_id: payload.event_id, cleaned_up: true },
+      })
     } finally {
       client.release()
     }
   } catch (err) {
-    console.error('[VerificationIngest] DELETE: Database error', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('[VerificationIngest] DELETE error', err)
+    return NextResponse.json(
+      { success: false, message: 'Internal server error', error: { code: 'INTERNAL_ERROR' } },
+      { status: 500 }
+    )
   }
 }
