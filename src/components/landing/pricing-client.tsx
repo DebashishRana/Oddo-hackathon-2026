@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { redirectToCheckout } from "@/lib/stripe-client";
+import { openRazorpayCheckout } from "@/lib/razorpay-client";
 import { cn } from "@/lib/utils";
 
 interface PricingClientProps {
@@ -51,7 +51,7 @@ export function PricingClient({ plan, isAuthenticated, highlighted }: PricingCli
       const requestBody: { plan: string } = { plan: plan.checkoutPlan || 'pro' };
       // Discount functionality can be added here if needed
 
-      const response = await fetch('/api/stripe/checkout', {
+      const response = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,13 +61,19 @@ export function PricingClient({ plan, isAuthenticated, highlighted }: PricingCli
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create checkout session');
+        throw new Error(error.error || 'Failed to create order session');
       }
 
-      const { sessionId } = await response.json();
+      const { orderId, amount, currency, userName, userEmail } = await response.json();
 
-      // Redirect to Stripe Checkout
-      await redirectToCheckout(sessionId);
+      // Open Razorpay Checkout modal
+      await openRazorpayCheckout(
+        orderId, 
+        amount, 
+        currency, 
+        userName, 
+        userEmail
+      );
 
     } catch (error) {
       console.error('Checkout error:', error);
