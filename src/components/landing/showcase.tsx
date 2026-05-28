@@ -1,7 +1,7 @@
 ﻿"use client"
 
 import { motion } from "motion/react"
-import { ArrowRight, Shield, Trash2, Download, PenLine, Cookie, HelpCircle, XCircle } from "lucide-react"
+import { ArrowRight, Shield, Trash2, Download, PenLine, Cookie, HelpCircle } from "lucide-react"
 import Link from "next/link"
 
 const privacyCards = [

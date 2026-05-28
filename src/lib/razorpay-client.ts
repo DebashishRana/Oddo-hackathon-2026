@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export async function loadRazorpayScript() {
   if (typeof window === "undefined") return false;
   if ((window as any).Razorpay) return true;

@@ -71,7 +71,7 @@ export function PricingClient({ plan, isAuthenticated, highlighted }: PricingCli
         currency: orderData.currency,
         name: orderData.userName,
         email: orderData.userEmail,
-        onSuccess: (res) => {
+        onSuccess: () => {
           // Instead of redirecting strictly to checkout session, we just go to billing success
           window.location.href = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/dashboard/billing?success=true`;
         },

@@ -57,7 +57,7 @@ export function BillingClient({ currentPlan }: BillingClientProps) {
         currency: orderData.currency,
         name: orderData.userName,
         email: orderData.userEmail,
-        onSuccess: (res) => {
+        onSuccess: () => {
           // Success redirect
           window.location.href = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/dashboard/billing?success=true`;
         },

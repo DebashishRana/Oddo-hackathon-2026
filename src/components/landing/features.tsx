@@ -1,7 +1,7 @@
 ﻿"use client"
 
 import { Button } from "@/components/ui/button"
-import { Lock, ShieldCheck, Workflow, ArrowRight, Smartphone, Key, FileText, CheckCircle2, History, Link, BarChart3, Database } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { motion } from "motion/react"
 import OrgLogoWall from "@/components/ui/OrgLogoWall"
 import Image from "next/image"

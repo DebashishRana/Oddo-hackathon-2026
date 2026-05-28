@@ -12,7 +12,6 @@ import {
   Home,
   Settings,
   User,
-  Users,
   BarChart3,
   Menu,
   X,
