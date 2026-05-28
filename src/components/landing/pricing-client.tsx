@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { redirectToCheckout } from "@/lib/stripe-client";
+import { openRazorpayCheckout } from "@/lib/razorpay-client";
 import { cn } from "@/lib/utils";
 
 interface PricingClientProps {
@@ -47,11 +47,9 @@ export function PricingClient({ plan, isAuthenticated, highlighted }: PricingCli
     setIsLoading(true);
     
     try {
-      // Create checkout session for Pro plan
       const requestBody: { plan: string } = { plan: plan.checkoutPlan || 'pro' };
-      // Discount functionality can be added here if needed
 
-      const response = await fetch('/api/stripe/checkout', {
+      const response = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,13 +59,29 @@ export function PricingClient({ plan, isAuthenticated, highlighted }: PricingCli
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create checkout session');
+        throw new Error(error.error || 'Failed to create Razorpay order');
       }
 
-      const { sessionId } = await response.json();
+      const orderData = await response.json();
 
-      // Redirect to Stripe Checkout
-      await redirectToCheckout(sessionId);
+      await openRazorpayCheckout({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
+        orderId: orderData.orderId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: orderData.userName,
+        email: orderData.userEmail,
+        onSuccess: (res) => {
+          // Instead of redirecting strictly to checkout session, we just go to billing success
+          window.location.href = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/dashboard/billing?success=true`;
+        },
+        onError: (err) => {
+          console.error("Razorpay Error:", err);
+          if (!err.dismissed) {
+             alert('Payment failed. Please try again.');
+          }
+        }
+      });
 
     } catch (error) {
       console.error('Checkout error:', error);

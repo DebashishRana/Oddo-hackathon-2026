@@ -11,8 +11,12 @@ import CustomerStories from "@/components/landing/customer-stories"
 import Footer from "@/components/landing/footer"
 import { SmoothScroll } from "@/components/ui/smooth-scroll"
 import { ScrollToTop } from "@/components/ui/scroll-to-top"
+import { auth } from "@/lib/auth"
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth()
+  const isAuthenticated = !!session
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Landing-only background treatment (keeps dashboards/admin unchanged) */}
@@ -34,7 +38,7 @@ export default function Home() {
       <Insights />
       <Foundations />
       <PoweredBySection />
-      <Pricing />
+      <Pricing isAuthenticated={isAuthenticated} />
       <Testimonials />
       <Footer />
       <ScrollToTop />

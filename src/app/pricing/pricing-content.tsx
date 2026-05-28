@@ -5,6 +5,7 @@ import { Check, Minus, ChevronDown, ChevronUp, Info } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { PricingClient } from "@/components/landing/pricing-client"
 
 // Plans matching the landing page pricing component
 const plans = [
@@ -38,6 +39,7 @@ const plans = [
     ],
     cta: "Start for free",
     ctaHref: "/auth/signup",
+    action: "signin" as const,
     highlighted: false,
   },
   {
@@ -70,6 +72,8 @@ const plans = [
     ],
     cta: "Add Site plan",
     ctaHref: "/auth/signup",
+    action: "checkout" as const,
+    checkoutPlan: "basic",
     highlighted: false,
   },
   {
@@ -104,6 +108,8 @@ const plans = [
     ],
     cta: "Add Site plan",
     ctaHref: "/auth/signup",
+    action: "checkout" as const,
+    checkoutPlan: "pro",
     highlighted: true,
   },
   {
@@ -139,6 +145,8 @@ const plans = [
     ],
     cta: "Add Site plan",
     ctaHref: "/auth/signup",
+    action: "checkout" as const,
+    checkoutPlan: "business",
     highlighted: false,
   },
   {
@@ -164,6 +172,8 @@ const plans = [
     ],
     cta: "Contact sales",
     ctaHref: "/contact",
+    action: "contact" as const,
+    contactEmail: "support@dectra.com",
     highlighted: false,
   },
 ]
@@ -387,7 +397,7 @@ function FeatureValue({ value }: { value: boolean | string }) {
   return <Minus className="h-5 w-5 text-muted-foreground/30" />
 }
 
-export function PricingContent() {
+export function PricingContent({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
     compareCategories.map((c) => c.name)
@@ -538,19 +548,19 @@ export function PricingContent() {
                   </div>
 
                   {/* CTA */}
-                  <Link
-                    href={plan.ctaHref}
-                    className={cn(
-                      "w-full py-2.5 rounded-lg text-sm font-medium text-center transition-colors block",
-                      plan.highlighted
-                        ? "bg-[#d4854e] hover:bg-[#c5773f] text-white"
-                        : plan.id === "enterprise"
-                          ? "bg-foreground text-background hover:opacity-90"
-                          : "bg-muted hover:bg-muted/80 text-foreground border border-border/40"
-                    )}
-                  >
-                    {plan.cta}
-                  </Link>
+                  <PricingClient
+                    plan={{
+                      name: plan.name,
+                      popular: plan.highlighted,
+                      variant: plan.highlighted ? "default" : "outline",
+                      cta: plan.cta,
+                      action: plan.action,
+                      checkoutPlan: plan.checkoutPlan,
+                      contactEmail: plan.contactEmail,
+                    }}
+                    isAuthenticated={isAuthenticated}
+                    highlighted={plan.highlighted}
+                  />
                 </motion.div>
               )
             })}
@@ -570,19 +580,19 @@ export function PricingContent() {
             {plans.map((plan) => (
               <div key={plan.id} className="text-center">
                 <h3 className="text-sm font-semibold mb-3">{plan.name}</h3>
-                <Link
-                  href={plan.ctaHref}
-                  className={cn(
-                    "inline-block w-full max-w-[160px] py-2 rounded-lg text-xs font-medium transition-colors",
-                    plan.highlighted
-                      ? "bg-[#d4854e] hover:bg-[#c5773f] text-white"
-                      : plan.id === "enterprise"
-                        ? "bg-foreground text-background hover:opacity-90"
-                        : "bg-muted hover:bg-muted/80 text-foreground border border-border/40"
-                  )}
-                >
-                  {plan.cta}
-                </Link>
+                <PricingClient
+                  plan={{
+                    name: plan.name,
+                    popular: plan.highlighted,
+                    variant: plan.highlighted ? "default" : "outline",
+                    cta: plan.cta,
+                    action: plan.action,
+                    checkoutPlan: plan.checkoutPlan,
+                    contactEmail: plan.contactEmail,
+                  }}
+                  isAuthenticated={isAuthenticated}
+                  highlighted={plan.highlighted}
+                />
               </div>
             ))}
           </div>

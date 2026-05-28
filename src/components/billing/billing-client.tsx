@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Crown, Loader2 } from "lucide-react";
-import { redirectToCheckout } from "@/lib/stripe-client";
+import { openRazorpayCheckout } from "@/lib/razorpay-client";
 import { DiscountInput, PriceDisplay } from "@/components/checkout/discount-input";
 
 interface DiscountDetails {
@@ -35,7 +35,7 @@ export function BillingClient({ currentPlan }: BillingClientProps) {
         requestBody.discountCode = appliedDiscount.code;
       }
 
-      const response = await fetch('/api/stripe/checkout', {
+      const response = await fetch('/api/razorpay/create-order', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,13 +45,29 @@ export function BillingClient({ currentPlan }: BillingClientProps) {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to create checkout session');
+        throw new Error(error.error || 'Failed to create Razorpay order');
       }
 
-      const { sessionId } = await response.json();
+      const orderData = await response.json();
 
-      // Redirect to Stripe Checkout
-      await redirectToCheckout(sessionId);
+      await openRazorpayCheckout({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
+        orderId: orderData.orderId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: orderData.userName,
+        email: orderData.userEmail,
+        onSuccess: (res) => {
+          // Success redirect
+          window.location.href = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/dashboard/billing?success=true`;
+        },
+        onError: (err) => {
+          console.error("Razorpay Error:", err);
+          if (!err.dismissed) {
+             alert('Payment failed. Please try again.');
+          }
+        }
+      });
 
     } catch (error) {
       console.error('Checkout error:', error);
@@ -116,7 +132,7 @@ export function BillingClient({ currentPlan }: BillingClientProps) {
       </Button>
 
       <p className="text-xs text-center text-muted-foreground">
-        Secure payment powered by Stripe. {appliedDiscount && 'Discount will be applied at checkout.'}
+        Secure payment powered by Razorpay. {appliedDiscount && 'Discount will be applied at checkout.'}
       </p>
     </div>
   );
