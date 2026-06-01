@@ -66,24 +66,6 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <ThemeScript />
-        {/* Watson Assistant Chatbot Script - Client Side Only */}
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            if (typeof window !== 'undefined') {
-              window.watsonAssistantChatOptions = {
-                integrationID: '97eb8a55-064f-4bb4-8bef-e59bda6637bd',
-                region: 'au-syd',
-                serviceInstanceID: '04bab5ac-f2d0-4980-96e0-18073dbdbad1',
-                onLoad: async (instance) => { await instance.render(); }
-              };
-              setTimeout(function(){
-                const t=document.createElement('script');
-                t.src="https://web-chat.global.assistant.watson.appdomain.cloud/versions/" + (window.watsonAssistantChatOptions.clientVersion || 'latest') + "/WatsonAssistantChatEntry.js";
-                document.head.appendChild(t);
-              });
-            }
-          `
-        }} />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
