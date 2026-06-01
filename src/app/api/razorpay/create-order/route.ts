@@ -18,7 +18,9 @@ export async function POST(request: NextRequest) {
 
     const { plan, discountCode } = await request.json();
 
-    if (plan !== 'pro') {
+    // Accept basic, pro, and business plans
+    const validPlans = ['basic', 'pro', 'business'];
+    if (!validPlans.includes(plan)) {
       return NextResponse.json(
         { error: 'Invalid plan' },
         { status: 400 }
@@ -34,15 +36,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user already has pro subscription
-    if (user.subscription_status === 'pro') {
-      return NextResponse.json(
-        { error: 'User already has Pro subscription' },
-        { status: 400 }
-      );
-    }
+    // Map plan to amount in Paise
+    const planAmounts: Record<string, number> = {
+      'basic': 219900,    // ₹2199
+      'pro': 340000,      // ₹3400
+      'business': 340000  // ₹3400
+    };
 
-    let amount = 9900; // Expected amount in Paise for $99 equivalent, or customize for INR logic
+    let amount = planAmounts[plan] || planAmounts.pro;
 
     // Handle discount code if provided
     if (discountCode) {
