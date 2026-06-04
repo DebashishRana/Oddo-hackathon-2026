@@ -13,7 +13,7 @@ export default function OrgLogoWall() {
   return (
     <section className="pt-6 pb-28">
       <h2 className="text-center text-blue-200 text-base mb-12 tracking-widest uppercase font-medium">
-        also seen and featured at
+        
       </h2>
       <div className="flex flex-wrap justify-center items-center gap-16 md:gap-24 lg:gap-16">
         {orgLogos.map((logo, idx) => (

@@ -2,16 +2,9 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 
 export function getRazorpay() {
-  const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_LIVE_API;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
-
-  if (!keyId || !keySecret) {
-    throw new Error(`Razorpay credentials not configured. Check env vars: NEXT_PUBLIC_RAZORPAY_KEY_ID=${!!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID}, RAZORPAY_KEY_SECRET=${!!process.env.RAZORPAY_KEY_SECRET}`);
-  }
-
   return new Razorpay({
-    key_id: keyId,
-    key_secret: keySecret,
+    key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_LIVE_API || "",
+    key_secret: process.env.RAZORPAY_LIVE_KEY_SECRET || "",
   });
 }
 
