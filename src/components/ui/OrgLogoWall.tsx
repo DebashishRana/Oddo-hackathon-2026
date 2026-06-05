@@ -11,20 +11,17 @@ const orgLogos = [
 
 export default function OrgLogoWall() {
   return (
-    <section className="pt-6 pb-28">
-      <h2 className="text-center text-blue-200 text-base mb-12 tracking-widest uppercase font-medium">
-        
-      </h2>
-      <div className="flex flex-wrap justify-center items-center gap-16 md:gap-24 lg:gap-16">
+    <section className="pt-4 pb-12">
+      <div className="flex flex-wrap justify-center items-center gap-10 md:gap-14 lg:gap-16">
         {orgLogos.map((logo, idx) => (
           <Image
             key={logo.alt}
             src={logo.src}
             alt={logo.alt}
-            width={[0, 1].includes(idx) ? 210 : 180}
-            height={[0, 1].includes(idx) ? 90 : 72}
-            className={[0, 1].includes(idx) ? "h-24 w-auto object-contain" : "h-16 md:h-[72px] w-auto object-contain"}
-            style={[0, 1, 2].includes(idx) ? undefined : { filter: 'brightness(0) invert(1)' }}
+            width={[0, 1].includes(idx) ? 180 : 150}
+            height={[0, 1].includes(idx) ? 72 : 60}
+            className={[0, 1].includes(idx) ? "h-14 w-auto object-contain" : "h-12 md:h-14 w-auto object-contain"}
+            style={idx === 0 ? undefined : { filter: "brightness(0) invert(1)" }}
           />
         ))}
       </div>
