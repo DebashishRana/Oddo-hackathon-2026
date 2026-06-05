@@ -12,7 +12,6 @@ import {
   FileText,
   Layers3,
   ShieldCheck,
-  Sparkles,
 } from 'lucide-react'
 import { CodeWindow } from '@/components/docs/code-window'
 import { DocsShell, type TocItem } from '@/components/docs/docs-shell'

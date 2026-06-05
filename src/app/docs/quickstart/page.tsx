@@ -248,7 +248,7 @@ export default function QuickstartPage() {
           </div>
 
           <p className="mt-6 max-w-2xl text-base leading-7 text-zinc-400">
-            Welcome! In this guide, we'll walk you through the basics of using the Dectra API, from creating an account to making your first request.
+            Welcome! In this guide, we&apos;ll walk you through the basics of using the Dectra API, from creating an account to making your first request.
           </p>
         </header>
 

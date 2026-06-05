@@ -121,7 +121,7 @@ const Features = () => {
             transition={{ delay: 0.1, ease: "easeInOut" }}
             className="text-lg text-muted-foreground leading-relaxed"
           >
-            Dectra's modular platform helps you verify, prevent fraud, and
+            Dectra&apos;s modular platform helps you verify, prevent fraud, and
             orchestrate compliance across the entire life cycle.
           </motion.p>
 
@@ -265,7 +265,7 @@ const Features = () => {
                 transition={{ ease: "easeInOut" }}
                 className="text-4xl lg:text-5xl font-medium tracking-tight text-white"
               >
-                Numbers don't lie
+                Numbers don&apos;t lie
               </motion.h2>
             </div>
 
