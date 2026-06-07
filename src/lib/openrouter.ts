@@ -1,3 +1,5 @@
+import { getEnvironmentSiteUrl } from "./site-url";
+
 // OpenRouter API client for AI chat completions
 
 export interface ChatMessage {
@@ -44,13 +46,11 @@ export interface OpenRouterError {
 class OpenRouterClient {
   private apiKey: string;
   private baseURL: string;
-  private siteUrl: string;
   private siteName: string;
 
   constructor() {
     this.apiKey = process.env.OPENROUTER_API_KEY || '';
     this.baseURL = 'https://openrouter.ai/api/v1';
-    this.siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
     this.siteName = process.env.NEXT_PUBLIC_SITE_NAME || '';
 
     if (!this.apiKey) {
@@ -60,11 +60,12 @@ class OpenRouterClient {
 
   async createChatCompletion(request: ChatCompletionRequest): Promise<ChatCompletionResponse> {
     try {
+      const siteUrl = getEnvironmentSiteUrl()
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
-          'HTTP-Referer': this.siteUrl,
+          'HTTP-Referer': siteUrl,
           'X-Title': this.siteName,
           'Content-Type': 'application/json',
         },
@@ -92,11 +93,12 @@ class OpenRouterClient {
     request: ChatCompletionRequest
   ): Promise<ReadableStream<Uint8Array>> {
     try {
+      const siteUrl = getEnvironmentSiteUrl()
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
-          'HTTP-Referer': this.siteUrl,
+          'HTTP-Referer': siteUrl,
           'X-Title': this.siteName,
           'Content-Type': 'application/json',
         },

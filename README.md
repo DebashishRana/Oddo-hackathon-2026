@@ -324,7 +324,7 @@ npm run db:seed      # Seed database with sample data (if you add this script)
 
 2. **Environment Variables**
    - Add all environment variables from `.env.local`
-   - Update `NEXTAUTH_URL` and `NEXT_PUBLIC_SITE_URL` to your domain
+   - Update `NEXTAUTH_URL` and `NEXT_PUBLIC_SITE_URL` to your current production domain
 
 3. **Deploy**
    - Vercel will automatically deploy your application
@@ -364,6 +364,7 @@ The application can be deployed to any platform that supports Next.js:
    - `https://dectra-two.vercel.app/api/auth/callback/google`
 
 3. **NEXTAUTH_URL**: Must match your production domain exactly (include `https://`)
+   - `NEXT_PUBLIC_SITE_URL` should match too, because checkout and email links use it when building absolute URLs
 
 ## 🐛 Troubleshooting
 

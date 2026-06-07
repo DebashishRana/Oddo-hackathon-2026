@@ -1,9 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, Search } from 'lucide-react'
+import { ChevronDown, Menu, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 
@@ -65,8 +64,20 @@ export function DocsShell({ children, tocItems, activeId }: DocsShellProps) {
         <div className="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-4 px-4 lg:px-6">
           <div className="flex items-center gap-4">
             <Link href="/docs" className="flex items-center gap-3">
-              <Image src="/logo.png" alt="Dectra" width={112} height={32} className="h-8 w-auto" priority />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-500/15 ring-1 ring-purple-500/30">
+                <span className="h-4 w-4 rounded-md bg-gradient-to-br from-purple-400 to-indigo-500" />
+              </div>
+              
+              <span className="text-sm font-semibold tracking-wide text-white">Dectra</span>
             </Link>
+
+            <button
+              type="button"
+              className="hidden items-center gap-1 rounded-full border border-zinc-800 bg-zinc-900/80 px-3 py-2 text-sm text-zinc-300 lg:inline-flex"
+            >
+              Docs
+              <ChevronDown size={14} />
+            </button>
           </div>
 
           <div className="hidden flex-1 items-center justify-center px-4 md:flex">

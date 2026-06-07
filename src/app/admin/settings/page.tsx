@@ -2,12 +2,14 @@ import { requireAdminAccess } from '@/lib/admin-auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Settings, Database, CreditCard, Mail, Shield } from 'lucide-react';
+import { getEnvironmentSiteUrl } from '@/lib/site-url';
 
 export const runtime = 'nodejs';
 
 export default async function AdminSettingsPage() {
   // Require admin access
   await requireAdminAccess();
+  const resolvedSiteUrl = getEnvironmentSiteUrl();
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -41,7 +43,13 @@ export default async function AdminSettingsPage() {
               </Badge>
             </div>
             <div className="flex justify-between items-center">
-              <span>Site URL:</span>
+              <span>Resolved Site URL:</span>
+              <Badge variant="outline">
+                {resolvedSiteUrl}
+              </Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Configured Site URL:</span>
               <Badge variant="outline">
                 {process.env.NEXT_PUBLIC_SITE_URL || 'Not set'}
               </Badge>

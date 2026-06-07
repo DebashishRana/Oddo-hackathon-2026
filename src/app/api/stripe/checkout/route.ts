@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { createStripeCustomer, createCheckoutSession, createCheckoutSessionWithDiscount } from '@/lib/stripe';
 import { getUserByGoogleId, updateUserSubscription, validateDiscountCode, getDiscountCodeByCode } from '@/lib/database';
+import { buildAbsoluteUrl } from '@/lib/site-url';
 
 export const runtime = 'nodejs';
 
@@ -77,21 +78,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Create checkout session with or without discount
+    const requestOrigin = new URL(request.url).origin
     const checkoutSession = stripeCouponId
       ? await createCheckoutSessionWithDiscount(
           customerId,
           user.id,
           user.email,
-          `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/billing?success=true`,
-          `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/billing?canceled=true`,
+          buildAbsoluteUrl('/dashboard/billing?success=true', requestOrigin),
+          buildAbsoluteUrl('/dashboard/billing?canceled=true', requestOrigin),
           stripeCouponId
         )
       : await createCheckoutSession(
           customerId,
           user.id,
           user.email,
-          `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/billing?success=true`,
-          `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard/billing?canceled=true`
+          buildAbsoluteUrl('/dashboard/billing?success=true', requestOrigin),
+          buildAbsoluteUrl('/dashboard/billing?canceled=true', requestOrigin)
         );
 
     return NextResponse.json({

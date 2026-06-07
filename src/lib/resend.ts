@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { getEnvironmentSiteUrl } from './site-url';
 
 // Initialize Resend with API key
 export const resend = new Resend(process.env.RESEND_API_KEY);
@@ -8,7 +9,6 @@ export const EMAIL_CONFIG = {
   FROM_EMAIL: process.env.FROM_EMAIL || 'onboarding@bestsaaskit.com',
   SUPPORT_EMAIL: process.env.SUPPORT_EMAIL || 'support@bestsaaskit.com',
   SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'Best SAAS Kit V2',
-  SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
 } as const;
 
 // Email types
@@ -39,6 +39,7 @@ export async function sendEmail(data: EmailData) {
 
 // Welcome email template
 export function createWelcomeEmail(userName: string, userEmail: string) {
+  const siteUrl = getEnvironmentSiteUrl()
   const subject = `Welcome to ${EMAIL_CONFIG.SITE_NAME}!`;
   const html = `
     <!DOCTYPE html>
@@ -72,7 +73,7 @@ export function createWelcomeEmail(userName: string, userEmail: string) {
           <li>📖 Check out our documentation</li>
         </ul>
         
-        <a href="${EMAIL_CONFIG.SITE_URL}/dashboard" class="button">Go to Dashboard</a>
+        <a href="${siteUrl}/dashboard" class="button">Go to Dashboard</a>
         
         <p>If you have any questions, feel free to reach out to our support team at <a href="mailto:${EMAIL_CONFIG.SUPPORT_EMAIL}">${EMAIL_CONFIG.SUPPORT_EMAIL}</a>.</p>
         
@@ -80,7 +81,7 @@ export function createWelcomeEmail(userName: string, userEmail: string) {
       </div>
       <div class="footer">
         <p>© 2024 ${EMAIL_CONFIG.SITE_NAME}. All rights reserved.</p>
-        <p><a href="${EMAIL_CONFIG.SITE_URL}">Visit our website</a> | <a href="${EMAIL_CONFIG.SITE_URL}/docs">Documentation</a></p>
+        <p><a href="${siteUrl}">Visit our website</a> | <a href="${siteUrl}/docs">Documentation</a></p>
       </div>
     </body>
     </html>
@@ -91,6 +92,7 @@ export function createWelcomeEmail(userName: string, userEmail: string) {
 
 // Subscription confirmation email template
 export function createSubscriptionConfirmationEmail(userName: string, userEmail: string, planName: string = 'Pro') {
+  const siteUrl = getEnvironmentSiteUrl()
   const subject = `Welcome to ${EMAIL_CONFIG.SITE_NAME} ${planName}!`;
   const html = `
     <!DOCTYPE html>
@@ -126,7 +128,7 @@ export function createSubscriptionConfirmationEmail(userName: string, userEmail:
           <li>🔧 Advanced customization options</li>
         </ul>
         
-        <a href="${EMAIL_CONFIG.SITE_URL}/dashboard" class="button">Access Your Dashboard</a>
+        <a href="${siteUrl}/dashboard" class="button">Access Your Dashboard</a>
         
         <p>Your subscription will automatically renew. You can manage your subscription anytime from your billing dashboard.</p>
         
@@ -136,7 +138,7 @@ export function createSubscriptionConfirmationEmail(userName: string, userEmail:
       </div>
       <div class="footer">
         <p>© 2024 ${EMAIL_CONFIG.SITE_NAME}. All rights reserved.</p>
-        <p><a href="${EMAIL_CONFIG.SITE_URL}/dashboard/billing">Manage Subscription</a> | <a href="mailto:${EMAIL_CONFIG.SUPPORT_EMAIL}">Support</a></p>
+        <p><a href="${siteUrl}/dashboard/billing">Manage Subscription</a> | <a href="mailto:${EMAIL_CONFIG.SUPPORT_EMAIL}">Support</a></p>
       </div>
     </body>
     </html>
@@ -147,7 +149,8 @@ export function createSubscriptionConfirmationEmail(userName: string, userEmail:
 
 // Password reset email template (for future use)
 export function createPasswordResetEmail(userName: string, userEmail: string, resetToken: string) {
-  const resetUrl = `${EMAIL_CONFIG.SITE_URL}/auth/reset-password?token=${resetToken}`;
+  const siteUrl = getEnvironmentSiteUrl()
+  const resetUrl = `${siteUrl}/auth/reset-password?token=${resetToken}`;
   const subject = `Reset your ${EMAIL_CONFIG.SITE_NAME} password`;
   const html = `
     <!DOCTYPE html>
@@ -190,7 +193,7 @@ export function createPasswordResetEmail(userName: string, userEmail: string, re
       </div>
       <div class="footer">
         <p>© 2024 ${EMAIL_CONFIG.SITE_NAME}. All rights reserved.</p>
-        <p><a href="${EMAIL_CONFIG.SITE_URL}">Visit our website</a> | <a href="mailto:${EMAIL_CONFIG.SUPPORT_EMAIL}">Support</a></p>
+        <p><a href="${siteUrl}">Visit our website</a> | <a href="mailto:${EMAIL_CONFIG.SUPPORT_EMAIL}">Support</a></p>
       </div>
     </body>
     </html>

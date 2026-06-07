@@ -59,7 +59,7 @@ export function BillingClient({ currentPlan }: BillingClientProps) {
         email: orderData.userEmail,
         onSuccess: () => {
           // Success redirect
-          window.location.href = `${process.env.NEXT_PUBLIC_SITE_URL || ''}/dashboard/billing?success=true`;
+          window.location.href = '/dashboard/billing?success=true';
         },
         onError: (err) => {
           console.error("Razorpay Error:", err);
