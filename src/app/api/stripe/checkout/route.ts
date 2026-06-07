@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { createStripeCustomer, createCheckoutSession, createCheckoutSessionWithDiscount } from '@/lib/stripe';
 import { getUserByGoogleId, updateUserSubscription, validateDiscountCode, getDiscountCodeByCode } from '@/lib/database';
-import { buildAbsoluteUrl } from '@/lib/site-url';
+import { buildAppUrl } from '@/lib/site-url';
 
 export const runtime = 'nodejs';
 
@@ -78,22 +78,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Create checkout session with or without discount
-    const requestOrigin = new URL(request.url).origin
     const checkoutSession = stripeCouponId
       ? await createCheckoutSessionWithDiscount(
           customerId,
           user.id,
           user.email,
-          buildAbsoluteUrl('/dashboard/billing?success=true', requestOrigin),
-          buildAbsoluteUrl('/dashboard/billing?canceled=true', requestOrigin),
+          buildAppUrl('/dashboard/billing?success=true'),
+          buildAppUrl('/dashboard/billing?canceled=true'),
           stripeCouponId
         )
       : await createCheckoutSession(
           customerId,
           user.id,
           user.email,
-          buildAbsoluteUrl('/dashboard/billing?success=true', requestOrigin),
-          buildAbsoluteUrl('/dashboard/billing?canceled=true', requestOrigin)
+          buildAppUrl('/dashboard/billing?success=true'),
+          buildAppUrl('/dashboard/billing?canceled=true')
         );
 
     return NextResponse.json({

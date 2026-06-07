@@ -4,6 +4,7 @@ import { signIn as nextAuthSignIn, signOut as nextAuthSignOut } from "@/lib/auth
 import { createUserWithPassword, getPasswordAuthSchemaStatus, getUserByEmail, setVerificationCode, isEmailVerified } from "@/lib/database"
 import { hashPassword } from "@/lib/auth-utils"
 import { sendEmail, createVerificationEmail } from "@/lib/resend"
+import { buildAppUrl, buildMarketingUrl } from "@/lib/site-url"
 
 type NextAuthErrorLike = {
   type?: string;
@@ -17,11 +18,11 @@ function getNextAuthErrorType(error: unknown): string | null {
 }
 
 export async function signInAction() {
-  await nextAuthSignIn("google", { redirectTo: "/dashboard" })
+  await nextAuthSignIn("google", { redirectTo: buildAppUrl("/dashboard") })
 }
 
 export async function signOutAction() {
-  await nextAuthSignOut({ redirectTo: "/" })
+  await nextAuthSignOut({ redirectTo: buildMarketingUrl("/") })
 }
 
 interface AuthActionState {
@@ -51,7 +52,7 @@ export async function signInWithCredentialsAction(prevState: AuthActionState | n
     await nextAuthSignIn("credentials", {
       email: formData.get("email"),
       password: formData.get("password"),
-      redirectTo: "/dashboard",
+      redirectTo: buildAppUrl("/dashboard"),
     })
     return { success: true }
   } catch (error) {

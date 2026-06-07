@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { ArrowLeft, Play, Code, Zap } from "lucide-react"
+import { buildAppUrl } from "@/lib/site-url"
 
 export default function DemoPage() {
   return (
@@ -50,12 +51,14 @@ export default function DemoPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Button className="w-full" variant="outline">
-                  <Play className="w-4 h-4 mr-2" />
-                  Try Sign In
+                <Button className="w-full" variant="outline" asChild>
+                  <Link href={buildAppUrl("/auth/signin")}>
+                    <Play className="w-4 h-4 mr-2" />
+                    Try Sign In
+                  </Link>
                 </Button>
                 <Button className="w-full" variant="outline" asChild>
-                  <Link href="/auth/signup">
+                  <Link href={buildAppUrl("/auth/signup")}>
                     <Play className="w-4 h-4 mr-2" />
                     Try Sign Up
                   </Link>
@@ -102,9 +105,11 @@ export default function DemoPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <Button className="w-full" variant="outline">
-                  <Play className="w-4 h-4 mr-2" />
-                  View Dashboard
+                <Button className="w-full" variant="outline" asChild>
+                  <Link href={buildAppUrl("/dashboard")}>
+                    <Play className="w-4 h-4 mr-2" />
+                    View Dashboard
+                  </Link>
                 </Button>
                 <Button className="w-full" variant="outline">
                   <Play className="w-4 h-4 mr-2" />

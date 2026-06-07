@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "motion/react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { PricingClient } from "@/components/landing/pricing-client"
+import { buildAppUrl } from "@/lib/site-url"
 
 // Plans matching the landing page pricing component
 const plans = [
@@ -670,7 +671,7 @@ export function PricingContent({ isAuthenticated = false }: { isAuthenticated?: 
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link
-              href="/auth/signup"
+              href={buildAppUrl("/auth/signup")}
               className="bg-[#d4854e] hover:bg-[#c5773f] text-white px-6 py-3 rounded-lg font-medium transition-colors"
             >
               Start for free

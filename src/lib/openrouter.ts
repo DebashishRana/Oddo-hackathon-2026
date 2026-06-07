@@ -1,4 +1,4 @@
-import { getEnvironmentSiteUrl } from "./site-url";
+import { getAppBaseUrl } from "./site-url";
 
 // OpenRouter API client for AI chat completions
 
@@ -60,7 +60,7 @@ class OpenRouterClient {
 
   async createChatCompletion(request: ChatCompletionRequest): Promise<ChatCompletionResponse> {
     try {
-      const siteUrl = getEnvironmentSiteUrl()
+      const siteUrl = getAppBaseUrl()
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
         headers: {
@@ -93,7 +93,7 @@ class OpenRouterClient {
     request: ChatCompletionRequest
   ): Promise<ReadableStream<Uint8Array>> {
     try {
-      const siteUrl = getEnvironmentSiteUrl()
+      const siteUrl = getAppBaseUrl()
       const response = await fetch(`${this.baseURL}/chat/completions`, {
         method: 'POST',
         headers: {

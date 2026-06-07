@@ -1,4 +1,5 @@
 import Google from "next-auth/providers/google"
+import { getCookieDomain } from "./site-url"
 
 type NextAuthInitParam = Parameters<typeof import("next-auth").default>[0]
 type NextAuthConfigObject = Exclude<NextAuthInitParam, (request: never) => unknown>
@@ -14,6 +15,18 @@ export const authConfig: NextAuthConfigObject = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  cookies: (() => {
+    const cookieDomain = getCookieDomain()
+    return cookieDomain
+    ? {
+        sessionToken: {
+          options: {
+            domain: cookieDomain,
+          },
+        },
+      }
+    : undefined
+  })(),
   callbacks: {
     async jwt({ token, account, profile, user }) {
       if (account?.provider === "google") {

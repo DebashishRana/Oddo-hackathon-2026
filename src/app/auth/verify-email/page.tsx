@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2 } from "lucide-react"
 import Link from "next/link"
+import { buildAppUrl } from "@/lib/site-url"
 
 // Helper to mask email
 function maskEmail(email: string): string {
@@ -119,7 +120,7 @@ function VerifyEmailContent() {
       if (data.verified) {
         toast({ title: "Success", description: "Email verified! You can now sign in." })
         // Redirect to sign-in page after verification
-        setTimeout(() => router.push("/auth/signin"), 1500)
+        setTimeout(() => router.push(buildAppUrl("/auth/signin")), 1500)
       } else {
         toast({ title: "Error", description: data.error || "Invalid code", variant: "destructive" })
         setCode(["", "", "", "", "", ""])
@@ -151,10 +152,10 @@ function VerifyEmailContent() {
               Dectra
             </Link>
             <nav className="flex items-center gap-6">
-              <Link href="/auth/signin" className="text-sm text-zinc-400 hover:text-white transition-colors">
+              <Link href={buildAppUrl("/auth/signin")} className="text-sm text-zinc-400 hover:text-white transition-colors">
                 Sign In
               </Link>
-              <Link href="/auth/signup" className="text-sm text-zinc-400 hover:text-white transition-colors">
+              <Link href={buildAppUrl("/auth/signup")} className="text-sm text-zinc-400 hover:text-white transition-colors">
                 Create Your Veri-Q Account
               </Link>
               <Link href="/docs" className="text-sm text-zinc-400 hover:text-white transition-colors">
@@ -169,7 +170,7 @@ function VerifyEmailContent() {
             <h1 className="text-2xl font-bold text-white">Missing email</h1>
             <p className="text-zinc-400">No email address provided for verification.</p>
             <Link 
-              href="/auth/signup"
+              href={buildAppUrl("/auth/signup")}
               className="inline-block text-[#d4854e] hover:text-[#e5965f] font-medium transition-colors"
             >
               Go to Sign Up
@@ -189,10 +190,10 @@ function VerifyEmailContent() {
             Dectra
           </Link>
           <nav className="flex items-center gap-6">
-            <Link href="/auth/signin" className="text-sm text-zinc-500 hover:text-black transition-colors">
+            <Link href={buildAppUrl("/auth/signin")} className="text-sm text-zinc-500 hover:text-black transition-colors">
               Sign In
             </Link>
-            <Link href="/auth/signup" className="text-sm text-zinc-500 hover:text-black transition-colors">
+            <Link href={buildAppUrl("/auth/signup")} className="text-sm text-zinc-500 hover:text-black transition-colors">
               Create Your Dectra Account
             </Link>
             <Link href="/docs" className="text-sm text-zinc-500 hover:text-black transition-colors">

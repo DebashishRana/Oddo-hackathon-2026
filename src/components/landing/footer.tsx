@@ -3,6 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "motion/react"
+import { buildAppUrl } from "@/lib/site-url"
 
 const footerColumns = [
   {
@@ -94,7 +95,7 @@ const Footer = () => {
               Contact sales
             </Link>
             <Link
-              href="/auth/signup"
+              href={buildAppUrl("/auth/signup")}
               className="inline-flex items-center justify-center rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background hover:opacity-90 hover:scale-105 transition-all duration-200"
             >
               Get started

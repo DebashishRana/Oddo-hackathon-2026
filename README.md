@@ -324,7 +324,9 @@ npm run db:seed      # Seed database with sample data (if you add this script)
 
 2. **Environment Variables**
    - Add all environment variables from `.env.local`
-   - Update `NEXTAUTH_URL` and `NEXT_PUBLIC_SITE_URL` to your current production domain
+   - Set `NEXT_PUBLIC_APP_URL` / `NEXTAUTH_URL` to your app subdomain
+   - Set `NEXT_PUBLIC_SITE_URL` to your marketing domain
+   - Set `NEXTAUTH_COOKIE_DOMAIN` to the shared root domain, like `.dectra.tech`
 
 3. **Deploy**
    - Vercel will automatically deploy your application
@@ -343,7 +345,10 @@ The application can be deployed to any platform that supports Next.js:
 | Variable | Description | Required | Example |
 |----------|-------------|----------|---------|
 | `AUTH_SECRET` | NextAuth v5 secret key (or use `NEXTAUTH_SECRET`) | ✅ | `your-secret-key` |
-| `NEXTAUTH_URL` | Your site URL (required for production) | ✅ | `https://dectra-two.vercel.app` |
+| `NEXT_PUBLIC_APP_URL` | Canonical app/dashboard origin | ✅ | `https://app.dectra.tech` |
+| `NEXTAUTH_URL` | NextAuth callback origin for the app | ✅ | `https://app.dectra.tech` |
+| `NEXT_PUBLIC_SITE_URL` | Marketing site origin | ✅ | `https://dectra.tech` |
+| `NEXTAUTH_COOKIE_DOMAIN` | Shared cookie domain for subdomains | ✅ | `.dectra.tech` |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID | ✅ | `123456789.apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret | ✅ | `GOCSPX-...` |
 | `DATABASE_URL` | Neon PostgreSQL connection string | ✅ | `postgresql://user:pass@host/db` |
@@ -363,8 +368,10 @@ The application can be deployed to any platform that supports Next.js:
 2. **Google OAuth Redirect URIs**: In Google Cloud Console, add your production URL:
    - `https://dectra-two.vercel.app/api/auth/callback/google`
 
-3. **NEXTAUTH_URL**: Must match your production domain exactly (include `https://`)
-   - `NEXT_PUBLIC_SITE_URL` should match too, because checkout and email links use it when building absolute URLs
+3. **Domain Split**:
+   - `app.dectra.tech` should host sign-in, dashboard, and authenticated app pages
+   - `dectra.tech` should host the marketing site
+   - Session cookies should use the shared parent domain, for example `.dectra.tech`
 
 ## 🐛 Troubleshooting
 
@@ -384,7 +391,7 @@ OAuthCallback error
 ```
 - Verify `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
 - Check authorized redirect URIs in Google Cloud Console
-- Ensure `NEXTAUTH_URL` matches your domain
+- Ensure `NEXT_PUBLIC_APP_URL` and `NEXTAUTH_URL` match `app.dectra.tech`
 
 **3. Stripe Webhook Error**
 ```bash

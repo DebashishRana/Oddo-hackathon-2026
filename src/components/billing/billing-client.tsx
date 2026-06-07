@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Crown, Loader2 } from "lucide-react";
 import { openRazorpayCheckout } from "@/lib/razorpay-client";
 import { DiscountInput, PriceDisplay } from "@/components/checkout/discount-input";
+import { buildAppUrl } from "@/lib/site-url";
 
 interface DiscountDetails {
   discount_id: number
@@ -59,7 +60,7 @@ export function BillingClient({ currentPlan }: BillingClientProps) {
         email: orderData.userEmail,
         onSuccess: () => {
           // Success redirect
-          window.location.href = '/dashboard/billing?success=true';
+          window.location.href = buildAppUrl('/dashboard/billing?success=true');
         },
         onError: (err) => {
           console.error("Razorpay Error:", err);

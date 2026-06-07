@@ -1,6 +1,7 @@
 import { auth } from "./auth";
 import { isAdminEmail, hasAdminPermission, type AdminPermission } from "./admin-config";
 import { redirect } from "next/navigation";
+import { buildAppUrl } from "./site-url";
 
 // Check if current user is admin
 export async function isCurrentUserAdmin(): Promise<boolean> {
@@ -22,7 +23,7 @@ export async function requireAdminAccess() {
   const session = await auth();
   
   if (!session?.user) {
-    redirect("/auth/signin?callbackUrl=/admin");
+    redirect(buildAppUrl("/auth/signin?callbackUrl=/admin"));
   }
   
   if (!isAdminEmail(session.user.email)) {
@@ -37,7 +38,7 @@ export async function requireAdminPermission(permission: AdminPermission) {
   const session = await auth();
   
   if (!session?.user) {
-    redirect("/auth/signin?callbackUrl=/admin");
+    redirect(buildAppUrl("/auth/signin?callbackUrl=/admin"));
   }
   
   if (!hasAdminPermission(session.user.email, permission)) {

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight, ShieldCheck, Workflow } from "lucide-react"
 import Link from "next/link"
 import { motion } from "motion/react"
+import { buildAppUrl } from "@/lib/site-url"
 
 const Hero = () => {
   return (
@@ -37,7 +38,7 @@ const Hero = () => {
           >
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Button className="h-11 rounded-full px-6" size="lg" asChild>
-                <Link href="/auth/signup" className="flex items-center gap-2">
+                <Link href={buildAppUrl("/auth/signup")} className="flex items-center gap-2">
                   <span>Start verifying</span>
                   <motion.span
                     animate={{ x: [0, 4, 0] }}

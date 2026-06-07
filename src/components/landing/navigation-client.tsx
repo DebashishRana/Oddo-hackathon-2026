@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { buildAppUrl } from "@/lib/site-url"
 import { Menu, X, ChevronDown, FileCheck, QrCode, Shield, BarChart3, Workflow, Globe, Sparkles, Code2, ClipboardList, FileSearch, Handshake, GitBranch, Users } from "lucide-react"
 import { UserButtonClient } from "@/components/auth/user-button-client"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -310,16 +311,16 @@ export function NavigationClient({ session }: NavigationClientProps) {
             {!session ? (
               <>
                 <Button variant="ghost" className="h-9 px-3 text-sm text-muted-foreground hover:text-foreground" asChild>
-                  <Link href="/auth/signin">Sign In</Link>
+                  <Link href={buildAppUrl("/auth/signin")}>Sign In</Link>
                 </Button>
                 <Button className="h-9 rounded-full px-4" asChild>
-                  <Link href="/auth/signup">Sign up</Link>
+                  <Link href={buildAppUrl("/auth/signup")}>Sign up</Link>
                 </Button>
               </>
             ) : (
               <>
                 <Button variant="ghost" className="h-9 px-3 text-sm text-muted-foreground hover:text-foreground" asChild>
-                  <Link href="/dashboard">Dashboard</Link>
+                  <Link href={buildAppUrl("/dashboard")}>Dashboard</Link>
                 </Button>
                 <UserButtonClient user={session.user} />
               </>
@@ -417,18 +418,18 @@ export function NavigationClient({ session }: NavigationClientProps) {
               {!session ? (
                 <>
                   <Button variant="ghost" asChild className="w-full justify-start">
-                    <Link href="/auth/signin" onClick={() => setIsOpen(false)}>
+                    <Link href={buildAppUrl("/auth/signin")} onClick={() => setIsOpen(false)}>
                       Sign In
                     </Link>
                   </Button>
                   <Button asChild className="w-full rounded-full">
-                    <Link href="/auth/signup">Sign up</Link>
+                    <Link href={buildAppUrl("/auth/signup")}>Sign up</Link>
                   </Button>
                 </>
               ) : (
                 <>
                   <Button variant="ghost" asChild className="w-full justify-start">
-                    <Link href="/dashboard">Dashboard</Link>
+                    <Link href={buildAppUrl("/dashboard")}>Dashboard</Link>
                   </Button>
                   <div className="flex items-center space-x-2 p-2">
                     <UserButtonClient user={session.user} />

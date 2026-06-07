@@ -2,14 +2,16 @@ import { requireAdminAccess } from '@/lib/admin-auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Settings, Database, CreditCard, Mail, Shield } from 'lucide-react';
-import { getEnvironmentSiteUrl } from '@/lib/site-url';
+import { getAppBaseUrl, getMarketingBaseUrl, getCookieDomain } from '@/lib/site-url';
 
 export const runtime = 'nodejs';
 
 export default async function AdminSettingsPage() {
   // Require admin access
   await requireAdminAccess();
-  const resolvedSiteUrl = getEnvironmentSiteUrl();
+  const resolvedAppUrl = getAppBaseUrl();
+  const resolvedMarketingUrl = getMarketingBaseUrl();
+  const cookieDomain = getCookieDomain() || 'Not set';
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -43,9 +45,21 @@ export default async function AdminSettingsPage() {
               </Badge>
             </div>
             <div className="flex justify-between items-center">
-              <span>Resolved Site URL:</span>
+              <span>App URL:</span>
               <Badge variant="outline">
-                {resolvedSiteUrl}
+                {resolvedAppUrl}
+              </Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Marketing URL:</span>
+              <Badge variant="outline">
+                {resolvedMarketingUrl}
+              </Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Cookie Domain:</span>
+              <Badge variant="outline">
+                {cookieDomain}
               </Badge>
             </div>
             <div className="flex justify-between items-center">
@@ -55,9 +69,9 @@ export default async function AdminSettingsPage() {
               </Badge>
             </div>
             <div className="flex justify-between items-center">
-              <span>NextAuth URL:</span>
+              <span>Configured App URL:</span>
               <Badge variant="outline">
-                {process.env.NEXTAUTH_URL || 'Not set'}
+                {process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || 'Not set'}
               </Badge>
             </div>
           </CardContent>

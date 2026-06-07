@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { openRazorpayCheckout } from "@/lib/razorpay-client";
 import { cn } from "@/lib/utils";
+import { buildAppUrl } from "@/lib/site-url";
 
 interface PricingClientProps {
   plan: {
@@ -29,7 +30,7 @@ export function PricingClient({ plan, isAuthenticated, highlighted }: PricingCli
     const action = plan.action || 'checkout';
 
     if (action === 'signin') {
-      window.location.href = '/auth/signin';
+      window.location.href = buildAppUrl('/auth/signin');
       return;
     }
 
@@ -40,7 +41,7 @@ export function PricingClient({ plan, isAuthenticated, highlighted }: PricingCli
     }
 
     if (!isAuthenticated) {
-      window.location.href = '/auth/signin?callbackUrl=/dashboard/billing';
+      window.location.href = buildAppUrl('/auth/signin?callbackUrl=/dashboard/billing');
       return;
     }
 
@@ -73,7 +74,7 @@ export function PricingClient({ plan, isAuthenticated, highlighted }: PricingCli
         email: orderData.userEmail,
         onSuccess: () => {
           // Instead of redirecting strictly to checkout session, we just go to billing success
-          window.location.href = '/dashboard/billing?success=true';
+          window.location.href = buildAppUrl('/dashboard/billing?success=true');
         },
         onError: (err) => {
           console.error("Razorpay Error:", err);

@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 import { saveUserToDatabase } from "@/lib/user-actions";
+import { buildAppUrl } from "@/lib/site-url";
 
 export const runtime = 'nodejs';
 
@@ -13,7 +14,7 @@ export default async function DashboardLayout({
   const session = await auth();
 
   if (!session) {
-    redirect("/auth/signin");
+    redirect(buildAppUrl("/auth/signin"));
   }
 
   // Save user to database when they access the dashboard

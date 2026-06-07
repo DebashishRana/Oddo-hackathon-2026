@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { buildAppUrl } from "@/lib/site-url"
 
 export default async function AuthErrorPage({
   searchParams,
@@ -15,7 +16,7 @@ export default async function AuthErrorPage({
       </p>
       <div className="flex gap-3">
         <Link
-          href="/auth/signin"
+          href={buildAppUrl("/auth/signin")}
           className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
         >
           Back to sign in
