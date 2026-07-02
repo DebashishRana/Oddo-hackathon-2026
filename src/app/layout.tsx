@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dectra - Instant Document Verification",
+  title: "Dectra- The platform for all your document management needs",
   description: "Manage, verify, and redirect documents all at once with Dectra. Instant EDV validation, QR-based access, and secure redirects.",
   keywords: ["Document Verification", "EDV", "QR Access", "Compliance", "Identity Verification", "SAAS"],
   authors: [{ name: "Dectra Team" }],
