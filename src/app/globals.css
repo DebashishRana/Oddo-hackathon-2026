@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 @import "tailwindcss";
 
 @layer base {
@@ -83,9 +84,73 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  :root {
+    --aura-base: #050505;
+    --aura-gray: #a3a3a3;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#050505] text-white antialiased selection:bg-white selection:text-black;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .text-auraGray {
+    color: var(--aura-gray);
+  }
+
+  .hero-shell {
+    background-color: var(--aura-base);
+    background-color: #050505;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-step {
+    opacity: 0;
+    animation: fadeInUp 1s ease-out forwards;
+  }
+
+  .delay-0 { animation-delay: 0s; }
+  .delay-1 { animation-delay: 1s; }
+  .delay-2 { animation-delay: 2s; }
+  .delay-3 { animation-delay: 3s; }
+
+  #mobile-menu {
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  #mobile-menu.open {
+    transform: translateX(0);
+  }
+
+  .menu-open span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .menu-open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-open span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
   }
 
   /* Performance optimizations */

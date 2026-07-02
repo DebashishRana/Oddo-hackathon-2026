@@ -1,5 +1,6 @@
 import { enqueueVerifyEmail } from "../queues/mail.queue";
 import {
+  OTP_LENGTH,
   OTP_EXPIRY_SECONDS,
   OTP_MAX_ATTEMPTS,
   OTP_RESEND_COOLDOWN_SECONDS
@@ -99,8 +100,14 @@ export class AuthService {
       type: "verify_email",
       email,
       encryptedOtp: encryptSecret(otp),
-      requestId: context.requestId,
-      requestedAt: new Date().toISOString()
+      requestContext: context,
+      requestedAt: new Date().toISOString(),
+      metadata: {
+        otpLength: OTP_LENGTH,
+        expirySeconds: OTP_EXPIRY_SECONDS,
+        resendCooldownSeconds: OTP_RESEND_COOLDOWN_SECONDS,
+        maxAttempts: OTP_MAX_ATTEMPTS
+      }
     });
 
     auditService.record(event, { ...context, email });

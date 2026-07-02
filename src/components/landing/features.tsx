@@ -13,14 +13,14 @@ const featuresTop = [
     label: "QR Document Verification",
     description:
       "Authenticate documents instantly using QR-linked metadata and cross-source validation against DigiLocker and UIDAI.",
-    image: "/images/feature-qr.png",
+    image: "/features/1.webp",
   },
   {
     id: 2,
     label: "KYC & Identity Checks",
     description:
       "Deep-learning powered Aadhaar and PAN verification with confidence scoring and automated fraud detection.",
-    image: "/images/feature-kyc.png",
+    image: "/features/2.webp",
   },
 ]
 
@@ -30,7 +30,7 @@ const featuresBottom = [
     label: "Ephemeral Architecture",
     description:
       "Zero PII retention. Verifications are processed and discarded — not stored — minimising liability.",
-    image: "/images/feature-ephemeral.png",
+    image: "/features/3.webp",
     bgColor: "bg-indigo-500/20",
   },
   {
@@ -38,7 +38,7 @@ const featuresBottom = [
     label: "Fraud Prevention",
     description:
       "Multi-layer cross-verification detects mismatches before they reach your compliance team.",
-    image: "/images/feature-fraud.png",
+    image: "/features/4.webp",
     bgColor: "bg-emerald-500/20",
   },
   {
@@ -46,7 +46,7 @@ const featuresBottom = [
     label: "Compliance Audit Trail",
     description:
       "Every verification is traceable, timestamped, and ready for institutional review or certification.",
-    image: "/images/feature-audit.png",
+    image: "/features/5.webp",
     bgColor: "bg-sky-500/20",
   },
 ]
@@ -156,12 +156,11 @@ const Features = () => {
                 className="group flex flex-col"
               >
                 <div className="aspect-[4/3] rounded-t-3xl overflow-hidden bg-slate-900 border border-white/10 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/5 pointer-events-none" />
                   <Image
                     src={feature.image}
                     alt={feature.label}
                     fill
-                    className="object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
                 <div className="pt-6">
@@ -188,12 +187,11 @@ const Features = () => {
                 <div
                   className={`aspect-[4/3] rounded-t-3xl overflow-hidden border border-white/10 relative ${feature.bgColor}`}
                 >
-                  <div className="absolute inset-0 bg-black/40 pointer-events-none" />
                   <Image
                     src={feature.image}
                     alt={feature.label}
                     fill
-                    className="object-cover opacity-60 mix-blend-overlay group-hover:scale-105 transition-transform duration-700"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
                 <div className="pt-6">

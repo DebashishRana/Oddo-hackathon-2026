@@ -34,17 +34,23 @@ export function AuthForm({ defaultIsSignUp = false }: { defaultIsSignUp?: boolea
     try {
       const action = isSignUp ? signUpAction : signInWithCredentialsAction
       const result = await action(null, formData)
-      
+      if (result?.redirectTo) {
+        if (result?.error) {
+          toast({
+            title: "Verification required",
+            description: result.error,
+          })
+        }
+        // Redirect to email verification page
+        router.push(result.redirectTo)
+        return
+      }
       if (result?.error) {
         toast({
           title: "Error",
           description: result.error,
           variant: "destructive",
         })
-      } else if (result?.redirectTo) {
-        // Redirect to email verification page
-        router.push(result.redirectTo)
-        return
       }
     } catch (error) {
       // NextAuth redirects throw errors, so we ignore those

@@ -44,14 +44,21 @@ JWT_SECRET=use-a-long-random-secret
 REDIS_URL=redis://localhost:6379
 ```
 
-4. Run the API and worker in separate terminals:
+4. Create `.env.local` from `.env.example` and confirm:
+
+```bash
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
+```
+
+5. Run the API and worker in separate terminals:
 
 ```bash
 npm run server:dev
 npm run server:worker
 ```
 
-5. Health check:
+6. Health check:
 
 ```bash
 curl http://localhost:4000/health
@@ -148,6 +155,13 @@ Success:
   }
 }
 ```
+
+## Frontend Flow
+
+- Signup uses the backend OTP service to issue the first code.
+- The verification page reads the `email`, `source`, and `delivery` query parameters to decide whether to auto-send a fresh code.
+- Verify requests update the app database through the Next.js layer after the backend validates the OTP.
+- Resend respects the backend cooldown and the frontend applies a visible cooldown timer.
 
 ## Redis Keys
 

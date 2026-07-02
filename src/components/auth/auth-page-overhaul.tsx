@@ -15,7 +15,7 @@ const COUNTRIES = [
   // Add more as needed just keeping it brief
 ]
 
-export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?: boolean }) {
+export function AuthPageOverhaul({ defaultIsSignUp = false, initialEmail = "" }: { defaultIsSignUp?: boolean; initialEmail?: string }) {
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [emailPreferences, setEmailPreferences] = useState(false)
@@ -44,12 +44,15 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
     setIsLoading(true)
     try {
       const result = await signInWithCredentialsAction(null, formData)
+      if (result?.redirectTo) {
+        if (result?.error) {
+          toast({ title: "Verification required", description: result.error })
+        }
+        router.push(result.redirectTo)
+        return
+      }
       if (result?.error) {
         toast({ title: "Error", description: result.error, variant: "destructive" })
-        if (result?.redirectTo) {
-          router.push(result.redirectTo)
-          return
-        }
       }
     } catch {
       toast({ title: "Error", description: "Something went wrong", variant: "destructive" })
@@ -77,15 +80,16 @@ export function AuthPageOverhaul({ defaultIsSignUp = false }: { defaultIsSignUp?
               <Label htmlFor="email" className="text-sm font-medium text-[#24292f]">
                 Email address
               </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="you@example.com"
-                className="h-11 rounded border-[#d0d7de] bg-white text-[#24292f] text-sm shadow-sm placeholder:text-[#6e7781] focus:border-[#4a4fff] focus:ring-[#4a4fff] focus:ring-1"
-                disabled={isLoading}
-                required
-              />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  defaultValue={initialEmail}
+                  className="h-11 rounded border-[#d0d7de] bg-white text-[#24292f] text-sm shadow-sm placeholder:text-[#6e7781] focus:border-[#4a4fff] focus:ring-[#4a4fff] focus:ring-1"
+                  disabled={isLoading}
+                  required
+                />
             </div>
 
             {/* Username - only for signup */}

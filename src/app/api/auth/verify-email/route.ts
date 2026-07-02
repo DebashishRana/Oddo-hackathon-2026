@@ -1,41 +1,52 @@
 import { NextResponse } from "next/server"
-import { verifyEmailCode } from "@/lib/database"
+import { markEmailVerified } from "@/lib/database"
+import { verifyOtpEmail } from "@/lib/auth-otp"
+
+export const runtime = "nodejs"
 
 export async function POST(request: Request) {
   try {
-    const { email, code } = await request.json()
+    const body = (await request.json()) as { email?: unknown; otp?: unknown; code?: unknown }
+    const email = typeof body.email === "string" ? body.email.trim() : ""
+    const otp = typeof body.otp === "string" ? body.otp.trim() : typeof body.code === "string" ? body.code.trim() : ""
 
-    if (!email || !code) {
+    if (!email || !otp) {
       return NextResponse.json(
-        { error: "Email and verification code are required" },
+        { success: false, error: "Email and verification code are required" },
         { status: 400 }
       )
     }
 
-    // Validate code format (6 digits)
-    if (!/^\d{6}$/.test(code)) {
+    const result = await verifyOtpEmail(email, otp)
+    try {
+      await markEmailVerified(email)
+    } catch (markError) {
+      console.error("[VerifyEmail] Failed to update account verification state:", markError)
       return NextResponse.json(
-        { error: "Invalid code format" },
-        { status: 400 }
+        {
+          success: false,
+          error: "The code was accepted, but we could not update your account yet. Please request a new code and try again.",
+          code: "VERIFY_STATE_UPDATE_FAILED"
+        },
+        { status: 500 }
       )
     }
 
-    const verified = await verifyEmailCode(email, code)
-
-    if (!verified) {
-      return NextResponse.json(
-        { error: "Invalid or expired verification code" },
-        { status: 400 }
-      )
-    }
-
-    console.log(`[Verify] Email verified successfully: ${email}`)
-    return NextResponse.json({ success: true, verified: true })
+    return NextResponse.json({
+      success: true,
+      verified: true,
+      message: result.message,
+      data: result.data
+    })
   } catch (error) {
-    console.error("[Verify] Error verifying email:", error)
+    const otpError = error as { status?: number; message?: string; code?: string }
     return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
+      {
+        success: false,
+        error: otpError.message || "Unable to verify code",
+        code: otpError.code || "REQUEST_FAILED"
+      },
+      { status: otpError.status || 500 }
     )
   }
 }

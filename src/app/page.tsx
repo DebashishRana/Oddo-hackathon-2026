@@ -3,9 +3,7 @@ import Hero from "@/components/landing/hero"
 import Features from "@/components/landing/features"
 import Showcase from "@/components/landing/showcase"
 import Insights from "@/components/landing/insights"
-import Foundations from "@/components/landing/foundations"
 import PoweredBySection from "@/components/landing/powered-by-section"
-import Pricing from "@/components/landing/pricing"
 import Testimonials from "@/components/landing/testimonials"
 import CustomerStories from "@/components/landing/customer-stories"
 import Footer from "@/components/landing/footer"
@@ -36,9 +34,7 @@ export default async function Home() {
       <Showcase />
       <CustomerStories />
       <Insights />
-      <Foundations />
       <PoweredBySection />
-      <Pricing isAuthenticated={isAuthenticated} />
       <Testimonials />
       <Footer />
       <ScrollToTop />

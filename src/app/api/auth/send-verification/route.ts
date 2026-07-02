@@ -1,49 +1,31 @@
 import { NextResponse } from "next/server"
-import { setVerificationCode, getUserByEmail } from "@/lib/database"
-import { sendEmail, createVerificationEmail } from "@/lib/resend"
+import { requestOtpEmail } from "@/lib/auth-otp"
+
+export const runtime = "nodejs"
 
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json()
+    const body = (await request.json()) as { email?: unknown }
+    const email = typeof body.email === "string" ? body.email.trim() : ""
 
     if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 })
+      return NextResponse.json({ success: false, error: "Email is required" }, { status: 400 })
     }
 
-    // Check user exists
-    const user = await getUserByEmail(email)
-    if (!user) {
-      // Don't reveal that the user doesn't exist
-      return NextResponse.json({ success: true })
-    }
-
-    // Already verified?
-    if (user.email_verified) {
-      return NextResponse.json({ error: "Email is already verified" }, { status: 400 })
-    }
-
-    // Generate code and save to DB
-    const code = await setVerificationCode(email)
-
-    // Send the email
-    const emailData = createVerificationEmail(email, code)
-    const result = await sendEmail(emailData)
-
-    if (!result.success) {
-      console.error("[Verify] Failed to send verification email:", result.error)
-      return NextResponse.json(
-        { error: "Failed to send verification email. Please try again." },
-        { status: 500 }
-      )
-    }
-
-    console.log(`[Verify] Verification code sent to ${email}`)
-    return NextResponse.json({ success: true })
+    const result = await requestOtpEmail(email)
+    return NextResponse.json({
+      success: true,
+      message: result.message
+    })
   } catch (error) {
-    console.error("[Verify] Error sending verification code:", error)
+    const otpError = error as { status?: number; message?: string; code?: string }
     return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
+      {
+        success: false,
+        error: otpError.message || "Unable to request verification code",
+        code: otpError.code || "REQUEST_FAILED"
+      },
+      { status: otpError.status || 500 }
     )
   }
 }

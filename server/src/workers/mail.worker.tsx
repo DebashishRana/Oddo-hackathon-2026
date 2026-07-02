@@ -19,6 +19,20 @@ const processMailJob = async (job: Job<MailJob>) => {
   }
 
   const otp = decryptSecret(job.data.encryptedOtp);
+  const requestContext =
+    "requestContext" in job.data && job.data.requestContext
+      ? job.data.requestContext
+      : {
+          requestId: (job.data as MailJob & { requestId?: string }).requestId || job.id?.toString() || "unknown",
+          ip: "unknown"
+        };
+  logger.info("mail_worker_processing_verify_email", {
+    jobId: job.id,
+    requestId: requestContext.requestId,
+    email: job.data.email,
+    queue: MAIL_QUEUE_NAME,
+    metadata: job.data.metadata
+  });
   const html = await render(<VerifyEmail otp={otp} />);
   const text = verifyEmailText({ otp });
 
@@ -29,16 +43,18 @@ const processMailJob = async (job: Job<MailJob>) => {
     text,
     tags: {
       category: "auth",
-      workflow: "email_verification"
+      workflow: "email_verification",
+      request_id: requestContext.requestId
     }
   });
 
   auditService.record("email_delivery_succeeded", {
-    requestId: job.data.requestId,
+    requestId: requestContext.requestId,
     email: job.data.email,
     provider: result.provider,
     messageId: result.messageId,
-    jobId: job.id
+    jobId: job.id,
+    metadata: job.data.metadata
   });
 
   return result;
@@ -62,16 +78,25 @@ worker.on("failed", async (job, error) => {
   });
 
   if (job && job.attemptsMade >= (job.opts.attempts || 1)) {
+    const failedRequestContext =
+      "requestContext" in job.data && job.data.requestContext
+        ? job.data.requestContext
+        : {
+            requestId: (job.data as MailJob & { requestId?: string }).requestId || job.id?.toString() || "unknown",
+            ip: "unknown"
+          };
+
     await mailDeadLetterQueue.add("mail_failed", job.data, {
       jobId: `${MAIL_DLQ_NAME}:${job.id}`,
       removeOnComplete: { age: 60 * 60 * 24 * 30 }
     });
 
     auditService.warn("email_delivery_failed", {
-      requestId: job.data.requestId,
+      requestId: failedRequestContext.requestId,
       email: job.data.email,
       jobId: job.id,
-      error: error.message
+      error: error.message,
+      metadata: job.data.metadata
     });
   }
 });

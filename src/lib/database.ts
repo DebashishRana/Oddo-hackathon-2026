@@ -1115,6 +1115,8 @@ export async function getDiscountAnalytics() {
 
 // =============================================================================
 // EMAIL VERIFICATION
+// Legacy DB-backed verification helpers retained for compatibility.
+// The signup and verification UX now uses the backend OTP service.
 // =============================================================================
 
 /**

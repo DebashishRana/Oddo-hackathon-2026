@@ -35,7 +35,17 @@ mailQueueEvents.on("failed", ({ jobId, failedReason }) => {
   logger.error("mail_job_failed", { jobId, queue: MAIL_QUEUE_NAME, failedReason });
 });
 
-export const enqueueVerifyEmail = async (job: MailJob) =>
-  mailQueue.add("verify_email", job, {
-    jobId: `verify:${job.email}:${job.requestId}`
+export const enqueueVerifyEmail = async (job: MailJob) => {
+  const jobId = `verify:${job.email}:${job.requestContext.requestId}`;
+  logger.info("mail_job_enqueued", {
+    jobId,
+    queue: MAIL_QUEUE_NAME,
+    requestId: job.requestContext.requestId,
+    email: job.email,
+    metadata: job.metadata
   });
+
+  return mailQueue.add("verify_email", job, {
+    jobId
+  });
+};

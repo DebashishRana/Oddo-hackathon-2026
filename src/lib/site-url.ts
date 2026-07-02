@@ -29,6 +29,13 @@ export function getMarketingBaseUrl() {
   )
 }
 
+export function getAuthApiBaseUrl() {
+  return resolveUrl(
+    process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL,
+    "http://localhost:4000"
+  )
+}
+
 export function getCookieDomain() {
   const cookieDomain = process.env.NEXTAUTH_COOKIE_DOMAIN?.trim()
   return cookieDomain ? (cookieDomain.startsWith(".") ? cookieDomain : `.${cookieDomain}`) : undefined
@@ -51,5 +58,9 @@ export function buildMarketingUrl(pathname: string, baseUrl = getMarketingBaseUr
 }
 
 export function buildAbsoluteUrl(pathname: string, baseUrl = getAppBaseUrl()) {
+  return new URL(pathname, normalizeSiteUrl(baseUrl)).toString()
+}
+
+export function buildAuthApiUrl(pathname: string, baseUrl = getAuthApiBaseUrl()) {
   return new URL(pathname, normalizeSiteUrl(baseUrl)).toString()
 }
