@@ -104,3 +104,33 @@ npm run build
 npm run server:build
 docker compose up -d db
 ```
+
+## Deployment
+
+### GitHub
+
+1. Push the repo to GitHub.
+2. Let the included CI workflow run on each push and pull request.
+3. Confirm both builds pass:
+   - frontend: `npm run build`
+   - backend: `npm run server:build`
+
+### Netlify frontend
+
+1. Connect the GitHub repo to Netlify.
+2. Use the root of the repo as the site base.
+3. Netlify will use `netlify.toml` for the Next.js build.
+4. Set these environment variables in Netlify:
+   - `NEXT_PUBLIC_APP_NAME`
+   - `NEXT_PUBLIC_API_BASE_URL`
+5. Point `NEXT_PUBLIC_API_BASE_URL` to the deployed backend URL, not `localhost`.
+
+### Backend
+
+1. Deploy the `server/` app to a Node host or container host.
+2. Provide production values for:
+   - `DATABASE_URL`
+   - `JWT_SECRET`
+   - `APP_URL`
+   - `CORS_ORIGINS`
+3. Run migrations against the production database before opening the app to users.
