@@ -6,7 +6,7 @@ import { apiFetch } from "@/lib/api";
 // Shared entity pickers for forms (assets, users, departments)
 
 const selectCls =
-  "w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-950 outline-none transition focus:border-[#1677ff] focus:ring-4 focus:ring-[#1677ff]/10";
+  "w-full rounded-xl border border-[var(--af-border)] bg-white px-4 py-3 text-sm text-[var(--af-ink)] outline-none transition focus:border-[var(--af-accent)] focus:ring-4 focus:ring-[var(--af-accent-soft)]";
 
 type Option = { value: string; label: string };
 

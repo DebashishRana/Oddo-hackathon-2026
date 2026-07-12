@@ -1,13 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #111111;
-  --muted: #f5f5f4;
-  --muted-foreground: #6b7280;
-  --border: rgba(17, 17, 17, 0.08);
-  --accent: #1677ff;
-  --accent-strong: #0b63db;
+  --af-bg: #eef2f6;
+  --af-bg-elevated: #ffffff;
+  --af-ink: #0b1220;
+  --af-muted: #5b6b7c;
+  --af-border: rgba(15, 23, 42, 0.08);
+  --af-accent: #0f766e;
+  --af-accent-strong: #0d9488;
+  --af-accent-soft: rgba(15, 118, 110, 0.1);
+  --af-steel: #1e293b;
+  --af-danger: #be123c;
+  --af-warning: #b45309;
+  --af-success: #047857;
+  --af-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+  --af-radius: 22px;
 }
 
 * {
@@ -21,15 +28,16 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
-  background: var(--background);
-  color: var(--foreground);
+  font-family: var(--font-body), "Segoe UI", system-ui, sans-serif;
+  background: var(--af-bg);
+  color: var(--af-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .font-display {
-  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  letter-spacing: -0.03em;
 }
 
 a {
@@ -38,6 +46,55 @@ a {
 }
 
 ::selection {
-  background: rgba(22, 119, 255, 0.2);
-  color: #111111;
+  background: rgba(15, 118, 110, 0.22);
+  color: #0b1220;
+}
+
+.af-grid-bg {
+  background-color: var(--af-bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(15, 118, 110, 0.14), transparent),
+    linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+  background-size: auto, 48px 48px, 48px 48px;
+}
+
+.af-panel {
+  border: 1px solid var(--af-border);
+  background: var(--af-bg-elevated);
+  border-radius: var(--af-radius);
+  box-shadow: var(--af-shadow);
+}
+
+.af-fade-up {
+  animation: af-fade-up 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.af-fade-up-delay {
+  animation: af-fade-up 640ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
+}
+
+@keyframes af-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes af-pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.af-live-dot {
+  animation: af-pulse-soft 1.8s ease-in-out infinite;
 }

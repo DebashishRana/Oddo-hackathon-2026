@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiFetch } from "@/lib/api";
+import { LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function SignOutButton() {
   const router = useRouter();
@@ -20,13 +22,9 @@ export function SignOutButton() {
   };
 
   return (
-    <button
-      className="w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-700 transition hover:bg-neutral-50 hover:text-neutral-950 disabled:opacity-60"
-      onClick={handleSignOut}
-      disabled={loading}
-      type="button"
-    >
+    <Button variant="secondary" className="w-full" onClick={handleSignOut} disabled={loading}>
+      <LogOut className="h-4 w-4" />
       {loading ? "Signing out..." : "Sign out"}
-    </button>
+    </Button>
   );
 }
