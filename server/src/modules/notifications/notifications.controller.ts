@@ -9,6 +9,11 @@ export class NotificationsController {
     return ok(res, "Notifications retrieved.", { notifications });
   }
 
+  async unreadCount(req: Request, res: Response) {
+    const count = await notificationsService.unreadCount(req.user!.id);
+    return ok(res, "Unread count retrieved.", { count });
+  }
+
   async markRead(req: Request, res: Response) {
     const id = Number(req.params.id);
     if (!id) throw new AppError("Invalid notification id", 400, "VALIDATION_ERROR", "Invalid notification id.");

@@ -1,15 +1,35 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { ArrowRightLeft, ClipboardCheck } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { AssetSelect, DepartmentSelect, UserSelect } from "@/components/entity-selects";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { panelBtnDanger, panelBtnPrimary, panelBtnSecondary, panelInput, statusTone } from "@/lib/panel-styles";
+
+const btnPrimary = panelBtnPrimary;
+const btnSecondary = panelBtnSecondary;
+const btnDanger = panelBtnDanger;
+const statusColors = statusTone;
+
+function camelKeys<T>(value: unknown): T {
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, entry]) => [
+      key.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase()),
+      entry,
+    ])
+  ) as T;
+}
 
 type Allocation = {
   id: number;
   assetId: number;
   assetName?: string;
+  assetTag?: string;
   allocatedToUserId: number | null;
   allocatedToDepartmentId: number | null;
+  userName?: string;
+  deptName?: string;
   allocatedByName?: string;
   status: string;
   expectedReturnDate: string | null;
@@ -27,21 +47,6 @@ type Transfer = {
   createdAt: string;
 };
 
-const inputCls =
-  "w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-950 outline-none transition focus:border-[#1677ff] focus:ring-4 focus:ring-[#1677ff]/10";
-const btnPrimary =
-  "rounded-full bg-[#1677ff] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0b63db] disabled:opacity-60";
-const btnSecondary =
-  "rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-100";
-const btnDanger =
-  "rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-60";
-
-const statusColors: Record<string, string> = {
-  active: "bg-blue-50 text-blue-700",
-  returned: "bg-emerald-50 text-emerald-700",
-  overdue: "bg-rose-50 text-rose-700",
-};
-
 function Badge({ label, color }: { label: string; color: string }) {
   return <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>{label}</span>;
 }
@@ -57,6 +62,7 @@ function SuccessMsg({ msg }: { msg: string }) {
 type TabKey = "allocations" | "overdue" | "transfers";
 
 export function AllocationsPanel() {
+  const { canApprove, canManageAssets } = useCurrentUser();
   const [tab, setTab] = useState<TabKey>("allocations");
 
   const [allocations, setAllocations] = useState<Allocation[]>([]);
@@ -74,6 +80,7 @@ export function AllocationsPanel() {
   const [allocReturnDate, setAllocReturnDate] = useState("");
   const [allocSaving, setAllocSaving] = useState(false);
   const [allocError, setAllocError] = useState<string | null>(null);
+  const [heldBy, setHeldBy] = useState<string | null>(null);
 
   // Return form
   const [returnTarget, setReturnTarget] = useState<number | null>(null);
@@ -100,9 +107,9 @@ export function AllocationsPanel() {
       const aP = await allocRes.json();
       const oP = await overdueRes.json();
       const tP = await txRes.json();
-      setAllocations(aP?.data?.allocations ?? []);
-      setOverdue(oP?.data?.allocations ?? []);
-      setTransfers(tP?.data?.transfers ?? []);
+      setAllocations((aP?.data?.allocations ?? []).map((item: unknown) => camelKeys<Allocation>(item)));
+      setOverdue((oP?.data?.allocations ?? []).map((item: unknown) => camelKeys<Allocation>(item)));
+      setTransfers((tP?.data?.transfers ?? []).map((item: unknown) => camelKeys<Transfer>(item)));
     } catch {
       setError("Failed to load allocations");
     } finally {
@@ -125,9 +132,17 @@ export function AllocationsPanel() {
       };
       const r = await apiFetch("/api/allocations", { method: "POST", body: JSON.stringify(body) });
       const p = await r.json();
-      if (!r.ok) throw new Error(p?.message || "Allocation failed");
+      if (!r.ok) {
+        const message = p?.message || "Allocation failed";
+        if (r.status === 409) {
+          const match = message.match(/currently held by\s+(.+?)(?:\.|$)/i);
+          setHeldBy(match?.[1] ?? "another holder");
+        }
+        throw new Error(message);
+      }
       setSuccess("Asset allocated.");
       setShowAllocForm(false);
+      setHeldBy(null);
       setAllocAssetId(""); setAllocUserId(""); setAllocDeptId(""); setAllocReturnDate("");
       await load();
     } catch (err: unknown) {
@@ -154,6 +169,14 @@ export function AllocationsPanel() {
     } finally {
       setReturnSaving(false);
     }
+  }
+
+  function requestTransferForAsset(assetId: string) {
+    setTxAssetId(assetId);
+    setHeldBy(null);
+    setShowAllocForm(false);
+    setShowTransferForm(true);
+    setTab("transfers");
   }
 
   async function handleTransferRequest() {
@@ -208,7 +231,7 @@ export function AllocationsPanel() {
       {success && <SuccessMsg msg={success} />}
       {error && <ErrorMsg msg={error} />}
 
-      <section className="rounded-[28px] border border-neutral-200 bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+      <section className="af-panel p-5 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex gap-2">
             {tabs.map((t) => (
@@ -224,54 +247,60 @@ export function AllocationsPanel() {
             ))}
           </div>
           <div className="flex gap-2">
-            <button className={btnPrimary} onClick={() => setShowAllocForm((v) => !v)}>
-              {showAllocForm ? "Cancel" : "+ Allocate"}
-            </button>
-            <button className={btnSecondary} onClick={() => setShowTransferForm((v) => !v)}>
-              {showTransferForm ? "Cancel" : "Request Transfer"}
+            {canManageAssets && <button className={panelBtnPrimary} onClick={() => setShowAllocForm((v) => !v)}>
+              <ClipboardCheck size={16} />{showAllocForm ? "Cancel" : "Allocate asset"}
+            </button>}
+            <button className={panelBtnSecondary} onClick={() => setShowTransferForm((v) => !v)}>
+              <ArrowRightLeft size={16} />{showTransferForm ? "Cancel" : "Request transfer"}
             </button>
           </div>
         </div>
 
         {showAllocForm && (
-          <div className="mt-5 rounded-[24px] border border-neutral-200 bg-neutral-50 p-5 space-y-3">
+          <div className="mt-5 rounded-2xl border border-[var(--af-border)] bg-slate-50/70 p-5 space-y-4">
             <h3 className="font-semibold text-neutral-800">Allocate Asset</h3>
             {allocError && <ErrorMsg msg={allocError} />}
+            {heldBy && (
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                <span>Currently held by <strong>{heldBy}</strong></span>
+                <button className={panelBtnSecondary} onClick={() => requestTransferForAsset(allocAssetId)}>Request transfer instead <ArrowRightLeft size={15} /></button>
+              </div>
+            )}
             <div className="grid gap-3 sm:grid-cols-2">
-              <AssetSelect className={inputCls} value={allocAssetId} onChange={setAllocAssetId} placeholder="Select asset *" />
-              <UserSelect className={inputCls} value={allocUserId} onChange={setAllocUserId} placeholder="Select user (or leave blank)" />
-              <DepartmentSelect className={inputCls} value={allocDeptId} onChange={setAllocDeptId} placeholder="Select department (or leave blank)" />
+              <AssetSelect className={panelInput} value={allocAssetId} onChange={(value) => { setAllocAssetId(value); setHeldBy(null); }} placeholder="Select available asset *" status="available" />
+              <UserSelect className={panelInput} value={allocUserId} onChange={setAllocUserId} placeholder="Select user (or leave blank)" />
+              <DepartmentSelect className={panelInput} value={allocDeptId} onChange={setAllocDeptId} placeholder="Select department (or leave blank)" />
               <div>
                 <label className="mb-1 block text-xs font-medium text-neutral-500">Expected Return Date</label>
-                <input className={inputCls} type="date" value={allocReturnDate} onChange={(e) => setAllocReturnDate(e.target.value)} />
+                <input className={panelInput} type="date" value={allocReturnDate} onChange={(e) => setAllocReturnDate(e.target.value)} />
               </div>
             </div>
             <div className="flex gap-3">
-              <button className={btnPrimary} onClick={handleAllocate} disabled={allocSaving}>{allocSaving ? "Saving…" : "Allocate"}</button>
-              <button className={btnSecondary} onClick={() => setShowAllocForm(false)}>Cancel</button>
+              <button className={panelBtnPrimary} onClick={handleAllocate} disabled={allocSaving}>{allocSaving ? "Saving…" : "Allocate"}</button>
+              <button className={panelBtnSecondary} onClick={() => setShowAllocForm(false)}>Cancel</button>
             </div>
           </div>
         )}
 
         {showTransferForm && (
-          <div className="mt-5 rounded-[24px] border border-neutral-200 bg-neutral-50 p-5 space-y-3">
+          <div className="mt-5 rounded-2xl border border-[var(--af-border)] bg-slate-50/70 p-5 space-y-4">
             <h3 className="font-semibold text-neutral-800">Request Transfer</h3>
             {txError && <ErrorMsg msg={txError} />}
             <div className="grid gap-3 sm:grid-cols-2">
-              <AssetSelect className={inputCls} value={txAssetId} onChange={setTxAssetId} placeholder="Select asset *" />
-              <UserSelect className={inputCls} value={txToUserId} onChange={setTxToUserId} placeholder="Select destination user" />
-              <DepartmentSelect className={inputCls} value={txToDeptId} onChange={setTxToDeptId} placeholder="Select destination department" />
-              <input className={inputCls} placeholder="Notes (optional)" value={txNotes} onChange={(e) => setTxNotes(e.target.value)} />
+              <AssetSelect className={panelInput} value={txAssetId} onChange={setTxAssetId} placeholder="Select asset *" />
+              <UserSelect className={panelInput} value={txToUserId} onChange={setTxToUserId} placeholder="Select destination user" />
+              <DepartmentSelect className={panelInput} value={txToDeptId} onChange={setTxToDeptId} placeholder="Select destination department" />
+              <input className={panelInput} placeholder="Notes (optional)" value={txNotes} onChange={(e) => setTxNotes(e.target.value)} />
             </div>
             <div className="flex gap-3">
-              <button className={btnPrimary} onClick={handleTransferRequest} disabled={txSaving}>{txSaving ? "Saving…" : "Request"}</button>
-              <button className={btnSecondary} onClick={() => setShowTransferForm(false)}>Cancel</button>
+              <button className={panelBtnPrimary} onClick={handleTransferRequest} disabled={txSaving}>{txSaving ? "Saving…" : "Request"}</button>
+              <button className={panelBtnSecondary} onClick={() => setShowTransferForm(false)}>Cancel</button>
             </div>
           </div>
         )}
       </section>
 
-      <section className="rounded-[28px] border border-neutral-200 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+      <section className="af-panel overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-2">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -286,6 +315,8 @@ export function AllocationsPanel() {
                 <thead className="bg-neutral-50 text-xs uppercase tracking-[0.18em] text-neutral-500">
                   <tr>
                     <th className="px-4 py-3 font-semibold">Asset</th>
+                    <th className="px-4 py-3 font-semibold">Holder</th>
+                    <th className="px-4 py-3 font-semibold">Department</th>
                     <th className="px-4 py-3 font-semibold">Status</th>
                     <th className="px-4 py-3 font-semibold">Expected Return</th>
                     <th className="px-4 py-3 font-semibold">Created</th>
@@ -294,10 +325,12 @@ export function AllocationsPanel() {
                 </thead>
                 <tbody>
                   {allocations.length === 0 ? (
-                    <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-neutral-400">No allocations yet</td></tr>
+                    <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-neutral-400">No allocations yet</td></tr>
                   ) : allocations.map((a) => (
                     <tr key={a.id} className="border-t border-neutral-100">
                       <td className="px-4 py-3 text-sm font-medium text-neutral-950">{a.assetName ?? `Asset #${a.assetId}`}</td>
+                      <td className="px-4 py-3 text-sm text-neutral-600">{a.userName ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-neutral-600">{a.deptName ?? "—"}</td>
                       <td className="px-4 py-3">
                         <Badge label={a.status} color={statusColors[a.status] ?? "bg-neutral-100 text-neutral-600"} />
                       </td>
@@ -306,7 +339,7 @@ export function AllocationsPanel() {
                       </td>
                       <td className="px-4 py-3 text-sm text-neutral-500">{new Date(a.createdAt).toLocaleDateString()}</td>
                       <td className="px-4 py-3">
-                        {a.status === "active" && (
+                        {canManageAssets && a.status === "active" && (
                           returnTarget === a.id ? (
                             <div className="flex items-center gap-2">
                               <input
@@ -350,7 +383,7 @@ export function AllocationsPanel() {
                       ? Math.floor((Date.now() - new Date(a.expectedReturnDate).getTime()) / 86400000)
                       : 0;
                     return (
-                      <tr key={a.id} className="border-t border-neutral-100">
+                      <tr key={a.id} className="border-t border-rose-100 bg-rose-50/40">
                         <td className="px-4 py-3 text-sm font-medium text-neutral-950">{a.assetName ?? `Asset #${a.assetId}`}</td>
                         <td className="px-4 py-3 text-sm text-rose-600">
                           {a.expectedReturnDate ? new Date(a.expectedReturnDate).toLocaleDateString() : "—"}
@@ -359,7 +392,7 @@ export function AllocationsPanel() {
                           <Badge label={`${daysOverdue}d overdue`} color="bg-rose-50 text-rose-700" />
                         </td>
                         <td className="px-4 py-3">
-                          {returnTarget === a.id ? (
+                          {canManageAssets && (returnTarget === a.id ? (
                             <div className="flex items-center gap-2">
                               <input
                                 className="rounded-xl border border-neutral-200 px-3 py-1 text-xs outline-none"
@@ -374,7 +407,7 @@ export function AllocationsPanel() {
                             </div>
                           ) : (
                             <button className={btnDanger} onClick={() => { setReturnTarget(a.id); setReturnNotes(""); }}>Return</button>
-                          )}
+                          ))}
                         </td>
                       </tr>
                     );
@@ -410,7 +443,7 @@ export function AllocationsPanel() {
                       <td className="px-4 py-3 text-sm text-neutral-500">{t.notes ?? "—"}</td>
                       <td className="px-4 py-3 text-sm text-neutral-500">{new Date(t.createdAt).toLocaleDateString()}</td>
                       <td className="px-4 py-3">
-                        {t.status === "requested" && (
+                        {t.status === "requested" && canApprove && (
                           <div className="flex gap-2">
                             <button className={btnPrimary} style={{ padding: "4px 12px", fontSize: "12px" }} onClick={() => handleTransferAction(t.id, "approve")}>
                               Approve

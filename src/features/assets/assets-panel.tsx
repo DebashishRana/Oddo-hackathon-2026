@@ -1,288 +1,229 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { apiFetch } from "@/lib/api";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { AssetQr } from "@/components/asset-qr";
 import { DepartmentSelect } from "@/components/entity-selects";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { apiFetch } from "@/lib/api";
+import { panelBtnPrimary, panelBtnSecondary, panelInput, statusTone } from "@/lib/panel-styles";
 
-type Asset = {
-  id: number;
-  name: string;
-  assetTag: string;
-  serialNumber: string | null;
-  status: string;
-  condition: string;
-  location: string | null;
-  isSharedBookable: boolean;
-  acquisitionDate: string | null;
-  acquisitionCost: number | null;
-  categoryId: number | null;
-  departmentId: number | null;
-  notes: string | null;
-  createdAt: string;
-};
-
+type AssetStatus = "available" | "allocated" | "reserved" | "under_maintenance" | "lost" | "retired" | "disposed";
 type Category = { id: number; name: string };
+type Asset = {
+  id: number; name: string; assetTag: string; serialNumber: string | null; status: AssetStatus; condition: string;
+  location: string | null; isSharedBookable: boolean; acquisitionDate: string | null; acquisitionCost: number | null;
+  categoryId: number | null; departmentId: number | null; categoryName?: string; deptName?: string;
+  photoUrl: string | null; documentUrl: string | null; notes: string | null;
+};
+type Allocation = { id: number; userName?: string; deptName?: string; status: string; expectedReturnDate?: string | null; returnedAt?: string | null; createdAt?: string };
+type Maintenance = { id: number; title?: string; issueDescription?: string; status: string; scheduledDate?: string | null; completedAt?: string | null; createdAt?: string };
+type StatusHistory = { id: number; fromStatus: string | null; toStatus: string; reason: string | null; changedByName?: string; createdAt: string };
+type AssetDetail = Asset & { allocationHistory: Allocation[]; maintenanceHistory: Maintenance[]; statusHistory: StatusHistory[] };
 
-const inputCls =
-  "w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-950 outline-none transition focus:border-[#1677ff] focus:ring-4 focus:ring-[#1677ff]/10";
-const btnPrimary =
-  "rounded-full bg-[#1677ff] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0b63db] disabled:opacity-60";
-const btnSecondary =
-  "rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-100";
-
-const statusColors: Record<string, string> = {
-  available: "bg-emerald-50 text-emerald-700",
-  allocated: "bg-blue-50 text-blue-700",
-  reserved: "bg-indigo-50 text-indigo-700",
-  under_maintenance: "bg-amber-50 text-amber-700",
-  lost: "bg-rose-50 text-rose-700",
-  retired: "bg-neutral-100 text-neutral-500",
-  disposed: "bg-neutral-100 text-neutral-400",
+const statuses: AssetStatus[] = ["available", "allocated", "reserved", "under_maintenance", "lost", "retired", "disposed"];
+const transitions: Record<AssetStatus, AssetStatus[]> = {
+  available: ["allocated", "reserved", "under_maintenance", "lost", "retired", "disposed"],
+  allocated: ["available", "under_maintenance", "lost", "retired", "disposed"],
+  reserved: ["available", "allocated", "under_maintenance", "lost", "retired", "disposed"],
+  under_maintenance: ["available", "retired", "disposed"],
+  lost: ["available"],
+  retired: ["disposed"],
+  disposed: [],
 };
 
-function Badge({ label, color }: { label: string; color: string }) {
-  return <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>{label}</span>;
+const pretty = (value: string) => value.replace(/_/g, " ");
+const dateLabel = (value?: string | null) => value ? new Date(value).toLocaleDateString() : "—";
+const empty = (value?: string | null) => value?.trim() || "—";
+
+function StatusBadge({ status }: { status: string }) {
+  return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${statusTone[status] ?? "bg-slate-100 text-slate-600"}`}>{pretty(status)}</span>;
 }
 
-function ErrorMsg({ msg }: { msg: string }) {
-  return <p className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{msg}</p>;
-}
-
-function SuccessMsg({ msg }: { msg: string }) {
-  return <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{msg}</p>;
+function Message({ tone, children }: { tone: "error" | "success"; children: string }) {
+  return <div className={`rounded-xl border px-4 py-3 text-sm ${tone === "error" ? "border-rose-200 bg-rose-50 text-rose-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>{children}</div>;
 }
 
 export function AssetsPanel() {
+  const { canManageAssets } = useCurrentUser();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
-
-  // filters
-  const [searchQ, setSearchQ] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [filterCat, setFilterCat] = useState("");
-
-  // form state
-  const [name, setName] = useState("");
-  const [serial, setSerial] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [departmentId, setDepartmentId] = useState("");
-  const [condition, setCondition] = useState("good");
-  const [location, setLocation] = useState("");
-  const [acquisitionDate, setAcquisitionDate] = useState("");
-  const [acquisitionCost, setAcquisitionCost] = useState("");
-  const [isSharedBookable, setIsSharedBookable] = useState(false);
-  const [notes, setNotes] = useState("");
+  const [filters, setFilters] = useState({ q: "", tag: "", serial: "", categoryId: "", status: "", departmentId: "", location: "" });
+  const [selectedAsset, setSelectedAsset] = useState<AssetDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [statusTarget, setStatusTarget] = useState("");
+  const [statusReason, setStatusReason] = useState("");
+  const [transitioning, setTransitioning] = useState(false);
+  const [transitionError, setTransitionError] = useState<string | null>(null);
+  const [form, setForm] = useState({
+    name: "", categoryId: "", serialNumber: "", acquisitionDate: "", acquisitionCost: "", condition: "good",
+    location: "", departmentId: "", photoUrl: "", documentUrl: "", notes: "", isSharedBookable: false,
+  });
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
-
   const load = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      const params = new URLSearchParams();
-      if (searchQ) params.set("q", searchQ);
-      if (filterStatus) params.set("status", filterStatus);
-      if (filterCat) params.set("categoryId", filterCat);
-
-      const [assetsRes, catsRes] = await Promise.all([
-        apiFetch(`/api/assets${params.toString() ? `?${params}` : ""}`),
-        apiFetch("/api/categories"),
-      ]);
-      const assetsPayload = await assetsRes.json();
-      const catsPayload = await catsRes.json();
-      setAssets(assetsPayload?.data?.assets ?? assetsPayload?.data ?? []);
-      setCategories(catsPayload?.data?.categories ?? []);
-    } catch {
-      setError("Failed to load assets");
+      const params = new URLSearchParams({ limit: "100" });
+      Object.entries(filters).forEach(([key, value]) => { if (value) params.set(key, value); });
+      const [assetsResponse, categoriesResponse] = await Promise.all([apiFetch(`/api/assets?${params}`), apiFetch("/api/categories")]);
+      const [assetsPayload, categoriesPayload] = await Promise.all([assetsResponse.json(), categoriesResponse.json()]);
+      if (!assetsResponse.ok) throw new Error(assetsPayload?.message || "Could not load assets.");
+      setAssets(assetsPayload?.data?.assets ?? []);
+      setCategories(categoriesPayload?.data?.categories ?? []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not load assets.");
     } finally {
       setLoading(false);
     }
-  }, [searchQ, filterStatus, filterCat]);
+  }, [filters]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { void load(); }, [load]);
 
-  function resetForm() {
-    setName(""); setSerial(""); setCategoryId(""); setDepartmentId("");
-    setCondition("good"); setLocation(""); setAcquisitionDate("");
-    setAcquisitionCost(""); setIsSharedBookable(false); setNotes("");
+  const updateFilter = (name: keyof typeof filters, value: string) => setFilters((current) => ({ ...current, [name]: value }));
+  const resetForm = () => {
+    setForm({ name: "", categoryId: "", serialNumber: "", acquisitionDate: "", acquisitionCost: "", condition: "good", location: "", departmentId: "", photoUrl: "", documentUrl: "", notes: "", isSharedBookable: false });
     setFormError(null);
+  };
+
+  async function openDetail(id: number) {
+    setDetailLoading(true);
+    setTransitionError(null);
+    try {
+      const response = await apiFetch(`/api/assets/${id}`);
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.message || "Could not load asset details.");
+      setSelectedAsset(payload?.data?.asset ?? null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not load asset details.");
+    } finally {
+      setDetailLoading(false);
+    }
   }
 
-  async function handleCreate() {
-    if (!name.trim()) { setFormError("Asset name is required"); return; }
-    setSaving(true); setFormError(null);
+  async function createAsset() {
+    if (!form.name.trim()) { setFormError("An asset name is required."); return; }
+    setSaving(true);
+    setFormError(null);
     try {
-      const body = {
-        name: name.trim(),
-        serialNumber: serial.trim() || null,
-        categoryId: categoryId ? Number(categoryId) : null,
-        departmentId: departmentId ? Number(departmentId) : null,
-        condition,
-        location: location.trim() || null,
-        acquisitionDate: acquisitionDate || null,
-        acquisitionCost: acquisitionCost ? Number(acquisitionCost) : null,
-        isSharedBookable,
-        notes: notes.trim() || null,
-      };
-      const r = await apiFetch("/api/assets", { method: "POST", body: JSON.stringify(body) });
-      const p = await r.json();
-      if (!r.ok) throw new Error(p?.message || "Create failed");
-      setSuccess("Asset registered.");
+      const response = await apiFetch("/api/assets", {
+        method: "POST",
+        body: JSON.stringify({
+          ...form,
+          name: form.name.trim(), serialNumber: form.serialNumber.trim() || null, categoryId: form.categoryId ? Number(form.categoryId) : null,
+          departmentId: form.departmentId ? Number(form.departmentId) : null, location: form.location.trim() || null,
+          acquisitionDate: form.acquisitionDate || null, acquisitionCost: form.acquisitionCost ? Number(form.acquisitionCost) : null,
+          photoUrl: form.photoUrl.trim() || null, documentUrl: form.documentUrl.trim() || null, notes: form.notes.trim() || null,
+        }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.message || "Could not register asset.");
+      setSuccess(`Asset ${payload?.data?.asset?.assetTag ?? ""} registered successfully.`.trim());
       setShowForm(false);
       resetForm();
       await load();
-    } catch (err: unknown) {
-      setFormError(err instanceof Error ? err.message : "Create failed");
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Could not register asset.");
     } finally {
       setSaving(false);
     }
   }
 
+  async function transitionStatus() {
+    if (!selectedAsset || !statusTarget) return;
+    setTransitioning(true);
+    setTransitionError(null);
+    try {
+      const response = await apiFetch(`/api/assets/${selectedAsset.id}/status`, { method: "POST", body: JSON.stringify({ status: statusTarget, reason: statusReason.trim() || null }) });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.message || "Could not update status.");
+      setSuccess("Asset status updated.");
+      setStatusTarget("");
+      setStatusReason("");
+      await Promise.all([load(), openDetail(selectedAsset.id)]);
+    } catch (err) {
+      setTransitionError(err instanceof Error ? err.message : "Could not update status.");
+    } finally {
+      setTransitioning(false);
+    }
+  }
+
   return (
-    <div className="space-y-4">
-      <div>
-        <p className="text-sm text-neutral-500">Asset registry</p>
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-neutral-950">Assets</h1>
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--af-muted)]">Asset registry</p>
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-[var(--af-ink)]">Assets</h1>
+          <p className="mt-1 text-sm text-[var(--af-muted)]">Track equipment, ownership, lifecycle, and availability.</p>
+        </div>
+        {canManageAssets && <button className={panelBtnPrimary} onClick={() => { resetForm(); setShowForm((shown) => !shown); }}>{showForm ? "Close registration" : "Register asset"}</button>}
       </div>
 
-      {success && <SuccessMsg msg={success} />}
+      {success && <Message tone="success">{success}</Message>}
+      {error && <Message tone="error">{error}</Message>}
 
-      <section className="rounded-[28px] border border-neutral-200 bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
-        <div className="flex flex-wrap items-center gap-3">
-          <input
-            className={`${inputCls} max-w-xs`}
-            placeholder="Search by name or tag…"
-            value={searchQ}
-            onChange={(e) => setSearchQ(e.target.value)}
-          />
-          <select className={`${inputCls} max-w-[160px]`} value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-            <option value="">All Statuses</option>
-            {Object.keys(statusColors).map((s) => (
-              <option key={s} value={s}>{s.replace(/_/g, " ")}</option>
-            ))}
-          </select>
-          <select className={`${inputCls} max-w-[180px]`} value={filterCat} onChange={(e) => setFilterCat(e.target.value)}>
-            <option value="">All Categories</option>
-            {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-          <button className={btnSecondary} onClick={() => load()}>Refresh</button>
-          <button className={btnPrimary} onClick={() => { resetForm(); setShowForm((v) => !v); setSelectedAsset(null); }}>
-            {showForm ? "Cancel" : "+ Register Asset"}
-          </button>
+      {canManageAssets && showForm && (
+        <section className="af-panel p-5 sm:p-6">
+          <div className="mb-5 flex items-center justify-between gap-3"><div><h2 className="font-display text-xl font-semibold text-[var(--af-ink)]">Register an asset</h2><p className="mt-1 text-sm text-[var(--af-muted)]">A tag is automatically assigned when the record is created.</p></div><button className={panelBtnSecondary} onClick={() => setShowForm(false)}>Cancel</button></div>
+          {formError && <div className="mb-4"><Message tone="error">{formError}</Message></div>}
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <input className={panelInput} placeholder="Asset name *" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+            <select className={panelInput} value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))}><option value="">Category</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select>
+            <input className={panelInput} placeholder="Serial number" value={form.serialNumber} onChange={(e) => setForm((f) => ({ ...f, serialNumber: e.target.value }))} />
+            <label className="space-y-1"><span className="text-xs font-medium text-[var(--af-muted)]">Acquisition date</span><input className={panelInput} type="date" value={form.acquisitionDate} onChange={(e) => setForm((f) => ({ ...f, acquisitionDate: e.target.value }))} /></label>
+            <input className={panelInput} type="number" min="0" step="0.01" placeholder="Acquisition cost" value={form.acquisitionCost} onChange={(e) => setForm((f) => ({ ...f, acquisitionCost: e.target.value }))} />
+            <select className={panelInput} value={form.condition} onChange={(e) => setForm((f) => ({ ...f, condition: e.target.value }))}>{["excellent", "good", "fair", "poor"].map((condition) => <option key={condition} value={condition}>{pretty(condition)}</option>)}</select>
+            <input className={panelInput} placeholder="Location" value={form.location} onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))} />
+            <DepartmentSelect className={panelInput} value={form.departmentId} onChange={(departmentId) => setForm((f) => ({ ...f, departmentId }))} placeholder="Department" />
+            <input className={panelInput} type="url" placeholder="Photo URL" value={form.photoUrl} onChange={(e) => setForm((f) => ({ ...f, photoUrl: e.target.value }))} />
+            <input className={panelInput} type="url" placeholder="Document URL" value={form.documentUrl} onChange={(e) => setForm((f) => ({ ...f, documentUrl: e.target.value }))} />
+            <textarea className={`${panelInput} min-h-24 md:col-span-2`} placeholder="Notes" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
+            <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--af-border)] bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700"><input type="checkbox" checked={form.isSharedBookable} onChange={(e) => setForm((f) => ({ ...f, isSharedBookable: e.target.checked }))} className="h-4 w-4 accent-[var(--af-accent)]" />Shared / bookable resource</label>
+          </div>
+          <div className="mt-5"><button className={panelBtnPrimary} disabled={saving} onClick={createAsset}>{saving ? "Registering…" : "Register asset"}</button></div>
+        </section>
+      )}
+
+      <section className="af-panel p-5 sm:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div><h2 className="font-display text-xl font-semibold text-[var(--af-ink)]">Asset inventory</h2><p className="mt-1 text-sm text-[var(--af-muted)]">{assets.length} matching asset{assets.length === 1 ? "" : "s"}</p></div><button className={panelBtnSecondary} onClick={() => void load()}>Refresh</button></div>
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <input className={panelInput} placeholder="Search name, tag, or serial" value={filters.q} onChange={(e) => updateFilter("q", e.target.value)} />
+          <input className={panelInput} placeholder="Filter asset tag" value={filters.tag} onChange={(e) => updateFilter("tag", e.target.value)} />
+          <input className={panelInput} placeholder="Filter serial number" value={filters.serial} onChange={(e) => updateFilter("serial", e.target.value)} />
+          <select className={panelInput} value={filters.categoryId} onChange={(e) => updateFilter("categoryId", e.target.value)}><option value="">All categories</option>{categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select>
+          <select className={panelInput} value={filters.status} onChange={(e) => updateFilter("status", e.target.value)}><option value="">All statuses</option>{statuses.map((status) => <option key={status} value={status}>{pretty(status)}</option>)}</select>
+          <DepartmentSelect className={panelInput} value={filters.departmentId} onChange={(value) => updateFilter("departmentId", value)} placeholder="All departments" />
+          <input className={panelInput} placeholder="Filter location" value={filters.location} onChange={(e) => updateFilter("location", e.target.value)} />
+          <button className={panelBtnSecondary} onClick={() => setFilters({ q: "", tag: "", serial: "", categoryId: "", status: "", departmentId: "", location: "" })}>Clear filters</button>
         </div>
+      </section>
 
-        {showForm && (
-          <div className="mt-5 rounded-[24px] border border-neutral-200 bg-neutral-50 p-5 space-y-3">
-            <h3 className="font-semibold text-neutral-800">Register New Asset</h3>
-            {formError && <ErrorMsg msg={formError} />}
-            <div className="grid gap-3 sm:grid-cols-2">
-              <input className={inputCls} placeholder="Asset name *" value={name} onChange={(e) => setName(e.target.value)} />
-              <input className={inputCls} placeholder="Serial number" value={serial} onChange={(e) => setSerial(e.target.value)} />
-              <select className={inputCls} value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-                <option value="">Category (optional)</option>
-                {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-              <DepartmentSelect className={inputCls} value={departmentId} onChange={setDepartmentId} placeholder="Select department (optional)" />
-              <select className={inputCls} value={condition} onChange={(e) => setCondition(e.target.value)}>
-                <option value="excellent">Excellent</option>
-                <option value="good">Good</option>
-                <option value="fair">Fair</option>
-                <option value="poor">Poor</option>
-              </select>
-              <input className={inputCls} placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
-              <div>
-                <label className="mb-1 block text-xs font-medium text-neutral-500">Acquisition Date</label>
-                <input className={inputCls} type="date" value={acquisitionDate} onChange={(e) => setAcquisitionDate(e.target.value)} />
-              </div>
-              <input className={inputCls} placeholder="Acquisition cost" type="number" value={acquisitionCost} onChange={(e) => setAcquisitionCost(e.target.value)} />
-            </div>
-            <input className={inputCls} placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
-            <label className="flex items-center gap-2 text-sm text-neutral-700 cursor-pointer">
-              <input type="checkbox" checked={isSharedBookable} onChange={(e) => setIsSharedBookable(e.target.checked)} className="h-4 w-4 rounded" />
-              Shared / Bookable resource
-            </label>
-            <div className="flex gap-3">
-              <button className={btnPrimary} onClick={handleCreate} disabled={saving}>{saving ? "Saving…" : "Register"}</button>
-              <button className={btnSecondary} onClick={() => setShowForm(false)}>Cancel</button>
-            </div>
-          </div>
-        )}
-
-        {selectedAsset && (
-          <div className="mt-5 rounded-[24px] border border-neutral-200 bg-neutral-50 p-5 space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-neutral-800">Asset Details — {selectedAsset.name}</h3>
-              <button className={btnSecondary} onClick={() => setSelectedAsset(null)}>Close</button>
-            </div>
-            <div className="grid gap-2 text-sm sm:grid-cols-2">
-              <div><span className="font-medium text-neutral-500">Asset Tag:</span> {selectedAsset.assetTag}</div>
-              <div><span className="font-medium text-neutral-500">Serial:</span> {selectedAsset.serialNumber ?? "—"}</div>
-              <div><span className="font-medium text-neutral-500">Condition:</span> {selectedAsset.condition}</div>
-              <div><span className="font-medium text-neutral-500">Location:</span> {selectedAsset.location ?? "—"}</div>
-              <div><span className="font-medium text-neutral-500">Bookable:</span> {selectedAsset.isSharedBookable ? "Yes" : "No"}</div>
-              <div><span className="font-medium text-neutral-500">Acquired:</span> {selectedAsset.acquisitionDate ? new Date(selectedAsset.acquisitionDate).toLocaleDateString() : "—"}</div>
-              <div><span className="font-medium text-neutral-500">Cost:</span> {selectedAsset.acquisitionCost != null ? `$${selectedAsset.acquisitionCost.toLocaleString()}` : "—"}</div>
-              <div className="col-span-2"><span className="font-medium text-neutral-500">Notes:</span> {selectedAsset.notes ?? "—"}</div>
-            </div>
-          </div>
+      <section className="af-panel overflow-hidden">
+        {loading ? <div className="space-y-3 p-6">{Array.from({ length: 5 }).map((_, index) => <div key={index} className="h-14 animate-pulse rounded-xl bg-slate-100" />)}</div> : (
+          <div className="overflow-x-auto"><table className="w-full min-w-[760px] text-left"><thead className="border-b border-[var(--af-border)] bg-slate-50 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--af-muted)]"><tr><th className="px-5 py-3">Tag</th><th className="px-5 py-3">Asset</th><th className="px-5 py-3">Status</th><th className="px-5 py-3">Condition</th><th className="px-5 py-3">Location</th><th className="px-5 py-3">Bookable</th><th className="px-5 py-3" /></tr></thead>
+            <tbody>{assets.length === 0 ? <tr><td colSpan={7} className="px-5 py-14 text-center text-sm text-[var(--af-muted)]">No assets match these filters.</td></tr> : assets.map((asset) => <tr key={asset.id} className="border-b border-[var(--af-border)] last:border-0 hover:bg-teal-50/30"><td className="px-5 py-4 text-sm font-semibold text-[var(--af-accent-strong)]">{asset.assetTag}</td><td className="px-5 py-4"><p className="font-semibold text-[var(--af-ink)]">{asset.name}</p><p className="mt-0.5 text-xs text-[var(--af-muted)]">{empty(asset.serialNumber)}</p></td><td className="px-5 py-4"><StatusBadge status={asset.status} /></td><td className="px-5 py-4 text-sm capitalize text-slate-700">{asset.condition}</td><td className="px-5 py-4 text-sm text-slate-600">{empty(asset.location)}</td><td className="px-5 py-4 text-sm">{asset.isSharedBookable ? <span className="font-medium text-teal-700">Yes</span> : <span className="text-[var(--af-muted)]">No</span>}</td><td className="px-5 py-4 text-right"><button className="text-sm font-semibold text-[var(--af-accent-strong)] hover:underline" onClick={() => void openDetail(asset.id)}>View</button></td></tr>)}</tbody>
+          </table></div>
         )}
       </section>
 
-      {error && <ErrorMsg msg={error} />}
-
-      <section className="rounded-[28px] border border-neutral-200 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
-        {loading ? (
-          <div className="p-6 space-y-2">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 animate-pulse rounded-[20px] bg-neutral-100" />
-            ))}
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-neutral-50 text-xs uppercase tracking-[0.18em] text-neutral-500">
-                <tr>
-                  <th className="px-4 py-3 font-semibold">Tag</th>
-                  <th className="px-4 py-3 font-semibold">Name</th>
-                  <th className="px-4 py-3 font-semibold">Serial</th>
-                  <th className="px-4 py-3 font-semibold">Status</th>
-                  <th className="px-4 py-3 font-semibold">Condition</th>
-                  <th className="px-4 py-3 font-semibold">Location</th>
-                  <th className="px-4 py-3 font-semibold">Bookable</th>
-                  <th className="px-4 py-3 font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {assets.length === 0 ? (
-                  <tr><td colSpan={8} className="px-4 py-10 text-center text-sm text-neutral-400">No assets found</td></tr>
-                ) : assets.map((asset) => (
-                  <tr key={asset.id} className="border-t border-neutral-100">
-                    <td className="px-4 py-3 text-sm font-medium text-neutral-700">{asset.assetTag}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-neutral-950">{asset.name}</td>
-                    <td className="px-4 py-3 text-sm text-neutral-500">{asset.serialNumber ?? "—"}</td>
-                    <td className="px-4 py-3">
-                      <Badge label={asset.status.replace(/_/g, " ")} color={statusColors[asset.status] ?? "bg-neutral-100 text-neutral-600"} />
-                    </td>
-                    <td className="px-4 py-3 text-sm text-neutral-600 capitalize">{asset.condition}</td>
-                    <td className="px-4 py-3 text-sm text-neutral-500">{asset.location ?? "—"}</td>
-                    <td className="px-4 py-3 text-sm text-neutral-500">{asset.isSharedBookable ? "Yes" : "No"}</td>
-                    <td className="px-4 py-3">
-                      <button className="text-sm text-[#1677ff] hover:underline" onClick={() => setSelectedAsset(selectedAsset?.id === asset.id ? null : asset)}>
-                        {selectedAsset?.id === asset.id ? "Hide" : "Details"}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+      {(detailLoading || selectedAsset) && <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/25" onMouseDown={() => !detailLoading && setSelectedAsset(null)}><aside className="h-full w-full max-w-2xl overflow-y-auto bg-white p-5 shadow-2xl sm:p-7" onMouseDown={(event) => event.stopPropagation()}>
+        {detailLoading && !selectedAsset ? <div className="space-y-4"><div className="h-8 w-2/3 animate-pulse rounded bg-slate-100" /><div className="h-48 animate-pulse rounded-xl bg-slate-100" /></div> : selectedAsset && <><div className="flex items-start justify-between gap-4 border-b border-[var(--af-border)] pb-5"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--af-accent-strong)]">{selectedAsset.assetTag}</p><h2 className="mt-1 font-display text-3xl font-semibold tracking-tight text-[var(--af-ink)]">{selectedAsset.name}</h2><div className="mt-3"><StatusBadge status={selectedAsset.status} /></div></div><button className={panelBtnSecondary} onClick={() => setSelectedAsset(null)}>Close</button></div>
+          <div className="grid gap-5 border-b border-[var(--af-border)] py-6 sm:grid-cols-[150px_1fr]"><AssetQr tag={selectedAsset.assetTag} /><dl className="grid grid-cols-2 gap-x-5 gap-y-4 text-sm"><div><dt className="text-[var(--af-muted)]">Serial</dt><dd className="mt-1 font-medium text-[var(--af-ink)]">{empty(selectedAsset.serialNumber)}</dd></div><div><dt className="text-[var(--af-muted)]">Condition</dt><dd className="mt-1 capitalize font-medium text-[var(--af-ink)]">{selectedAsset.condition}</dd></div><div><dt className="text-[var(--af-muted)]">Location</dt><dd className="mt-1 font-medium text-[var(--af-ink)]">{empty(selectedAsset.location)}</dd></div><div><dt className="text-[var(--af-muted)]">Bookable</dt><dd className="mt-1 font-medium text-[var(--af-ink)]">{selectedAsset.isSharedBookable ? "Yes" : "No"}</dd></div><div><dt className="text-[var(--af-muted)]">Acquired</dt><dd className="mt-1 font-medium text-[var(--af-ink)]">{dateLabel(selectedAsset.acquisitionDate)}</dd></div><div><dt className="text-[var(--af-muted)]">Cost</dt><dd className="mt-1 font-medium text-[var(--af-ink)]">{selectedAsset.acquisitionCost == null ? "—" : `$${selectedAsset.acquisitionCost.toLocaleString()}`}</dd></div></dl></div>
+          {(selectedAsset.photoUrl || selectedAsset.documentUrl || selectedAsset.notes) && <section className="border-b border-[var(--af-border)] py-5 text-sm"><h3 className="font-display text-lg font-semibold text-[var(--af-ink)]">Record notes</h3>{selectedAsset.notes && <p className="mt-2 whitespace-pre-wrap text-slate-600">{selectedAsset.notes}</p>}<div className="mt-3 flex flex-wrap gap-3">{selectedAsset.photoUrl && <a className="font-semibold text-[var(--af-accent-strong)] hover:underline" href={selectedAsset.photoUrl} target="_blank" rel="noreferrer">View photo</a>}{selectedAsset.documentUrl && <a className="font-semibold text-[var(--af-accent-strong)] hover:underline" href={selectedAsset.documentUrl} target="_blank" rel="noreferrer">Open document</a>}</div></section>}
+          {canManageAssets && transitions[selectedAsset.status].length > 0 && <section className="border-b border-[var(--af-border)] py-5"><h3 className="font-display text-lg font-semibold text-[var(--af-ink)]">Transition status</h3>{transitionError && <div className="mt-3"><Message tone="error">{transitionError}</Message></div>}<div className="mt-3 grid gap-3 sm:grid-cols-2"><select className={panelInput} value={statusTarget} onChange={(e) => setStatusTarget(e.target.value)}><option value="">Choose next status</option>{transitions[selectedAsset.status].map((status) => <option key={status} value={status}>{pretty(status)}</option>)}</select><input className={panelInput} placeholder="Reason (optional)" value={statusReason} onChange={(e) => setStatusReason(e.target.value)} /></div><button className={`${panelBtnPrimary} mt-3`} disabled={!statusTarget || transitioning} onClick={transitionStatus}>{transitioning ? "Updating…" : "Update status"}</button></section>}
+          <HistorySection title="Allocation history" emptyText="No allocation history recorded." items={selectedAsset.allocationHistory} render={(item) => <><StatusBadge status={item.status} /><span className="text-sm text-slate-600">{item.userName || item.deptName || "Unassigned"} · {dateLabel(item.createdAt)}</span>{item.expectedReturnDate && <span className="text-xs text-[var(--af-muted)]">Expected return: {dateLabel(item.expectedReturnDate)}</span>}</>} />
+          <HistorySection title="Maintenance history" emptyText="No maintenance history recorded." items={selectedAsset.maintenanceHistory} render={(item) => <><StatusBadge status={item.status} /><span className="text-sm font-medium text-[var(--af-ink)]">{item.title || item.issueDescription || "Maintenance record"}</span><span className="text-xs text-[var(--af-muted)]">{dateLabel(item.completedAt || item.scheduledDate || item.createdAt)}</span></>} />
+          <HistorySection title="Status history" emptyText="No status changes recorded." items={selectedAsset.statusHistory} render={(item) => <><span className="text-sm font-medium text-[var(--af-ink)]">{item.fromStatus ? `${pretty(item.fromStatus)} → ` : ""}{pretty(item.toStatus)}</span><span className="text-sm text-slate-600">{item.reason || "No reason provided"} · {dateLabel(item.createdAt)}</span></>} />
+        </>}</aside></div>}
     </div>
   );
+}
+
+function HistorySection<T extends { id: number }>({ title, emptyText, items, render }: { title: string; emptyText: string; items: T[]; render: (item: T) => ReactNode }) {
+  return <section className="border-b border-[var(--af-border)] py-5 last:border-0"><h3 className="font-display text-lg font-semibold text-[var(--af-ink)]">{title}</h3>{items.length === 0 ? <p className="mt-2 text-sm text-[var(--af-muted)]">{emptyText}</p> : <div className="mt-3 space-y-2">{items.map((item) => <div key={item.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl bg-slate-50 px-3 py-2.5">{render(item)}</div>)}</div>}</section>;
 }

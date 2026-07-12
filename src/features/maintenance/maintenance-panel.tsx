@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
 import { AssetSelect } from "@/components/entity-selects";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 type MaintenanceRequest = {
   id: number;
@@ -14,6 +15,7 @@ type MaintenanceRequest = {
   status: string;
   technicianName: string | null;
   rejectionReason: string | null;
+  photoUrl?: string | null;
   createdAt: string;
 };
 
@@ -53,6 +55,7 @@ function SuccessMsg({ msg }: { msg: string }) {
 }
 
 export function MaintenancePanel() {
+  const { canManageAssets } = useCurrentUser();
   const [requests, setRequests] = useState<MaintenanceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +66,7 @@ export function MaintenancePanel() {
   const [assetId, setAssetId] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
+  const [photoUrl, setPhotoUrl] = useState("");
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -96,13 +100,18 @@ export function MaintenancePanel() {
     if (!description.trim()) { setFormError("Description is required"); return; }
     setSaving(true); setFormError(null);
     try {
-      const body = { assetId: Number(assetId), description: description.trim(), priority };
+      const body = {
+        assetId: Number(assetId),
+        description: description.trim(),
+        priority,
+        photoUrl: photoUrl.trim() || null,
+      };
       const r = await apiFetch("/api/maintenance", { method: "POST", body: JSON.stringify(body) });
       const p = await r.json();
       if (!r.ok) throw new Error(p?.message || "Create failed");
       setSuccess("Maintenance request raised.");
       setShowForm(false);
-      setAssetId(""); setDescription(""); setPriority("medium");
+      setAssetId(""); setDescription(""); setPriority("medium"); setPhotoUrl("");
       await load();
     } catch (err: unknown) {
       setFormError(err instanceof Error ? err.message : "Create failed");
@@ -187,6 +196,12 @@ export function MaintenancePanel() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
+            <input
+              className={inputCls}
+              placeholder="Photo URL (optional — attach evidence)"
+              value={photoUrl}
+              onChange={(e) => setPhotoUrl(e.target.value)}
+            />
             <div className="flex gap-3">
               <button className={btnPrimary} onClick={handleCreate} disabled={saving}>{saving ? "Saving…" : "Submit"}</button>
               <button className={btnSecondary} onClick={() => setShowForm(false)}>Cancel</button>
@@ -216,6 +231,11 @@ export function MaintenancePanel() {
                       <Badge label={req.priority} color={priorityColors[req.priority] ?? "bg-neutral-100 text-neutral-500"} />
                     </div>
                     <p className="mt-1 text-sm text-neutral-600">{req.description}</p>
+                    {req.photoUrl ? (
+                      <a href={req.photoUrl} target="_blank" rel="noreferrer" className="mt-1 inline-block text-xs font-semibold text-teal-700 hover:underline">
+                        View attached photo
+                      </a>
+                    ) : null}
                     {req.technicianName && (
                       <p className="mt-1 text-xs text-neutral-500">Technician: {req.technicianName}</p>
                     )}
@@ -226,7 +246,7 @@ export function MaintenancePanel() {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {req.status === "pending" && (
+                    {req.status === "pending" && canManageAssets && (
                       <>
                         <button
                           className="rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-600 disabled:opacity-60"
@@ -243,7 +263,7 @@ export function MaintenancePanel() {
                         </button>
                       </>
                     )}
-                    {req.status === "approved" && (
+                    {req.status === "approved" && canManageAssets && (
                       <button
                         className="rounded-full bg-indigo-500 px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-600 disabled:opacity-60"
                         onClick={() => setAssignTarget(req.id)}
@@ -252,7 +272,7 @@ export function MaintenancePanel() {
                         Assign
                       </button>
                     )}
-                    {req.status === "technician_assigned" && (
+                    {req.status === "technician_assigned" && canManageAssets && (
                       <button
                         className="rounded-full bg-cyan-500 px-3 py-1 text-xs font-semibold text-white hover:bg-cyan-600 disabled:opacity-60"
                         onClick={() => handleAction(req.id, "start")}
@@ -261,7 +281,7 @@ export function MaintenancePanel() {
                         Start
                       </button>
                     )}
-                    {req.status === "in_progress" && (
+                    {req.status === "in_progress" && canManageAssets && (
                       <button
                         className="rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
                         onClick={() => handleAction(req.id, "resolve")}

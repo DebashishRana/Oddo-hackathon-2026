@@ -162,6 +162,32 @@ export const bookingRepository = {
     );
   },
 
+  async listDueForReminder(withinMinutes = 60): Promise<Array<ResourceBooking & { asset_name?: string }>> {
+    const result = await getPool().query(
+      `SELECT rb.*, a.name AS asset_name
+       FROM resource_bookings rb
+       LEFT JOIN assets a ON a.id = rb.asset_id
+       WHERE rb.status = 'upcoming'
+         AND rb.reminder_sent = FALSE
+         AND rb.starts_at > NOW()
+         AND rb.starts_at <= NOW() + ($1 || ' minutes')::interval
+       ORDER BY rb.starts_at ASC
+       LIMIT 50`,
+      [withinMinutes]
+    );
+    return result.rows.map((row) => ({
+      ...mapBooking(row),
+      asset_name: (row.asset_name as string | null) ?? undefined,
+    }));
+  },
+
+  async markReminderSent(id: number): Promise<void> {
+    await getPool().query(
+      `UPDATE resource_bookings SET reminder_sent = TRUE, updated_at = NOW() WHERE id = $1`,
+      [id]
+    );
+  },
+
   async countActive(): Promise<number> {
     const result = await getPool().query(
       `SELECT COUNT(*) FROM resource_bookings WHERE status IN ('upcoming','ongoing')`

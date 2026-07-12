@@ -6,6 +6,11 @@ export const notificationsService = {
     return notificationRepository.listForUser(userId);
   },
 
+  async unreadCount(userId: number) {
+    const items = await notificationRepository.listForUser(userId);
+    return items.filter((n) => !n.is_read).length;
+  },
+
   async markRead(id: number, userId: number) {
     const notification = await notificationRepository.markRead(id, userId);
     if (!notification) throw new AppError("Notification not found", 404, "NOT_FOUND", "Notification not found.");

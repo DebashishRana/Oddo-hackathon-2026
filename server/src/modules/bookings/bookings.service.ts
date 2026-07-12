@@ -6,12 +6,27 @@ import { activityService } from "../../services/activity.service";
 export const bookingsService = {
   async list(filters: Parameters<typeof bookingRepository.list>[0] = {}) {
     await bookingRepository.refreshStatuses();
+    await this.dispatchReminders().catch(() => undefined);
     return bookingRepository.list(filters);
   },
 
   async getCalendar(assetId: number) {
     await bookingRepository.refreshStatuses();
     return bookingRepository.getCalendar(assetId);
+  },
+
+  async dispatchReminders() {
+    const due = await bookingRepository.listDueForReminder(60);
+    for (const booking of due) {
+      await activityService.notifyIfUser(booking.booked_by, {
+        type: "booking_reminder",
+        title: "Booking reminder",
+        body: `${booking.asset_name ?? `Asset #${booking.asset_id}`} starts at ${new Date(booking.starts_at).toLocaleString()}.`,
+        entityType: "booking",
+        entityId: booking.id,
+      });
+      await bookingRepository.markReminderSent(booking.id);
+    }
   },
 
   async book(input: CreateBookingInput, actorId?: number) {

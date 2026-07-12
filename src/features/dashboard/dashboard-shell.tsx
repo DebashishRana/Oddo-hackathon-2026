@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Building2,
@@ -19,6 +20,7 @@ import {
 import { SignOutButton } from "./sign-out-button";
 import { cn } from "@/lib/cn";
 import { Badge } from "@/components/ui/badge";
+import { apiFetch } from "@/lib/api";
 
 type NavItem = {
   href: string;
@@ -65,8 +67,28 @@ const roleLabel = (role?: string) => {
 export function DashboardShell({ user, children }: Props) {
   const pathname = usePathname();
   const role = user?.role || "employee";
+  const canManageAssets = ["admin", "asset_manager"].includes(role);
   const visibleNav = mainNav.filter((item) => !item.roles || item.roles.includes(role));
   const initials = (user?.name?.[0] || user?.email?.[0] || "A").toUpperCase();
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    const load = () => {
+      apiFetch("/api/notifications/unread-count")
+        .then((r) => r.json())
+        .then((p) => {
+          if (active) setUnread(Number(p?.data?.count || 0));
+        })
+        .catch(() => undefined);
+    };
+    load();
+    const timer = setInterval(load, 30000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, [pathname]);
 
   return (
     <div className="af-grid-bg min-h-screen text-[var(--af-ink)]">
@@ -99,7 +121,10 @@ export function DashboardShell({ user, children }: Props) {
                   )}
                 >
                   <Icon className="h-4 w-4 shrink-0 opacity-80" />
-                  <span>{item.label}</span>
+                  <span className="flex-1">{item.label}</span>
+                  {item.href === "/dashboard/notifications" && unread > 0 ? (
+                    <span className="rounded-md bg-rose-600 px-1.5 py-0.5 text-[10px] font-bold text-white">{unread}</span>
+                  ) : null}
                 </Link>
               );
             })}
@@ -134,10 +159,15 @@ export function DashboardShell({ user, children }: Props) {
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href="/dashboard/notifications"
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--af-border)] bg-white px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                className="relative inline-flex items-center gap-2 rounded-xl border border-[var(--af-border)] bg-white px-3.5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
               >
                 <Bell className="h-4 w-4" />
                 Alerts
+                {unread > 0 ? (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-bold text-white">
+                    {unread}
+                  </span>
+                ) : null}
               </Link>
               <Link
                 href="/dashboard/settings"
@@ -146,13 +176,23 @@ export function DashboardShell({ user, children }: Props) {
                 <Settings className="h-4 w-4" />
                 Settings
               </Link>
-              <Link
-                href="/dashboard/assets"
-                className="inline-flex items-center gap-2 rounded-xl bg-[var(--af-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(15,118,110,0.28)] transition hover:bg-[var(--af-accent-strong)]"
-              >
-                <Plus className="h-4 w-4" />
-                Register Asset
-              </Link>
+              {canManageAssets ? (
+                <Link
+                  href="/dashboard/assets"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[var(--af-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(15,118,110,0.28)] transition hover:bg-[var(--af-accent-strong)]"
+                >
+                  <Plus className="h-4 w-4" />
+                  Register Asset
+                </Link>
+              ) : (
+                <Link
+                  href="/dashboard/bookings"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[var(--af-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(15,118,110,0.28)] transition hover:bg-[var(--af-accent-strong)]"
+                >
+                  <CalendarDays className="h-4 w-4" />
+                  Book Resource
+                </Link>
+              )}
             </div>
           </header>
 

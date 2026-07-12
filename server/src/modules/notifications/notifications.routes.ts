@@ -8,6 +8,10 @@ notificationsRoutes.get("/activity", requireAuth, requireRole("admin", "asset_ma
   notificationsController.activityLogs(req, res).catch(next);
 });
 
+notificationsRoutes.get("/unread-count", requireAuth, (req, res, next) => {
+  notificationsController.unreadCount(req, res).catch(next);
+});
+
 notificationsRoutes.get("/", requireAuth, (req, res, next) => {
   notificationsController.list(req, res).catch(next);
 });

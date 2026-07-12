@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { CheckCircle2, ChevronDown, ClipboardList, SearchCheck, TriangleAlert, XCircle } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import { AssetSelect, DepartmentSelect, MultiUserSelect } from "@/components/entity-selects";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { panelBtnDanger, panelBtnPrimary, panelBtnSecondary, panelInput, statusTone } from "@/lib/panel-styles";
 
 type AuditCycle = {
   id: number;
@@ -17,20 +20,32 @@ type AuditCycle = {
   verifiedCount?: number;
   missingCount?: number;
   damagedCount?: number;
+  deptName?: string;
 };
 
-const inputCls =
-  "w-full rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-950 outline-none transition focus:border-[#1677ff] focus:ring-4 focus:ring-[#1677ff]/10";
-const btnPrimary =
-  "rounded-full bg-[#1677ff] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0b63db] disabled:opacity-60";
-const btnSecondary =
-  "rounded-full border border-neutral-200 px-4 py-2 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-100";
-
-const statusColors: Record<string, string> = {
-  open: "bg-blue-50 text-blue-700",
-  in_progress: "bg-amber-50 text-amber-700",
-  closed: "bg-neutral-100 text-neutral-600",
+type AuditItem = {
+  id: number;
+  assetId: number;
+  assetName?: string;
+  assetTag?: string;
+  result: "verified" | "missing" | "damaged" | null;
+  notes: string | null;
+  verifierName?: string;
 };
+
+const inputCls = panelInput;
+const btnPrimary = panelBtnPrimary;
+const btnSecondary = panelBtnSecondary;
+const statusColors = statusTone;
+
+function camelKeys<T>(value: unknown): T {
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, entry]) => [
+      key.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase()),
+      entry,
+    ])
+  ) as T;
+}
 
 function Badge({ label, color }: { label: string; color: string }) {
   return <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>{label}</span>;
@@ -45,6 +60,7 @@ function SuccessMsg({ msg }: { msg: string }) {
 }
 
 export function AuditsPanel() {
+  const { canManageAssets, isAdmin } = useCurrentUser();
   const [cycles, setCycles] = useState<AuditCycle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,21 +77,24 @@ export function AuditsPanel() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // mark item form
-  const [markCycleId, setMarkCycleId] = useState<number | null>(null);
+  const [expandedCycleId, setExpandedCycleId] = useState<number | null>(null);
+  const [cycleItems, setCycleItems] = useState<Record<number, AuditItem[]>>({});
+  const [detailLoading, setDetailLoading] = useState<number | null>(null);
+  // Fallback marker is only used when a cycle contains no seeded items.
   const [markAssetId, setMarkAssetId] = useState("");
   const [markResult, setMarkResult] = useState<"verified" | "missing" | "damaged">("verified");
   const [markNotes, setMarkNotes] = useState("");
   const [markSaving, setMarkSaving] = useState(false);
 
   const [actionLoading, setActionLoading] = useState(false);
+  const [discrepancies, setDiscrepancies] = useState<Record<number, AuditItem[]>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const r = await apiFetch("/api/audits");
       const p = await r.json();
-      setCycles(p?.data?.cycles ?? []);
+      setCycles((p?.data?.cycles ?? []).map((cycle: unknown) => camelKeys<AuditCycle>(cycle)));
     } catch {
       setError("Failed to load audit cycles");
     } finally {
@@ -84,6 +103,29 @@ export function AuditsPanel() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  async function toggleCycle(cycleId: number) {
+    if (expandedCycleId === cycleId) {
+      setExpandedCycleId(null);
+      return;
+    }
+    setExpandedCycleId(cycleId);
+    if (cycleItems[cycleId]) return;
+    setDetailLoading(cycleId);
+    try {
+      const response = await apiFetch(`/api/audits/${cycleId}`);
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.message || "Failed to load audit items");
+      setCycleItems((current) => ({
+        ...current,
+        [cycleId]: (payload?.data?.cycle?.items ?? []).map((item: unknown) => camelKeys<AuditItem>(item)),
+      }));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to load audit items");
+    } finally {
+      setDetailLoading(null);
+    }
+  }
 
   async function handleCreate() {
     if (!name.trim()) { setFormError("Name is required"); return; }
@@ -112,18 +154,24 @@ export function AuditsPanel() {
     }
   }
 
-  async function handleMarkItem(cycleId: number) {
-    if (!markAssetId) return;
+  async function handleMarkItem(cycleId: number, assetId: number, result = markResult) {
+    if (!assetId) return;
     setMarkSaving(true);
     try {
-      const r = await apiFetch(`/api/audits/${cycleId}/items/${markAssetId}/mark`, {
+      const r = await apiFetch(`/api/audits/${cycleId}/items/${assetId}/mark`, {
         method: "POST",
-        body: JSON.stringify({ result: markResult, notes: markNotes.trim() || null }),
+        body: JSON.stringify({ result, notes: markNotes.trim() || null }),
       });
       const p = await r.json();
       if (!r.ok) throw new Error(p?.message || "Mark failed");
-      setSuccess(`Asset marked as ${markResult}.`);
-      setMarkCycleId(null); setMarkAssetId(""); setMarkNotes("");
+      setSuccess(`Item marked as ${result}.`);
+      setMarkAssetId(""); setMarkNotes("");
+      setCycleItems((current) => ({
+        ...current,
+        [cycleId]: (current[cycleId] ?? []).map((item) =>
+          item.assetId === assetId ? { ...item, result, notes: markNotes.trim() || null } : item
+        ),
+      }));
       await load();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Mark failed");
@@ -139,6 +187,19 @@ export function AuditsPanel() {
       const p = await r.json();
       if (!r.ok) throw new Error(p?.message || "Close failed");
       setSuccess("Audit cycle closed.");
+      setDiscrepancies((current) => ({
+        ...current,
+        [id]: (p?.data?.discrepancies ?? []).map((item: unknown) => camelKeys<AuditItem>(item)),
+      }));
+      setExpandedCycleId(id);
+      const detailResponse = await apiFetch(`/api/audits/${id}`);
+      const detailPayload = await detailResponse.json();
+      if (detailResponse.ok) {
+        setCycleItems((current) => ({
+          ...current,
+          [id]: (detailPayload?.data?.cycle?.items ?? []).map((item: unknown) => camelKeys<AuditItem>(item)),
+        }));
+      }
       await load();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Close failed");
@@ -157,16 +218,16 @@ export function AuditsPanel() {
       {success && <SuccessMsg msg={success} />}
       {error && <ErrorMsg msg={error} />}
 
-      <section className="rounded-[28px] border border-neutral-200 bg-white p-6 shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+      <section className="af-panel p-5 sm:p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-neutral-950">Audit Cycles</h2>
           <button className={btnPrimary} onClick={() => { setShowForm((v) => !v); setFormError(null); }}>
-            {showForm ? "Cancel" : "+ New Cycle"}
+            <ClipboardList size={16} /> {showForm ? "Cancel" : "New cycle"}
           </button>
         </div>
 
         {showForm && (
-          <div className="mt-5 rounded-[24px] border border-neutral-200 bg-neutral-50 p-5 space-y-3">
+          <div className="mt-5 rounded-2xl border border-[var(--af-border)] bg-slate-50/70 p-5 space-y-4">
             <h3 className="font-semibold text-neutral-800">Create Audit Cycle</h3>
             {formError && <ErrorMsg msg={formError} />}
             <div className="grid gap-3 sm:grid-cols-2">
@@ -191,7 +252,7 @@ export function AuditsPanel() {
         )}
       </section>
 
-      <section className="rounded-[28px] border border-neutral-200 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+      <section className="af-panel overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-2">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -227,52 +288,53 @@ export function AuditsPanel() {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
+                    <button
+                      className={btnSecondary}
+                      onClick={() => toggleCycle(cycle.id)}
+                      aria-expanded={expandedCycleId === cycle.id}
+                    >
+                      <SearchCheck size={16} /> {expandedCycleId === cycle.id ? "Hide checklist" : "View checklist"} <ChevronDown size={15} className={expandedCycleId === cycle.id ? "rotate-180 transition-transform" : "transition-transform"} />
+                    </button>
                     {cycle.status !== "closed" && (
                       <>
-                        <button
+                        {(canManageAssets || isAdmin) && <button
                           className={btnSecondary}
-                          style={{ padding: "6px 14px", fontSize: "12px" }}
-                          onClick={() => setMarkCycleId(markCycleId === cycle.id ? null : cycle.id)}
-                        >
-                          {markCycleId === cycle.id ? "Close" : "Mark Item"}
-                        </button>
-                        <button
-                          className="rounded-full border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-700 hover:bg-neutral-100 disabled:opacity-60"
                           onClick={() => handleClose(cycle.id)}
                           disabled={actionLoading}
                         >
-                          Close Cycle
-                        </button>
+                          <CheckCircle2 size={16} /> Close cycle
+                        </button>}
                       </>
                     )}
                   </div>
                 </div>
 
-                {markCycleId === cycle.id && (
-                  <div className="mt-3 flex flex-wrap items-end gap-3 rounded-[20px] border border-neutral-200 bg-neutral-50 p-4">
-                    <div className="flex-1 min-w-[120px]">
-                      <label className="mb-1 block text-xs font-medium text-neutral-500">Asset</label>
-                      <AssetSelect className={inputCls} value={markAssetId} onChange={setMarkAssetId} placeholder="Select asset" />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-xs font-medium text-neutral-500">Result</label>
-                      <select
-                        className={inputCls}
-                        value={markResult}
-                        onChange={(e) => setMarkResult(e.target.value as "verified" | "missing" | "damaged")}
-                      >
-                        <option value="verified">Verified</option>
-                        <option value="missing">Missing</option>
-                        <option value="damaged">Damaged</option>
-                      </select>
-                    </div>
-                    <div className="flex-1 min-w-[120px]">
-                      <label className="mb-1 block text-xs font-medium text-neutral-500">Notes</label>
-                      <input className={inputCls} placeholder="Notes (optional)" value={markNotes} onChange={(e) => setMarkNotes(e.target.value)} />
-                    </div>
-                    <button className={btnPrimary} style={{ padding: "10px 14px", fontSize: "12px" }} onClick={() => handleMarkItem(cycle.id)} disabled={markSaving}>
-                      {markSaving ? "…" : "Mark"}
-                    </button>
+                {expandedCycleId === cycle.id && (
+                  <div className="mt-4 rounded-2xl border border-[var(--af-border)] bg-slate-50/70 p-4">
+                    {detailLoading === cycle.id ? <p className="text-sm text-slate-500">Loading checklist…</p> : cycleItems[cycle.id]?.length ? (
+                      <div className="space-y-2">
+                        {cycleItems[cycle.id].map((item) => (
+                          <div key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-[var(--af-border)]">
+                            <div>
+                              <p className="text-sm font-semibold text-[var(--af-ink)]">{item.assetTag ? `${item.assetTag} — ` : ""}{item.assetName ?? `Asset #${item.assetId}`}</p>
+                              <p className="text-xs text-slate-500">{item.notes ?? (item.result ? `Marked ${item.result}` : "Awaiting verification")}</p>
+                            </div>
+                            {cycle.status !== "closed" && <div className="flex flex-wrap gap-2">
+                              <button className={item.result === "verified" ? btnPrimary : btnSecondary} onClick={() => handleMarkItem(cycle.id, item.assetId, "verified")} disabled={markSaving} title="Mark verified"><CheckCircle2 size={15} /> Verified</button>
+                              <button className={item.result === "missing" ? panelBtnDanger : btnSecondary} onClick={() => handleMarkItem(cycle.id, item.assetId, "missing")} disabled={markSaving}><XCircle size={15} /> Missing</button>
+                              <button className={item.result === "damaged" ? "inline-flex items-center gap-2 rounded-xl bg-amber-100 px-4 py-2.5 text-sm font-semibold text-amber-800" : btnSecondary} onClick={() => handleMarkItem(cycle.id, item.assetId, "damaged")} disabled={markSaving}><TriangleAlert size={15} /> Damaged</button>
+                            </div>}
+                          </div>
+                        ))}
+                      </div>
+                    ) : cycle.status !== "closed" ? (
+                      <div className="flex flex-wrap items-end gap-3">
+                        <div className="min-w-[220px] flex-1"><label className="mb-1 block text-xs font-medium text-slate-500">Asset</label><AssetSelect className={inputCls} value={markAssetId} onChange={setMarkAssetId} placeholder="Select asset" /></div>
+                        <div><label className="mb-1 block text-xs font-medium text-slate-500">Result</label><select className={inputCls} value={markResult} onChange={(e) => setMarkResult(e.target.value as typeof markResult)}><option value="verified">Verified</option><option value="missing">Missing</option><option value="damaged">Damaged</option></select></div>
+                        <button className={btnPrimary} onClick={() => handleMarkItem(cycle.id, Number(markAssetId))} disabled={markSaving || !markAssetId}>Mark item</button>
+                      </div>
+                    ) : <p className="text-sm text-slate-500">This cycle has no audit items.</p>}
+                    {discrepancies[cycle.id]?.length ? <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4"><p className="font-semibold text-rose-800">Discrepancy report</p><ul className="mt-2 space-y-1 text-sm text-rose-700">{discrepancies[cycle.id].map((item) => <li key={item.id}>{item.assetName ?? `Asset #${item.assetId}`} — {item.result}</li>)}</ul></div> : null}
                   </div>
                 )}
               </div>

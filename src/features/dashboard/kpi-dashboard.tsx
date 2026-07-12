@@ -50,12 +50,12 @@ export function KpiDashboard() {
 
   const kpiCards = kpis
     ? [
-        { label: "Assets Available", value: kpis.assetsAvailable, icon: PackageCheck, tone: "text-emerald-700 bg-emerald-50" },
-        { label: "Assets Allocated", value: kpis.assetsAllocated, icon: Boxes, tone: "text-sky-700 bg-sky-50" },
-        { label: "Maintenance Today", value: kpis.maintenanceToday, icon: Wrench, tone: "text-amber-700 bg-amber-50" },
-        { label: "Active Bookings", value: kpis.activeBookings, icon: CalendarDays, tone: "text-teal-700 bg-teal-50" },
-        { label: "Pending Transfers", value: kpis.pendingTransfers, icon: ArrowLeftRight, tone: "text-slate-700 bg-slate-100" },
-        { label: "Upcoming Returns", value: kpis.upcomingReturns, icon: Clock3, tone: "text-cyan-700 bg-cyan-50" },
+        { label: "Assets Available", value: kpis.assetsAvailable, icon: PackageCheck, tone: "text-emerald-700 bg-emerald-50", href: "/dashboard/assets?status=available" },
+        { label: "Assets Allocated", value: kpis.assetsAllocated, icon: Boxes, tone: "text-sky-700 bg-sky-50", href: "/dashboard/assets?status=allocated" },
+        { label: "Maintenance Today", value: kpis.maintenanceToday, icon: Wrench, tone: "text-amber-700 bg-amber-50", href: "/dashboard/maintenance" },
+        { label: "Active Bookings", value: kpis.activeBookings, icon: CalendarDays, tone: "text-teal-700 bg-teal-50", href: "/dashboard/bookings" },
+        { label: "Pending Transfers", value: kpis.pendingTransfers, icon: ArrowLeftRight, tone: "text-slate-700 bg-slate-100", href: "/dashboard/allocations" },
+        { label: "Upcoming Returns", value: kpis.upcomingReturns, icon: Clock3, tone: "text-cyan-700 bg-cyan-50", href: "/dashboard/allocations" },
       ]
     : [];
 
@@ -95,7 +95,7 @@ export function KpiDashboard() {
             {kpiCards.map((card) => {
               const Icon = card.icon;
               return (
-                <article key={card.label} className="af-panel group p-5 transition hover:-translate-y-0.5">
+                <Link key={card.label} href={card.href} className="af-panel group block p-5 transition hover:-translate-y-0.5 hover:border-teal-200">
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-sm font-medium text-[var(--af-muted)]">{card.label}</p>
                     <div className={cn("rounded-xl p-2", card.tone)}>
@@ -105,7 +105,7 @@ export function KpiDashboard() {
                   <div className="mt-5 font-display text-4xl font-semibold tracking-tight">
                     {card.value.toLocaleString()}
                   </div>
-                </article>
+                </Link>
               );
             })}
           </div>
