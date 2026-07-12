@@ -1,16 +1,28 @@
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 import { DashboardShell } from "../../features/dashboard/dashboard-shell";
+import { API_BASE_URL } from "@/lib/api";
+import { DEMO_AUTH_COOKIE, parseDemoSession } from "@/lib/demo-auth";
 
 async function getCurrentUser() {
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") || "";
-  if (!cookieHeader) {
-    redirect("/auth/signin");
+  const cookieStore = await cookies();
+  const demoSession = parseDemoSession(cookieStore.get(DEMO_AUTH_COOKIE)?.value);
+
+  if (demoSession) {
+    return demoSession;
   }
 
   try {
-    const response = await fetch("/api/auth/me", {
+    const cookieHeader = cookieStore
+      .getAll()
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join("; ");
+
+    if (!cookieHeader) {
+      redirect("/auth/signin");
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
       headers: { cookie: cookieHeader },
       cache: "no-store",
     });

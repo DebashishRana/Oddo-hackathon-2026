@@ -3,6 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiFetch } from "@/lib/api";
+import {
+  buildDemoSessionUser,
+  createDemoSessionCookie,
+  isDemoCredentials,
+} from "@/lib/demo-auth";
 
 type AuthMode = "signin" | "signup";
 
@@ -28,8 +33,8 @@ const getErrorMessage = (payload: ApiErrorBody | undefined, fallback: string) =>
 
 export function AuthForm({ mode }: Props) {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(mode === "signin" ? "demo@dectra.local" : "");
+  const [password, setPassword] = useState(mode === "signin" ? "Demo1234!" : "");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [department, setDepartment] = useState("");
@@ -51,6 +56,13 @@ export function AuthForm({ mode }: Props) {
     }
 
     try {
+      if (!isSignup && isDemoCredentials(email, password)) {
+        document.cookie = createDemoSessionCookie(buildDemoSessionUser(email));
+        router.push("/dashboard");
+        router.refresh();
+        return;
+      }
+
       const response = await apiFetch(isSignup ? "/api/auth/register" : "/api/auth/login", {
         method: "POST",
         body: JSON.stringify(

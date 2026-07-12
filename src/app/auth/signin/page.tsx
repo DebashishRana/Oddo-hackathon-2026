@@ -5,13 +5,17 @@ import { API_BASE_URL } from "@/lib/api";
 
 export default function SignInPage() {
   return (
-      <AuthShell
+    <AuthShell
       eyebrow="Welcome back"
       title="Log in to your workspace."
-      subtitle="Sign in with your email and password, or use Google to get into AssetFlow faster."
+      subtitle="Use the demo login below to open the dashboard now. Your team can wire the full backend auth later."
     >
       <div className="space-y-5">
         <AuthForm mode="signin" />
+
+        <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
+          Demo access: <span className="font-semibold">demo@dectra.local</span> / <span className="font-semibold">Demo1234!</span>
+        </div>
 
         <div className="flex items-center gap-4">
           <span className="h-px flex-1 bg-slate-200" />
