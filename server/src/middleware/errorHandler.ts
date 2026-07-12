@@ -15,7 +15,7 @@ export const errorHandler = (err: unknown, req: Request, res: Response, _next: N
     path: req.path,
     method: req.method,
     error: err instanceof Error ? err.message : "Unknown error",
-    stack: err instanceof Error ? err.stack : undefined
+    stack: err instanceof Error ? err.stack : undefined,
   });
 
   return fail(

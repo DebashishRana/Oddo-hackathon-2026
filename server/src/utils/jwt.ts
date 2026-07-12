@@ -1,23 +1,33 @@
-import jwt, { SignOptions } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 
-export type SessionClaims = {
-  sub: string;
+export type JwtUser = {
+  id: number;
   email: string;
-  assurance_level: "email_verified";
-  aud: "dectra-api";
+  role: string;
 };
 
-export const signSessionToken = (email: string) => {
+export type SessionClaims = JwtUser & {
+  aud: "assetflow-api";
+};
+
+export const signSessionToken = (user: JwtUser) => {
   const claims: SessionClaims = {
-    sub: `email:${email}`,
-    email,
-    assurance_level: "email_verified",
-    aud: "dectra-api"
+    ...user,
+    aud: "assetflow-api",
   };
 
   return jwt.sign(claims, env.jwtSecret, {
-    expiresIn: env.jwtExpiresIn,
-    issuer: "dectra-auth"
-  } as SignOptions);
+    expiresIn: env.jwtExpiresIn as jwt.SignOptions["expiresIn"],
+    issuer: "assetflow-auth",
+  });
+};
+
+export const verifySessionToken = (token: string) => {
+  const claims = jwt.verify(token, env.jwtSecret) as SessionClaims;
+  return {
+    id: claims.id,
+    email: claims.email,
+    role: claims.role,
+  };
 };

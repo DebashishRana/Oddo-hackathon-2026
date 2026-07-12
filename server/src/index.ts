@@ -1,6 +1,5 @@
 import { createApp } from "./app";
 import { env } from "./config/env";
-import { redis } from "./config/redis";
 import { logger } from "./utils/logger";
 
 const app = createApp();
@@ -8,23 +7,18 @@ const app = createApp();
 const server = app.listen(env.port, () => {
   logger.info("server_started", {
     port: env.port,
-    environment: env.nodeEnv
+    environment: env.nodeEnv,
+    appName: env.appName,
   });
 });
 
-const shutdown = async (signal: string) => {
+const shutdown = (signal: string) => {
   logger.info("server_shutdown_started", { signal });
-  server.close(async () => {
-    await redis.quit();
+  server.close(() => {
     logger.info("server_shutdown_complete");
     process.exit(0);
   });
 };
 
-process.on("SIGTERM", () => {
-  void shutdown("SIGTERM");
-});
-
-process.on("SIGINT", () => {
-  void shutdown("SIGINT");
-});
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
