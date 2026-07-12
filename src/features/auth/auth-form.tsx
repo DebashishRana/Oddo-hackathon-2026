@@ -33,8 +33,8 @@ const getErrorMessage = (payload: ApiErrorBody | undefined, fallback: string) =>
 
 export function AuthForm({ mode }: Props) {
   const router = useRouter();
-  const [email, setEmail] = useState(mode === "signin" ? "demo@dectra.local" : "");
-  const [password, setPassword] = useState(mode === "signin" ? "Demo1234!" : "");
+  const [email, setEmail] = useState(mode === "signin" ? "admin@assetflow.local" : "");
+  const [password, setPassword] = useState(mode === "signin" ? "Admin1234!" : "");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [department, setDepartment] = useState("");

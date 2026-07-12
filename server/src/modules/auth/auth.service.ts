@@ -53,6 +53,10 @@ export class AuthService {
 
     const employeeRole = await this.getEmployeeRole();
     const passwordHash = await hashPassword(input.password);
+
+    // Auto-activate when no email service is configured (local/hackathon mode)
+    const autoActivate = !env.resendApiKey;
+
     const user = await userRepository.create({
       email: input.email,
       name: input.name,
@@ -60,12 +64,15 @@ export class AuthService {
       passwordHash,
       roleId: employeeRole.id,
       authProvider: "local",
-      isActive: false,
+      isActive: autoActivate,
+      emailVerifiedAt: autoActivate ? new Date() : null,
     });
 
-    const verificationToken = generateToken();
-    await this.storeEmailVerificationToken(user.id, verificationToken);
-    await this.dispatchVerificationEmail(user.email, verificationToken);
+    if (!autoActivate) {
+      const verificationToken = generateToken();
+      await this.storeEmailVerificationToken(user.id, verificationToken);
+      await this.dispatchVerificationEmail(user.email, verificationToken);
+    }
 
     return {
       user: toAuthUser({
@@ -74,10 +81,10 @@ export class AuthService {
         name: user.name,
         department: user.department,
         role_slug: employeeRole.slug,
-        is_active: false,
-        email_verified_at: null,
+        is_active: autoActivate,
+        email_verified_at: autoActivate ? new Date() : null,
       }),
-      verificationRequired: true,
+      verificationRequired: !autoActivate,
     };
   }
 

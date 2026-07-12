@@ -19,7 +19,7 @@ export const createApp = () => {
       credentials: true,
     })
   );
-  app.use(express.json({ limit: "32kb" }));
+  app.use(express.json({ limit: "1mb" }));
   app.use(requestContext);
   app.use(sanitizeInput);
 

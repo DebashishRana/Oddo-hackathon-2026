@@ -1,71 +1,5 @@
+import { getPool } from "../../config/database";
 import { AppError } from "../../utils/errors";
-
-const utilizationSeries = [42, 46, 44, 51, 53, 56, 58, 61, 63, 66, 68, 71];
-const maintenanceSeries = [12, 15, 14, 18, 22, 19, 21, 24, 20, 17, 23, 26];
-
-const utilizationTop = [
-  { name: "MacBook Pro 16", department: "IT", category: "Electronics", allocations: 42, usageDays: 287, idleDays: 6 },
-  { name: "Dell Docking Hub", department: "IT", category: "Electronics", allocations: 36, usageDays: 254, idleDays: 12 },
-  { name: "Conference Room A", department: "Facilities", category: "Rooms", allocations: 31, usageDays: 198, idleDays: 4 },
-  { name: "Delivery Van 02", department: "Operations", category: "Vehicles", allocations: 27, usageDays: 176, idleDays: 18 },
-];
-
-const utilizationIdle = utilizationTop
-  .slice()
-  .sort((a, b) => b.idleDays - a.idleDays)
-  .map((asset) => ({ ...asset }));
-
-const maintenanceAssets = [
-  { name: "Delivery Van 02", department: "Operations", category: "Vehicles", events: 9, cost: 18400, dueInDays: 4 },
-  { name: "Conference Room A", department: "Facilities", category: "Rooms", events: 7, cost: 8200, dueInDays: 8 },
-  { name: "MacBook Pro 16", department: "IT", category: "Electronics", events: 6, cost: 12400, dueInDays: 13 },
-  { name: "Projector Unit 4", department: "IT", category: "Electronics", events: 5, cost: 6600, dueInDays: 21 },
-];
-
-const categoryMaintenance = [
-  { category: "Electronics", events: 52 },
-  { category: "Furniture", events: 31 },
-  { category: "Vehicles", events: 18 },
-  { category: "Rooms", events: 14 },
-];
-
-const departmentSummary = [
-  { department: "Operations", total: 820, allocated: 602, available: 148, maintenance: 38, retired: 32 },
-  { department: "IT", total: 540, allocated: 398, available: 92, maintenance: 34, retired: 16 },
-  { department: "Facilities", total: 310, allocated: 192, available: 74, maintenance: 27, retired: 17 },
-  { department: "Finance", total: 160, allocated: 98, available: 41, maintenance: 8, retired: 13 },
-];
-
-const bookingResources = [
-  {
-    name: "Room Alpha",
-    type: "Room",
-    location: "HQ - 2nd Floor",
-    utilization: [
-      [1, 1, 2, 4, 4, 3, 2, 1, 1],
-      [1, 2, 3, 4, 4, 3, 3, 2, 1],
-      [1, 1, 2, 3, 4, 4, 3, 2, 1],
-      [1, 1, 2, 2, 3, 4, 4, 3, 2],
-      [0, 1, 1, 2, 3, 4, 4, 3, 2],
-      [0, 0, 1, 1, 2, 3, 4, 3, 2],
-      [0, 0, 0, 1, 1, 2, 3, 3, 2],
-    ],
-  },
-  {
-    name: "Delivery Van 02",
-    type: "Vehicle",
-    location: "Warehouse",
-    utilization: [
-      [0, 1, 1, 2, 3, 3, 2, 1, 0],
-      [0, 1, 2, 3, 3, 3, 2, 1, 0],
-      [0, 0, 1, 2, 4, 4, 3, 1, 0],
-      [0, 0, 1, 2, 3, 4, 4, 2, 1],
-      [0, 0, 0, 1, 2, 3, 4, 3, 1],
-      [0, 0, 0, 1, 1, 2, 3, 2, 1],
-      [0, 0, 0, 0, 1, 1, 2, 2, 1],
-    ],
-  },
-];
 
 const toCsv = (rows: Record<string, string | number>[]) => {
   const headers = rows.length ? Object.keys(rows[0]) : [];
@@ -73,96 +7,309 @@ const toCsv = (rows: Record<string, string | number>[]) => {
 };
 
 export const analyticsService = {
-  utilization() {
+  async utilization() {
+    const pool = getPool();
+
+    const kpiResult = await pool.query(`
+      SELECT
+        COUNT(*) FILTER (WHERE status NOT IN ('retired','disposed')) AS total_assets,
+        COUNT(*) FILTER (WHERE status = 'allocated') AS allocated_assets,
+        COUNT(*) FILTER (WHERE status = 'available') AS idle_assets,
+        COUNT(*) FILTER (WHERE status = 'under_maintenance') AS under_maintenance
+      FROM assets
+    `);
+    const kpiRow = kpiResult.rows[0];
+    const total = Number(kpiRow.total_assets) || 1;
+    const allocated = Number(kpiRow.allocated_assets);
+    const utilizationRate = Math.round((allocated / total) * 100);
+
+    // Monthly allocation counts over last 12 months
+    const seriesResult = await pool.query(`
+      SELECT TO_CHAR(DATE_TRUNC('month', created_at), 'Mon') AS period,
+             COUNT(*) AS count
+      FROM asset_allocations
+      WHERE created_at >= NOW() - INTERVAL '12 months'
+      GROUP BY DATE_TRUNC('month', created_at)
+      ORDER BY DATE_TRUNC('month', created_at) ASC
+    `);
+    const seriesMap: Record<string, number> = {};
+    for (const row of seriesResult.rows) {
+      seriesMap[String(row.period)] = Number(row.count);
+    }
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const series = months.map((m) => ({ period: m, utilization_rate: (seriesMap[m] ?? 0) / 100 }));
+
+    // Top used assets by allocation count
+    const topUsedResult = await pool.query(`
+      SELECT a.name, COALESCE(d.name, 'Unassigned') AS department,
+             COALESCE(c.name, 'Uncategorized') AS category,
+             COUNT(aa.id) AS allocations
+      FROM assets a
+      LEFT JOIN asset_allocations aa ON aa.asset_id = a.id
+      LEFT JOIN departments d ON d.id = a.department_id
+      LEFT JOIN asset_categories c ON c.id = a.category_id
+      GROUP BY a.id, d.name, c.name
+      ORDER BY allocations DESC
+      LIMIT 10
+    `);
+
+    const topUsed = topUsedResult.rows.map((r) => ({
+      name: String(r.name),
+      department: String(r.department),
+      category: String(r.category),
+      allocations: Number(r.allocations),
+      usageDays: Number(r.allocations) * 7,
+      idleDays: Math.max(0, 30 - Number(r.allocations) * 3),
+    }));
+
+    const topIdle = [...topUsed].sort((a, b) => b.idleDays - a.idleDays);
+
     return {
       kpis: {
-        totalAssets: 1840,
-        allocatedAssets: 1206,
-        idleAssets: 318,
-        underMaintenance: 74,
-        utilizationRate: 68,
+        totalAssets: Number(kpiRow.total_assets),
+        allocatedAssets: allocated,
+        idleAssets: Number(kpiRow.idle_assets),
+        underMaintenance: Number(kpiRow.under_maintenance),
+        utilizationRate,
       },
-      series: utilizationSeries.map((value, index) => ({ period: `M${index + 1}`, utilization_rate: value / 100 })),
-      topUsed: utilizationTop,
-      topIdle: utilizationIdle,
+      series,
+      topUsed,
+      topIdle,
     };
   },
 
-  maintenance() {
+  async maintenance() {
+    const pool = getPool();
+
+    const kpiResult = await pool.query(`
+      SELECT
+        COUNT(*) FILTER (WHERE status NOT IN ('resolved','rejected')) AS open_requests,
+        COUNT(*) FILTER (WHERE status = 'resolved') AS resolved,
+        COUNT(DISTINCT asset_id) AS assets_under_maintenance
+      FROM maintenance_requests
+    `);
+    const kpiRow = kpiResult.rows[0];
+
+    const categoryResult = await pool.query(`
+      SELECT COALESCE(c.name, 'Uncategorized') AS category, COUNT(mr.id) AS events
+      FROM maintenance_requests mr
+      LEFT JOIN assets a ON a.id = mr.asset_id
+      LEFT JOIN asset_categories c ON c.id = a.category_id
+      GROUP BY c.name
+      ORDER BY events DESC
+    `);
+
+    const seriesResult = await pool.query(`
+      SELECT TO_CHAR(DATE_TRUNC('month', created_at), 'Mon') AS period, COUNT(*) AS count
+      FROM maintenance_requests
+      WHERE created_at >= NOW() - INTERVAL '12 months'
+      GROUP BY DATE_TRUNC('month', created_at)
+      ORDER BY DATE_TRUNC('month', created_at) ASC
+    `);
+
+    const costSeriesMap: Record<string, number> = {};
+    for (const row of seriesResult.rows) costSeriesMap[String(row.period)] = Number(row.count);
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    const highFreqResult = await pool.query(`
+      SELECT a.name, COALESCE(d.name,'Unassigned') AS department, COALESCE(c.name,'Uncategorized') AS category,
+             COUNT(mr.id) AS events
+      FROM maintenance_requests mr
+      LEFT JOIN assets a ON a.id = mr.asset_id
+      LEFT JOIN departments d ON d.id = a.department_id
+      LEFT JOIN asset_categories c ON c.id = a.category_id
+      GROUP BY a.id, d.name, c.name
+      ORDER BY events DESC
+      LIMIT 5
+    `);
+
     return {
       kpis: {
-        openMaintenanceRequests: 74,
-        averageMaintenanceFrequency: 4.8,
-        totalMaintenanceCost: 45600,
-        assetsDueForMaintenance: 12,
+        openMaintenanceRequests: Number(kpiRow.open_requests),
+        averageMaintenanceFrequency: 0,
+        totalMaintenanceCost: 0,
+        assetsDueForMaintenance: Number(kpiRow.assets_under_maintenance),
       },
-      categoryCounts: categoryMaintenance,
-      costSeries: maintenanceSeries.map((value, index) => ({ period: `M${index + 1}`, cost: value * 1000 })),
-      highFrequency: maintenanceAssets,
-      retirementRisk: maintenanceAssets.slice().sort((a, b) => a.dueInDays - b.dueInDays),
+      categoryCounts: categoryResult.rows.map((r) => ({ category: String(r.category), events: Number(r.events) })),
+      costSeries: months.map((m) => ({ period: m, cost: (costSeriesMap[m] ?? 0) * 1000 })),
+      highFrequency: highFreqResult.rows.map((r) => ({
+        name: String(r.name),
+        department: String(r.department),
+        category: String(r.category),
+        events: Number(r.events),
+        cost: 0,
+        dueInDays: 0,
+      })),
+      retirementRisk: [],
     };
   },
 
-  departments() {
+  async departments() {
+    const pool = getPool();
+
+    const result = await pool.query(`
+      SELECT
+        COALESCE(d.name, 'Unassigned') AS department,
+        COUNT(a.id) AS total,
+        COUNT(a.id) FILTER (WHERE a.status = 'allocated') AS allocated,
+        COUNT(a.id) FILTER (WHERE a.status = 'available') AS available,
+        COUNT(a.id) FILTER (WHERE a.status = 'under_maintenance') AS maintenance,
+        COUNT(a.id) FILTER (WHERE a.status = 'retired') AS retired
+      FROM assets a
+      LEFT JOIN departments d ON d.id = a.department_id
+      GROUP BY d.name
+      ORDER BY total DESC
+    `);
+
     return {
-      summaries: departmentSummary,
+      summaries: result.rows.map((r) => ({
+        department: String(r.department),
+        total: Number(r.total),
+        allocated: Number(r.allocated),
+        available: Number(r.available),
+        maintenance: Number(r.maintenance),
+        retired: Number(r.retired),
+      })),
     };
   },
 
-  bookings() {
+  async bookings() {
+    const pool = getPool();
+
+    const kpiResult = await pool.query(`
+      SELECT
+        COUNT(*) AS total_bookings,
+        COUNT(*) FILTER (WHERE status IN ('upcoming','ongoing')) AS active_bookings
+      FROM resource_bookings
+    `);
+
+    const resourceResult = await pool.query(`
+      SELECT a.name, COALESCE(c.name, 'Asset') AS type, COALESCE(a.location, 'Unknown') AS location,
+             COUNT(rb.id) AS booking_count
+      FROM resource_bookings rb
+      JOIN assets a ON a.id = rb.asset_id
+      LEFT JOIN asset_categories c ON c.id = a.category_id
+      GROUP BY a.id, c.name
+      ORDER BY booking_count DESC
+      LIMIT 10
+    `);
+
+    const total = Number(kpiResult.rows[0].total_bookings);
+    const active = Number(kpiResult.rows[0].active_bookings);
+    const avgUtil = total > 0 ? active / total : 0;
+
     return {
       kpis: {
-        totalBookings: 1842,
-        peakHour: "1 pm - 3 pm",
-        peakDays: ["Tue", "Thu"],
-        averageUtilization: 0.68,
+        totalBookings: total,
+        peakHour: "N/A",
+        peakDays: [],
+        averageUtilization: avgUtil,
       },
-      resources: bookingResources,
+      resources: resourceResult.rows.map((r) => ({
+        name: String(r.name),
+        type: String(r.type),
+        location: String(r.location),
+        utilization: [[Number(r.booking_count)]],
+      })),
     };
   },
 
-  reportRows(type: string) {
+  async reportRows(type: string) {
+    const pool = getPool();
+
     switch (type) {
-      case "asset-utilization":
-        return utilizationTop.map((asset) => ({
-          asset: asset.name,
-          department: asset.department,
-          category: asset.category,
-          allocations: asset.allocations,
-          usage_days: asset.usageDays,
-          idle_days: asset.idleDays,
+      case "asset-utilization": {
+        const result = await pool.query(`
+          SELECT a.name AS asset, COALESCE(d.name,'Unassigned') AS department,
+                 COALESCE(c.name,'Uncategorized') AS category,
+                 COUNT(aa.id) AS allocations
+          FROM assets a
+          LEFT JOIN asset_allocations aa ON aa.asset_id = a.id
+          LEFT JOIN departments d ON d.id = a.department_id
+          LEFT JOIN asset_categories c ON c.id = a.category_id
+          GROUP BY a.id, d.name, c.name
+          ORDER BY allocations DESC
+          LIMIT 50
+        `);
+        return result.rows.map((r) => ({
+          asset: String(r.asset),
+          department: String(r.department),
+          category: String(r.category),
+          allocations: Number(r.allocations),
+          usage_days: Number(r.allocations) * 7,
+          idle_days: Math.max(0, 30 - Number(r.allocations) * 3),
         }));
-      case "maintenance-summary":
-        return maintenanceAssets.map((asset) => ({
-          asset: asset.name,
-          department: asset.department,
-          category: asset.category,
-          maintenance_events: asset.events,
-          cost: asset.cost,
-          due_in_days: asset.dueInDays,
+      }
+      case "maintenance-summary": {
+        const result = await pool.query(`
+          SELECT a.name AS asset, COALESCE(d.name,'Unassigned') AS department,
+                 COALESCE(c.name,'Uncategorized') AS category,
+                 COUNT(mr.id) AS maintenance_events
+          FROM assets a
+          LEFT JOIN maintenance_requests mr ON mr.asset_id = a.id
+          LEFT JOIN departments d ON d.id = a.department_id
+          LEFT JOIN asset_categories c ON c.id = a.category_id
+          GROUP BY a.id, d.name, c.name
+          ORDER BY maintenance_events DESC
+          LIMIT 50
+        `);
+        return result.rows.map((r) => ({
+          asset: String(r.asset),
+          department: String(r.department),
+          category: String(r.category),
+          maintenance_events: Number(r.maintenance_events),
+          cost: 0,
+          due_in_days: 0,
         }));
-      case "department-summary":
-        return departmentSummary.map((item) => ({
-          department: item.department,
-          total_assets: item.total,
-          allocated: item.allocated,
-          available: item.available,
-          under_maintenance: item.maintenance,
-          retired: item.retired,
+      }
+      case "department-summary": {
+        const result = await pool.query(`
+          SELECT COALESCE(d.name,'Unassigned') AS department,
+                 COUNT(a.id) AS total_assets,
+                 COUNT(a.id) FILTER (WHERE a.status='allocated') AS allocated,
+                 COUNT(a.id) FILTER (WHERE a.status='available') AS available,
+                 COUNT(a.id) FILTER (WHERE a.status='under_maintenance') AS under_maintenance,
+                 COUNT(a.id) FILTER (WHERE a.status='retired') AS retired
+          FROM assets a
+          LEFT JOIN departments d ON d.id = a.department_id
+          GROUP BY d.name
+          ORDER BY total_assets DESC
+        `);
+        return result.rows.map((r) => ({
+          department: String(r.department),
+          total_assets: Number(r.total_assets),
+          allocated: Number(r.allocated),
+          available: Number(r.available),
+          under_maintenance: Number(r.under_maintenance),
+          retired: Number(r.retired),
         }));
-      case "resource-bookings":
-        return bookingResources.map((resource) => ({
-          resource: resource.name,
-          type: resource.type,
-          location: resource.location,
-          peak_utilization: Math.max(...resource.utilization.flat()) * 25,
+      }
+      case "resource-bookings": {
+        const result = await pool.query(`
+          SELECT a.name AS resource, COALESCE(c.name,'Asset') AS type,
+                 COALESCE(a.location,'Unknown') AS location,
+                 COUNT(rb.id) AS booking_count
+          FROM resource_bookings rb
+          JOIN assets a ON a.id = rb.asset_id
+          LEFT JOIN asset_categories c ON c.id = a.category_id
+          GROUP BY a.id, c.name
+          ORDER BY booking_count DESC
+          LIMIT 50
+        `);
+        return result.rows.map((r) => ({
+          resource: String(r.resource),
+          type: String(r.type),
+          location: String(r.location),
+          peak_utilization: Number(r.booking_count),
         }));
+      }
       default:
         throw new AppError("Unknown report type", 400, "REPORT_TYPE_INVALID", "Unknown report type.");
     }
   },
 
-  reportCsv(type: string) {
-    return toCsv(this.reportRows(type));
+  async reportCsv(type: string) {
+    const rows = await this.reportRows(type);
+    return toCsv(rows as Record<string, string | number>[]);
   },
 };

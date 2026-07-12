@@ -1,108 +1,95 @@
-# SaaS Starter
+# AssetFlow
 
-This repository is a stripped-down starter template for hackathons and new SaaS apps.
+Enterprise Asset & Resource Management System for the Oddo hackathon.
 
-It keeps the shared infrastructure:
+Organizations can manage departments, employees, assets, allocations, shared-resource bookings, maintenance approvals, audits, notifications, and operational analytics — with proper role-based access.
 
-- Frontend shell with landing, auth, and dashboard routes
-- Backend API with JWT cookie auth, RBAC, logging, and Postgres access
-- Migration structure for local development
-- A sample backend module you can copy for new features
+## Stack
 
-It removes the old product-specific OCR, compliance, pricing, and billing flows, while keeping a generic auth and dashboard scaffold.
+- **Frontend:** Next.js 15 + React 19 + Tailwind (existing shell preserved)
+- **Backend:** Express 5 + TypeScript
+- **Database:** PostgreSQL
 
-## Structure
+## Roles
 
-- `src/app/` - Next.js app router pages and layouts
-- `src/features/` - Frontend feature modules
-- `server/src/modules/` - Backend modules
-- `server/src/db/` - Database repositories and models
-- `server/migrations/` - SQL migrations
+| Role | Capabilities |
+|------|--------------|
+| **Admin** | Organization setup, employee role promotion, audits, org-wide analytics |
+| **Asset Manager** | Register/allocate assets, approve transfers/maintenance/returns |
+| **Department Head** | Approve dept transfers, book for department, view dept assets |
+| **Employee** | View own assets, book resources, raise maintenance, request transfer/return |
 
-## What is included
+Signup always creates an **Employee** account. Admins promote people from Organization → Employees.
 
-- Landing page with hero, feature placeholders, and auth links
-- Dashboard shell with sidebar, topbar, and example pages
-- Auth endpoints for register, login, logout, current session, Google OAuth, and email verification
-- Profile endpoints for `me` and profile updates
-- Role-based access control middleware
-- Sample module: `sample-entity`
+## Modules (independent)
 
-## Local Setup
+| Area | API prefix | Dashboard route |
+|------|------------|-----------------|
+| Auth | `/api/auth` | `/auth/signin`, `/auth/signup`, forgot/reset/verify |
+| Organization | `/api/departments`, `/api/categories`, `/api/users` | `/dashboard/organization` |
+| Assets | `/api/assets` | `/dashboard/assets` |
+| Allocations & Transfers | `/api/allocations`, `/api/transfers` | `/dashboard/allocations` |
+| Bookings | `/api/bookings` | `/dashboard/bookings` |
+| Maintenance | `/api/maintenance` | `/dashboard/maintenance` |
+| Audits | `/api/audits` | `/dashboard/audits` |
+| Notifications & logs | `/api/notifications` | `/dashboard/notifications` |
+| KPIs | `/api/dashboard` | `/dashboard` |
+| Analytics / Reports | `/api/analytics`, `/api/reports` | `/dashboard/analytics` |
 
-1. Install dependencies.
+## Local setup
+
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-2. Copy env files and fill them in.
-
-- Root frontend env: `.env.local`
-- Backend env: `server/.env`
-
-3. Start Postgres.
+2. Start Postgres (Docker Desktop must be running):
 
 ```bash
 docker compose up -d db
 ```
 
-4. Run migrations.
+3. Env files are already scaffolded:
+
+- Root: `.env.local`
+- Backend: `server/.env` (uses `postgresql://starter:starter@localhost:5432/starter`)
+
+4. Run migrations (creates schema + seed admin + starter departments/categories):
 
 ```bash
 npm run server:migrate
 ```
 
-5. Start the backend.
+5. Start API + web app:
 
 ```bash
 npm run server:dev
-```
-
-6. Start the frontend.
-
-```bash
 npm run dev
 ```
 
-## Environment Variables
+Open http://localhost:3000
 
-Frontend:
+## Seed admin login
 
-- `NEXT_PUBLIC_APP_NAME`
-- `NEXT_PUBLIC_API_BASE_URL`
+After migrations:
 
-Backend:
+- **Email:** `admin@assetflow.local`
+- **Password:** `Admin1234!`
 
-- `DATABASE_URL`
-- `JWT_SECRET`
-- `JWT_EXPIRES_IN`
-- `APP_URL`
-- `CORS_ORIGINS`
-- `COOKIE_NAME`
-- `COOKIE_SECURE`
-- `APP_NAME`
-- `RESEND_API_KEY`
-- `RESEND_FROM`
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
-- `GOOGLE_REDIRECT_URI`
-- `VERIFICATION_CODE_TTL_MINUTES`
+Use Organization → Employees to promote other signed-up users to Department Head or Asset Manager.
 
-## Adding a new feature module
+## Core workflows covered
 
-Backend:
-
-- Create a folder in `server/src/modules/<feature-name>/`
-- Add a controller, service, and routes file
-- Register the router in `server/src/modules/index.ts`
-- Add any tables or columns in `server/migrations/`
-
-Frontend:
-
-- Create a folder in `src/features/<feature-name>/`
-- Add page or component files there
-- Wire the feature into `src/app/` routes or layouts
+1. Login / signup (employee-only signup, email verify when Resend is configured; auto-active locally without `RESEND_API_KEY`)
+2. KPI dashboard with overdue returns highlighted
+3. Organization setup: departments, categories, employee directory + role promotion
+4. Asset registration with auto tags (`AF-0001`…), lifecycle statuses, search/filter
+5. Allocation with double-allocation blocked + transfer request workflow
+6. Shared resource booking with overlap validation
+7. Maintenance approval workflow (Pending → Approved → Assigned → In Progress → Resolved)
+8. Audit cycles with discrepancy report on close
+9. Notifications + activity logs
 
 ## Useful commands
 
@@ -110,23 +97,6 @@ Frontend:
 npm run dev
 npm run server:dev
 npm run server:migrate
-npm run server:build
 npm run build
+npm run server:build
 ```
-
-## Example backend endpoints
-
-- `GET /health`
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/logout`
-- `GET /api/auth/me`
-- `GET /api/auth/google/start`
-- `GET /api/auth/google/callback`
-- `POST /api/auth/email/send-verification`
-- `POST /api/auth/email/verify`
-- `GET /api/users/me`
-- `PATCH /api/users/me`
-- `GET /api/users` - admin only
-- `GET /api/sample-entities` - authenticated
-- `POST /api/sample-entities` - authenticated

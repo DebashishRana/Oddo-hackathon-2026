@@ -8,16 +8,18 @@ type NavItem = {
 
 const mainNav: NavItem[] = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard/organization", label: "Organization" },
+  { href: "/dashboard/assets", label: "Assets" },
+  { href: "/dashboard/allocations", label: "Allocations" },
+  { href: "/dashboard/bookings", label: "Bookings" },
+  { href: "/dashboard/maintenance", label: "Maintenance" },
+  { href: "/dashboard/audits", label: "Audits" },
   { href: "/dashboard/analytics", label: "Analytics" },
-  { href: "/dashboard/entities", label: "Entities" },
+  { href: "/dashboard/notifications", label: "Notifications" },
   { href: "/dashboard/settings", label: "Settings" },
 ];
 
-const toolsNav: NavItem[] = [
-  { href: "#", label: "Projects" },
-  { href: "#", label: "Customers" },
-  { href: "#", label: "Messages" },
-];
+const toolsNav: NavItem[] = [];
 
 type Props = {
   user?: {
@@ -56,18 +58,20 @@ export function DashboardShell({ user, children }: Props) {
             ))}
           </div>
 
-          <div className="mt-6 space-y-1 border-t border-neutral-200 pt-6">
-            <p className="px-3 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-400">Tools</p>
-            {toolsNav.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="flex items-center justify-between rounded-2xl px-3 py-3 text-sm text-neutral-700 transition hover:bg-neutral-100 hover:text-neutral-950"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
+          {toolsNav.length > 0 && (
+            <div className="mt-6 space-y-1 border-t border-neutral-200 pt-6">
+              <p className="px-3 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-400">Tools</p>
+              {toolsNav.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="flex items-center justify-between rounded-2xl px-3 py-3 text-sm text-neutral-700 transition hover:bg-neutral-100 hover:text-neutral-950"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
 
           <div className="mt-auto rounded-[24px] border border-neutral-200 bg-neutral-50 p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-neutral-400">Team</p>

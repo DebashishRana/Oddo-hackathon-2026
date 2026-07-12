@@ -15,3 +15,19 @@ usersRoutes.patch("/me", requireAuth, (req, res, next) => {
 usersRoutes.get("/", requireAuth, requireRole("admin"), (req, res, next) => {
   usersController.listUsers(req, res).catch(next);
 });
+
+usersRoutes.get("/directory", requireAuth, requireRole("admin", "asset_manager"), (req, res, next) => {
+  usersController.directory(req, res).catch(next);
+});
+
+usersRoutes.patch("/:id/role", requireAuth, requireRole("admin"), (req, res, next) => {
+  usersController.updateRole(req, res).catch(next);
+});
+
+usersRoutes.patch("/:id/status", requireAuth, requireRole("admin"), (req, res, next) => {
+  usersController.updateStatus(req, res).catch(next);
+});
+
+usersRoutes.patch("/:id", requireAuth, requireRole("admin"), (req, res, next) => {
+  usersController.updateUser(req, res).catch(next);
+});
