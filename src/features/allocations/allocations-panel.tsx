@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
+import { AssetSelect, DepartmentSelect, UserSelect } from "@/components/entity-selects";
 
 type Allocation = {
   id: number;
@@ -112,8 +113,8 @@ export function AllocationsPanel() {
   useEffect(() => { load(); }, [load]);
 
   async function handleAllocate() {
-    if (!allocAssetId) { setAllocError("Asset ID is required"); return; }
-    if (!allocUserId && !allocDeptId) { setAllocError("User ID or Department ID is required"); return; }
+    if (!allocAssetId) { setAllocError("An asset is required"); return; }
+    if (!allocUserId && !allocDeptId) { setAllocError("A user or department is required"); return; }
     setAllocSaving(true); setAllocError(null);
     try {
       const body = {
@@ -156,7 +157,7 @@ export function AllocationsPanel() {
   }
 
   async function handleTransferRequest() {
-    if (!txAssetId) { setTxError("Asset ID is required"); return; }
+    if (!txAssetId) { setTxError("An asset is required"); return; }
     setTxSaving(true); setTxError(null);
     try {
       const body = {
@@ -237,9 +238,9 @@ export function AllocationsPanel() {
             <h3 className="font-semibold text-neutral-800">Allocate Asset</h3>
             {allocError && <ErrorMsg msg={allocError} />}
             <div className="grid gap-3 sm:grid-cols-2">
-              <input className={inputCls} placeholder="Asset ID *" type="number" value={allocAssetId} onChange={(e) => setAllocAssetId(e.target.value)} />
-              <input className={inputCls} placeholder="User ID (or leave blank)" type="number" value={allocUserId} onChange={(e) => setAllocUserId(e.target.value)} />
-              <input className={inputCls} placeholder="Department ID (or leave blank)" type="number" value={allocDeptId} onChange={(e) => setAllocDeptId(e.target.value)} />
+              <AssetSelect className={inputCls} value={allocAssetId} onChange={setAllocAssetId} placeholder="Select asset *" />
+              <UserSelect className={inputCls} value={allocUserId} onChange={setAllocUserId} placeholder="Select user (or leave blank)" />
+              <DepartmentSelect className={inputCls} value={allocDeptId} onChange={setAllocDeptId} placeholder="Select department (or leave blank)" />
               <div>
                 <label className="mb-1 block text-xs font-medium text-neutral-500">Expected Return Date</label>
                 <input className={inputCls} type="date" value={allocReturnDate} onChange={(e) => setAllocReturnDate(e.target.value)} />
@@ -257,9 +258,9 @@ export function AllocationsPanel() {
             <h3 className="font-semibold text-neutral-800">Request Transfer</h3>
             {txError && <ErrorMsg msg={txError} />}
             <div className="grid gap-3 sm:grid-cols-2">
-              <input className={inputCls} placeholder="Asset ID *" type="number" value={txAssetId} onChange={(e) => setTxAssetId(e.target.value)} />
-              <input className={inputCls} placeholder="To User ID" type="number" value={txToUserId} onChange={(e) => setTxToUserId(e.target.value)} />
-              <input className={inputCls} placeholder="To Department ID" type="number" value={txToDeptId} onChange={(e) => setTxToDeptId(e.target.value)} />
+              <AssetSelect className={inputCls} value={txAssetId} onChange={setTxAssetId} placeholder="Select asset *" />
+              <UserSelect className={inputCls} value={txToUserId} onChange={setTxToUserId} placeholder="Select destination user" />
+              <DepartmentSelect className={inputCls} value={txToDeptId} onChange={setTxToDeptId} placeholder="Select destination department" />
               <input className={inputCls} placeholder="Notes (optional)" value={txNotes} onChange={(e) => setTxNotes(e.target.value)} />
             </div>
             <div className="flex gap-3">

@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiFetch } from "@/lib/api";
-import { clearDemoSessionCookie } from "@/lib/demo-auth";
 
 export function SignOutButton() {
   const router = useRouter();
@@ -13,7 +12,6 @@ export function SignOutButton() {
     setLoading(true);
     try {
       await apiFetch("/api/auth/logout", { method: "POST" }).catch(() => null);
-      document.cookie = clearDemoSessionCookie();
       router.push("/");
       router.refresh();
     } finally {

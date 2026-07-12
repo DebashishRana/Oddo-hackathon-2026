@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: saas-starter-db
+    container_name: assetflow-db
     environment:
       POSTGRES_USER: starter
       POSTGRES_PASSWORD: starter
@@ -10,6 +10,32 @@ services:
       - "5432:5432"
     volumes:
       - starter_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U starter -d starter"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: assetflow-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://starter:starter@db:5432/starter
+      APP_NAME: AssetFlow API
+      COOKIE_SECURE: "false"
+      FRONTEND_URL: http://localhost:3000
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - "4000:4000"
+    profiles:
+      - full
 
 volumes:
   starter_db_data:

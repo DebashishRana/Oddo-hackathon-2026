@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ok } from "../../utils/apiResponse";
 import { AppError } from "../../utils/errors";
 import { allocationsService } from "./allocations.service";
+import { userRepository } from "../../db/repositories/user.repository";
 
 export class AllocationsController {
   async list(req: Request, res: Response) {
@@ -15,14 +16,27 @@ export class AllocationsController {
     if (limit) filters.limit = Number(limit);
     if (offset) filters.offset = Number(offset);
 
+    const role = req.user!.role;
+    if (role === "employee") {
+      filters.userId = req.user!.id;
+    } else if (role === "department_head") {
+      const profile = await userRepository.findById(req.user!.id);
+      if (profile?.department_id) {
+        filters.departmentId = profile.department_id;
+      }
+    }
+
     const allocations = await allocationsService.list(filters);
     return ok(res, "Allocations retrieved.", { allocations });
   }
 
   async allocate(req: Request, res: Response) {
-    const { assetId, allocatedToUserId, allocatedToDepartmentId, expectedReturnDate } = req.body;
+    const assetId = Number(req.body.assetId);
+    const allocatedToUserId = req.body.allocatedToUserId != null ? Number(req.body.allocatedToUserId) : null;
+    const allocatedToDepartmentId = req.body.allocatedToDepartmentId != null ? Number(req.body.allocatedToDepartmentId) : null;
+    const { expectedReturnDate } = req.body;
 
-    if (!assetId || typeof assetId !== "number") {
+    if (!assetId) {
       throw new AppError("assetId is required", 400, "VALIDATION_ERROR", "Asset id is required.");
     }
 
@@ -32,8 +46,8 @@ export class AllocationsController {
 
     const allocation = await allocationsService.allocate({
       assetId,
-      allocatedToUserId: allocatedToUserId ?? null,
-      allocatedToDepartmentId: allocatedToDepartmentId ?? null,
+      allocatedToUserId,
+      allocatedToDepartmentId,
       allocatedBy: req.user?.id ?? undefined,
       expectedReturnDate: expectedReturnDate ? new Date(expectedReturnDate) : null,
     });

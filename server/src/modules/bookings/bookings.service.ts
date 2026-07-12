@@ -39,6 +39,15 @@ export const bookingsService = {
       entityId: booking.id,
       metadata: { assetId: input.assetId, startsAt: input.startsAt, endsAt: input.endsAt },
     });
+
+    await activityService.notifyIfUser(input.bookedBy, {
+      type: "booking_confirmed",
+      title: "Booking confirmed",
+      body: `${asset.name} booked from ${new Date(input.startsAt).toLocaleString()} to ${new Date(input.endsAt).toLocaleString()}.`,
+      entityType: "booking",
+      entityId: booking.id,
+    });
+
     return booking;
   },
 
@@ -61,6 +70,15 @@ export const bookingsService = {
       entityId: id,
       metadata: {},
     });
+
+    await activityService.notifyIfUser(booking.booked_by, {
+      type: "booking_cancelled",
+      title: "Booking cancelled",
+      body: `Your booking for ${booking.asset_name ?? `asset #${booking.asset_id}`} was cancelled.`,
+      entityType: "booking",
+      entityId: id,
+    });
+
     return updated;
   },
 
@@ -98,6 +116,15 @@ export const bookingsService = {
       entityId: id,
       metadata: { startsAt, endsAt },
     });
+
+    await activityService.notifyIfUser(booking.booked_by, {
+      type: "booking_rescheduled",
+      title: "Booking rescheduled",
+      body: `Your booking was moved to ${startsAt.toLocaleString()} – ${endsAt.toLocaleString()}.`,
+      entityType: "booking",
+      entityId: id,
+    });
+
     return bookingRepository.findById(id);
   },
 };

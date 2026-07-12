@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
+import { DepartmentSelect } from "@/components/entity-selects";
 
 type Asset = {
   id: number;
@@ -186,9 +187,9 @@ export function AssetsPanel() {
                 <option value="">Category (optional)</option>
                 {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
-              <input className={inputCls} placeholder="Department ID (optional)" type="number" value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} />
+              <DepartmentSelect className={inputCls} value={departmentId} onChange={setDepartmentId} placeholder="Select department (optional)" />
               <select className={inputCls} value={condition} onChange={(e) => setCondition(e.target.value)}>
-                <option value="new">New</option>
+                <option value="excellent">Excellent</option>
                 <option value="good">Good</option>
                 <option value="fair">Fair</option>
                 <option value="poor">Poor</option>

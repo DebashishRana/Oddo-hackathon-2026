@@ -47,6 +47,18 @@ export class AuthController {
     const name = requireString(req.body.name, "name");
     const department = requireString(req.body.department, "department");
     const result = await authService.register({ email, password, name, department });
+
+    // Auto-login when email verification is not required (local/hackathon mode)
+    if (!result.verificationRequired) {
+      const session = await authService.login({ email, password });
+      setSessionCookie(res, session.token);
+      return ok(res, "Account created and signed in.", {
+        ...result,
+        token: session.token,
+        user: session.user,
+      });
+    }
+
     return ok(res, "Account created. Check your email to verify your account.", result);
   }
 

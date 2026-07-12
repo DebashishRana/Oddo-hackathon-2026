@@ -16,6 +16,11 @@ usersRoutes.get("/", requireAuth, requireRole("admin"), (req, res, next) => {
   usersController.listUsers(req, res).catch(next);
 });
 
+// Lightweight picker list for allocation/transfer/audit forms (all authenticated roles)
+usersRoutes.get("/options", requireAuth, (req, res, next) => {
+  usersController.options(req, res).catch(next);
+});
+
 usersRoutes.get("/directory", requireAuth, requireRole("admin", "asset_manager"), (req, res, next) => {
   usersController.directory(req, res).catch(next);
 });

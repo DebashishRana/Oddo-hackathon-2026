@@ -8,13 +8,14 @@ export default function SignInPage() {
     <AuthShell
       eyebrow="Welcome back"
       title="Log in to your workspace."
-      subtitle="Use the demo login below to open the dashboard now. Your team can wire the full backend auth later."
+      subtitle="Sign in with your AssetFlow account. New users always start as Employees — admins promote roles from Organization Setup."
     >
       <div className="space-y-5">
         <AuthForm mode="signin" />
 
         <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
-          Demo access: <span className="font-semibold">demo@dectra.local</span> / <span className="font-semibold">Demo1234!</span>
+          Seed admin: <span className="font-semibold">admin@assetflow.local</span> /{" "}
+          <span className="font-semibold">Admin1234!</span>
         </div>
 
         <div className="flex items-center gap-4">
@@ -44,7 +45,6 @@ export default function SignInPage() {
             Create account
           </Link>
         </div>
-
       </div>
     </AuthShell>
   );

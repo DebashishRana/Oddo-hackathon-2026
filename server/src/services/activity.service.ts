@@ -34,6 +34,37 @@ export const activityService = {
     }
   },
 
+  async notifyRoles(
+    roleSlugs: string[],
+    payload: Omit<CreateNotificationInput, "userId">,
+    excludeUserId?: number | null
+  ) {
+    const result = await getPool().query(
+      `SELECT u.id
+       FROM users u
+       JOIN roles r ON r.id = u.role_id
+       WHERE r.slug = ANY($1::text[])
+         AND u.is_active = TRUE
+         AND ($2::int IS NULL OR u.id <> $2)`,
+      [roleSlugs, excludeUserId ?? null]
+    );
+
+    await this.notifyMany(
+      result.rows.map((row) => ({
+        userId: Number(row.id),
+        ...payload,
+      }))
+    );
+  },
+
+  async notifyIfUser(
+    userId: number | null | undefined,
+    payload: Omit<CreateNotificationInput, "userId">
+  ) {
+    if (!userId) return;
+    await this.notify({ userId, ...payload });
+  },
+
   async log(input: CreateActivityLogInput) {
     const result = await getPool().query(
       `INSERT INTO activity_logs (actor_id, action, entity_type, entity_id, metadata)

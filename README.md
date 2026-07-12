@@ -6,9 +6,9 @@ Organizations can manage departments, employees, assets, allocations, shared-res
 
 ## Stack
 
-- **Frontend:** Next.js 15 + React 19 + Tailwind (existing shell preserved)
+- **Frontend:** Next.js 15 + React 19 + Tailwind
 - **Backend:** Express 5 + TypeScript
-- **Database:** PostgreSQL
+- **Database:** PostgreSQL 16 (Docker)
 
 ## Roles
 
@@ -21,7 +21,7 @@ Organizations can manage departments, employees, assets, allocations, shared-res
 
 Signup always creates an **Employee** account. Admins promote people from Organization → Employees.
 
-## Modules (independent)
+## Modules
 
 | Area | API prefix | Dashboard route |
 |------|------------|-----------------|
@@ -50,12 +50,12 @@ npm install
 docker compose up -d db
 ```
 
-3. Env files are already scaffolded:
+3. Env files:
 
-- Root: `.env.local`
-- Backend: `server/.env` (uses `postgresql://starter:starter@localhost:5432/starter`)
+- Root: `.env.local` (from `.env.example`)
+- Backend: `server/.env` (from `server/.env.example`) — default DB URL `postgresql://starter:starter@localhost:5432/starter`
 
-4. Run migrations (creates schema + seed admin + starter departments/categories):
+4. Run migrations (schema + seed admin + demo users/assets):
 
 ```bash
 npm run server:migrate
@@ -70,26 +70,29 @@ npm run dev
 
 Open http://localhost:3000
 
-## Seed admin login
+## Seed logins (password for all: `Admin1234!`)
 
-After migrations:
+| Email | Role |
+|-------|------|
+| `admin@assetflow.local` | Admin |
+| `manager@assetflow.local` | Asset Manager |
+| `head@assetflow.local` | Department Head |
+| `employee@assetflow.local` | Employee |
 
-- **Email:** `admin@assetflow.local`
-- **Password:** `Admin1234!`
-
-Use Organization → Employees to promote other signed-up users to Department Head or Asset Manager.
+Signup creates Employee accounts only. Promote roles from Organization → Employees.
 
 ## Core workflows covered
 
-1. Login / signup (employee-only signup, email verify when Resend is configured; auto-active locally without `RESEND_API_KEY`)
-2. KPI dashboard with overdue returns highlighted
+1. Login / signup (employee-only signup; email verify when Resend is configured; auto-active + auto-login locally without `RESEND_API_KEY`)
+2. KPI dashboard with overdue returns highlighted + notifications
 3. Organization setup: departments, categories, employee directory + role promotion
 4. Asset registration with auto tags (`AF-0001`…), lifecycle statuses, search/filter
 5. Allocation with double-allocation blocked + transfer request workflow
 6. Shared resource booking with overlap validation
-7. Maintenance approval workflow (Pending → Approved → Assigned → In Progress → Resolved)
-8. Audit cycles with discrepancy report on close
-9. Notifications + activity logs
+7. Maintenance approval workflow (Pending → Approved → Technician Assigned → In Progress → Resolved)
+8. Audit cycles with auditor assignment + discrepancy report on close
+9. Live analytics + CSV exportable reports
+10. Notifications + activity logs
 
 ## Useful commands
 
@@ -99,4 +102,5 @@ npm run server:dev
 npm run server:migrate
 npm run build
 npm run server:build
+docker compose up -d db
 ```

@@ -20,6 +20,19 @@ export const maintenanceService = {
       entityId: request.id,
       metadata: { assetId: input.assetId, priority: input.priority },
     });
+
+    await activityService.notifyRoles(
+      ["admin", "asset_manager"],
+      {
+        type: "maintenance_requested",
+        title: "Maintenance request raised",
+        body: `${asset.name} (${asset.asset_tag}): ${input.description.slice(0, 120)}`,
+        entityType: "maintenance",
+        entityId: request.id,
+      },
+      actorId
+    );
+
     return request;
   },
 
@@ -44,6 +57,15 @@ export const maintenanceService = {
       entityId: id,
       metadata: {},
     });
+
+    await activityService.notifyIfUser(req.requested_by, {
+      type: "maintenance_approved",
+      title: "Maintenance approved",
+      body: `Your maintenance request for ${req.asset_name ?? `asset #${req.asset_id}`} was approved. The asset is now under maintenance.`,
+      entityType: "maintenance",
+      entityId: id,
+    });
+
     return updated;
   },
 
@@ -60,6 +82,17 @@ export const maintenanceService = {
       entityId: id,
       metadata: { reason: rejectionReason },
     });
+
+    await activityService.notifyIfUser(req.requested_by, {
+      type: "maintenance_rejected",
+      title: "Maintenance rejected",
+      body: rejectionReason
+        ? `Your maintenance request was rejected: ${rejectionReason}`
+        : "Your maintenance request was rejected.",
+      entityType: "maintenance",
+      entityId: id,
+    });
+
     return updated;
   },
 
@@ -78,6 +111,15 @@ export const maintenanceService = {
       entityId: id,
       metadata: { technicianName },
     });
+
+    await activityService.notifyIfUser(req.requested_by, {
+      type: "maintenance_assigned",
+      title: "Technician assigned",
+      body: `${technicianName.trim()} was assigned to your maintenance request.`,
+      entityType: "maintenance",
+      entityId: id,
+    });
+
     return updated;
   },
 
@@ -118,6 +160,15 @@ export const maintenanceService = {
       entityId: id,
       metadata: {},
     });
+
+    await activityService.notifyIfUser(req.requested_by, {
+      type: "maintenance_resolved",
+      title: "Maintenance resolved",
+      body: `Maintenance for ${req.asset_name ?? `asset #${req.asset_id}`} is resolved. The asset is available again.`,
+      entityType: "maintenance",
+      entityId: id,
+    });
+
     return updated;
   },
 };

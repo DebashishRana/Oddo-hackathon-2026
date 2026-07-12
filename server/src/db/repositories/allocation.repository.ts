@@ -40,7 +40,17 @@ export const allocationRepository = {
 
     if (filters.assetId !== undefined) { conditions.push(`aa.asset_id = $${idx++}`); values.push(filters.assetId); }
     if (filters.userId !== undefined) { conditions.push(`aa.allocated_to_user_id = $${idx++}`); values.push(filters.userId); }
-    if (filters.departmentId !== undefined) { conditions.push(`aa.allocated_to_department_id = $${idx++}`); values.push(filters.departmentId); }
+    if (filters.departmentId !== undefined) {
+      conditions.push(`(
+        aa.allocated_to_department_id = $${idx}
+        OR EXISTS (
+          SELECT 1 FROM users du
+          WHERE du.id = aa.allocated_to_user_id AND du.department_id = $${idx}
+        )
+      )`);
+      values.push(filters.departmentId);
+      idx++;
+    }
     if (filters.status) { conditions.push(`aa.status = $${idx++}`); values.push(filters.status); }
 
     const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";

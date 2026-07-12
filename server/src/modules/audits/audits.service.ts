@@ -25,6 +25,20 @@ export const auditsService = {
       entityId: cycle.id,
       metadata: { name: cycle.name },
     });
+
+    if (input.auditorIds?.length) {
+      await activityService.notifyMany(
+        input.auditorIds.map((userId) => ({
+          userId,
+          type: "audit_assigned",
+          title: "Audit cycle assigned",
+          body: `You were assigned as an auditor for "${cycle.name}".`,
+          entityType: "audit_cycle",
+          entityId: cycle.id,
+        }))
+      );
+    }
+
     return cycle;
   },
 
@@ -48,6 +62,21 @@ export const auditsService = {
       entityId: item.id,
       metadata: { cycleId, assetId, result },
     });
+
+    if (result === "missing" || result === "damaged") {
+      await activityService.notifyRoles(
+        ["admin", "asset_manager"],
+        {
+          type: "audit_discrepancy",
+          title: "Audit discrepancy flagged",
+          body: `Asset #${assetId} marked ${result} in audit "${cycle.name}".`,
+          entityType: "audit_cycle",
+          entityId: cycleId,
+        },
+        userId
+      );
+    }
+
     return item;
   },
 
@@ -79,6 +108,18 @@ export const auditsService = {
       entityId: id,
       metadata: { missingCount: missingItems.length, discrepancyCount: discrepancies.length },
     });
+
+    await activityService.notifyRoles(
+      ["admin", "asset_manager"],
+      {
+        type: "audit_closed",
+        title: "Audit cycle closed",
+        body: `"${cycle.name}" closed with ${discrepancies.length} discrepancy(ies). Missing assets marked Lost.`,
+        entityType: "audit_cycle",
+        entityId: id,
+      },
+      actorId
+    );
 
     return { cycle: closed, discrepancies };
   },

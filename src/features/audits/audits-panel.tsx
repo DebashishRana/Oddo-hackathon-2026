@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
+import { AssetSelect, DepartmentSelect, MultiUserSelect } from "@/components/entity-selects";
 
 type AuditCycle = {
   id: number;
@@ -53,6 +54,7 @@ export function AuditsPanel() {
   // create form
   const [name, setName] = useState("");
   const [departmentId, setDepartmentId] = useState("");
+  const [auditorIds, setAuditorIds] = useState<number[]>([]);
   const [location, setLocation] = useState("");
   const [startsOn, setStartsOn] = useState("");
   const [endsOn, setEndsOn] = useState("");
@@ -94,14 +96,14 @@ export function AuditsPanel() {
         location: location.trim() || null,
         startsOn,
         endsOn,
-        auditorIds: [],
+        auditorIds,
       };
       const r = await apiFetch("/api/audits", { method: "POST", body: JSON.stringify(body) });
       const p = await r.json();
       if (!r.ok) throw new Error(p?.message || "Create failed");
       setSuccess("Audit cycle created.");
       setShowForm(false);
-      setName(""); setDepartmentId(""); setLocation(""); setStartsOn(""); setEndsOn("");
+      setName(""); setDepartmentId(""); setAuditorIds([]); setLocation(""); setStartsOn(""); setEndsOn("");
       await load();
     } catch (err: unknown) {
       setFormError(err instanceof Error ? err.message : "Create failed");
@@ -170,8 +172,8 @@ export function AuditsPanel() {
             <div className="grid gap-3 sm:grid-cols-2">
               <input className={inputCls} placeholder="Cycle name *" value={name} onChange={(e) => setName(e.target.value)} />
               <input className={inputCls} placeholder="Location (optional)" value={location} onChange={(e) => setLocation(e.target.value)} />
-              <input className={inputCls} placeholder="Department ID (optional)" type="number" value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} />
-              <div />
+              <DepartmentSelect className={inputCls} value={departmentId} onChange={setDepartmentId} placeholder="Select department (optional)" />
+              <MultiUserSelect className={inputCls} values={auditorIds} onChange={setAuditorIds} />
               <div>
                 <label className="mb-1 block text-xs font-medium text-neutral-500">Starts On *</label>
                 <input className={inputCls} type="date" value={startsOn} onChange={(e) => setStartsOn(e.target.value)} />
@@ -249,8 +251,8 @@ export function AuditsPanel() {
                 {markCycleId === cycle.id && (
                   <div className="mt-3 flex flex-wrap items-end gap-3 rounded-[20px] border border-neutral-200 bg-neutral-50 p-4">
                     <div className="flex-1 min-w-[120px]">
-                      <label className="mb-1 block text-xs font-medium text-neutral-500">Asset ID</label>
-                      <input className={inputCls} type="number" placeholder="Asset ID" value={markAssetId} onChange={(e) => setMarkAssetId(e.target.value)} />
+                      <label className="mb-1 block text-xs font-medium text-neutral-500">Asset</label>
+                      <AssetSelect className={inputCls} value={markAssetId} onChange={setMarkAssetId} placeholder="Select asset" />
                     </div>
                     <div>
                       <label className="mb-1 block text-xs font-medium text-neutral-500">Result</label>

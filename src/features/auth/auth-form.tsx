@@ -3,11 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiFetch } from "@/lib/api";
-import {
-  buildDemoSessionUser,
-  createDemoSessionCookie,
-  isDemoCredentials,
-} from "@/lib/demo-auth";
 
 type AuthMode = "signin" | "signup";
 
@@ -56,13 +51,6 @@ export function AuthForm({ mode }: Props) {
     }
 
     try {
-      if (!isSignup && isDemoCredentials(email, password)) {
-        document.cookie = createDemoSessionCookie(buildDemoSessionUser(email));
-        router.push("/dashboard");
-        router.refresh();
-        return;
-      }
-
       const response = await apiFetch(isSignup ? "/api/auth/register" : "/api/auth/login", {
         method: "POST",
         body: JSON.stringify(
@@ -80,10 +68,14 @@ export function AuthForm({ mode }: Props) {
         ),
       });
 
-      let payload: ApiErrorBody & { data?: { verificationRequired?: boolean } } = {};
+      let payload: ApiErrorBody & {
+        data?: { verificationRequired?: boolean; user?: { email?: string } };
+      } = {};
 
       try {
-        payload = (await response.json()) as ApiErrorBody & { data?: { verificationRequired?: boolean } };
+        payload = (await response.json()) as ApiErrorBody & {
+          data?: { verificationRequired?: boolean; user?: { email?: string } };
+        };
       } catch {
         payload = {};
       }
@@ -96,7 +88,7 @@ export function AuthForm({ mode }: Props) {
         throw new Error(getErrorMessage(payload, "Authentication failed"));
       }
 
-      if (isSignup) {
+      if (isSignup && payload.data?.verificationRequired) {
         router.push(`/auth/verify-email?email=${encodeURIComponent(email)}&sent=1`);
       } else {
         router.push("/dashboard");
@@ -198,7 +190,7 @@ export function AuthForm({ mode }: Props) {
 
       {isSignup ? (
         <p className="rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
-          Signup creates an Employee account. Admins assign roles later.
+          Signup creates an Employee account. Admins assign roles later from Organization → Employees.
         </p>
       ) : null}
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
+import { AssetSelect } from "@/components/entity-selects";
 
 type Booking = {
   id: number;
@@ -85,7 +86,7 @@ export function BookingsPanel() {
   useEffect(() => { load(); }, [load]);
 
   async function handleCreate() {
-    if (!assetId) { setFormError("Asset ID is required"); return; }
+    if (!assetId) { setFormError("A bookable asset is required"); return; }
     if (!startsAt || !endsAt) { setFormError("Start and end time are required"); return; }
     setSaving(true); setFormError(null);
     try {
@@ -169,7 +170,7 @@ export function BookingsPanel() {
             <h3 className="font-semibold text-neutral-800">Create Booking</h3>
             {formError && <ErrorMsg msg={formError} />}
             <div className="grid gap-3 sm:grid-cols-2">
-              <input className={inputCls} placeholder="Bookable Asset ID *" type="number" value={assetId} onChange={(e) => setAssetId(e.target.value)} />
+              <AssetSelect className={inputCls} value={assetId} onChange={setAssetId} bookableOnly placeholder="Select bookable asset *" />
               <input className={inputCls} placeholder="Purpose (optional)" value={purpose} onChange={(e) => setPurpose(e.target.value)} />
               <div>
                 <label className="mb-1 block text-xs font-medium text-neutral-500">Starts At *</label>

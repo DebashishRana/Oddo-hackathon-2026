@@ -4,22 +4,21 @@ import { SignOutButton } from "./sign-out-button";
 type NavItem = {
   href: string;
   label: string;
+  roles?: string[];
 };
 
 const mainNav: NavItem[] = [
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/dashboard/organization", label: "Organization" },
+  { href: "/dashboard/organization", label: "Organization", roles: ["admin"] },
   { href: "/dashboard/assets", label: "Assets" },
   { href: "/dashboard/allocations", label: "Allocations" },
   { href: "/dashboard/bookings", label: "Bookings" },
   { href: "/dashboard/maintenance", label: "Maintenance" },
-  { href: "/dashboard/audits", label: "Audits" },
-  { href: "/dashboard/analytics", label: "Analytics" },
+  { href: "/dashboard/audits", label: "Audits", roles: ["admin", "asset_manager"] },
+  { href: "/dashboard/analytics", label: "Analytics", roles: ["admin", "asset_manager", "department_head"] },
   { href: "/dashboard/notifications", label: "Notifications" },
   { href: "/dashboard/settings", label: "Settings" },
 ];
-
-const toolsNav: NavItem[] = [];
 
 type Props = {
   user?: {
@@ -30,7 +29,23 @@ type Props = {
   children: React.ReactNode;
 };
 
+const roleLabel = (role?: string) => {
+  switch (role) {
+    case "admin":
+      return "Admin";
+    case "asset_manager":
+      return "Asset Manager";
+    case "department_head":
+      return "Department Head";
+    default:
+      return "Employee";
+  }
+};
+
 export function DashboardShell({ user, children }: Props) {
+  const role = user?.role || "employee";
+  const visibleNav = mainNav.filter((item) => !item.roles || item.roles.includes(role));
+
   return (
     <div className="min-h-screen bg-[#f7f7f5] text-neutral-950">
       <div className="mx-auto grid min-h-screen max-w-[1600px] grid-cols-1 gap-4 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-5">
@@ -47,7 +62,7 @@ export function DashboardShell({ user, children }: Props) {
 
           <div className="mt-6 space-y-1">
             <p className="px-3 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-400">General</p>
-            {mainNav.map((item) => (
+            {visibleNav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -58,30 +73,15 @@ export function DashboardShell({ user, children }: Props) {
             ))}
           </div>
 
-          {toolsNav.length > 0 && (
-            <div className="mt-6 space-y-1 border-t border-neutral-200 pt-6">
-              <p className="px-3 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-400">Tools</p>
-              {toolsNav.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className="flex items-center justify-between rounded-2xl px-3 py-3 text-sm text-neutral-700 transition hover:bg-neutral-100 hover:text-neutral-950"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          )}
-
           <div className="mt-auto rounded-[24px] border border-neutral-200 bg-neutral-50 p-4">
-            <p className="text-xs uppercase tracking-[0.16em] text-neutral-400">Team</p>
+            <p className="text-xs uppercase tracking-[0.16em] text-neutral-400">Signed in</p>
             <div className="mt-2 flex items-center justify-between">
               <div>
-                <p className="font-semibold text-neutral-950">{user?.name || "Operations"}</p>
-                <p className="text-sm text-neutral-500">{user?.role || "employee"}</p>
+                <p className="font-semibold text-neutral-950">{user?.name || "User"}</p>
+                <p className="text-sm text-neutral-500">{roleLabel(role)}</p>
               </div>
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-400 text-sm font-semibold text-white">
-                {user?.name?.[0]?.toUpperCase() || "A"}
+                {user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "A"}
               </div>
             </div>
             <div className="mt-4">
@@ -92,23 +92,29 @@ export function DashboardShell({ user, children }: Props) {
 
         <main className="flex min-w-0 flex-col gap-4">
           <header className="flex flex-col gap-4 rounded-[28px] border border-neutral-200 bg-white px-5 py-4 shadow-[0_10px_40px_rgba(0,0,0,0.04)] lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-3">
-              <button className="flex h-10 w-10 items-center justify-center rounded-2xl border border-neutral-200 text-neutral-500">☰</button>
-              <label className="flex min-w-0 items-center gap-3 rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2.5">
-                <span className="text-neutral-400">⌕</span>
-                <input className="w-full bg-transparent text-sm outline-none placeholder:text-neutral-400" placeholder="Search" />
-              </label>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-400">Workspace</p>
+              <h1 className="font-display text-xl font-semibold text-neutral-950">Asset & Resource Management</h1>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Link href="/" className="rounded-full px-4 py-2 text-sm text-neutral-600 transition hover:bg-neutral-100">
-                Home
+              <Link
+                href="/dashboard/notifications"
+                className="rounded-full px-4 py-2 text-sm text-neutral-600 transition hover:bg-neutral-100"
+              >
+                Notifications
               </Link>
-              <Link href="/dashboard/settings" className="rounded-full px-4 py-2 text-sm text-neutral-600 transition hover:bg-neutral-100">
+              <Link
+                href="/dashboard/settings"
+                className="rounded-full px-4 py-2 text-sm text-neutral-600 transition hover:bg-neutral-100"
+              >
                 Settings
               </Link>
-              <Link href="/auth/signin" className="rounded-full bg-[#1677ff] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0b63db]">
-                Open AssetFlow
+              <Link
+                href="/dashboard/assets"
+                className="rounded-full bg-[#1677ff] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0b63db]"
+              >
+                Register Asset
               </Link>
             </div>
           </header>

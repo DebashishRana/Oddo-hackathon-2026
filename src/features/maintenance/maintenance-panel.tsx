@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
+import { AssetSelect } from "@/components/entity-selects";
 
 type MaintenanceRequest = {
   id: number;
@@ -27,7 +28,7 @@ const statusColors: Record<string, string> = {
   pending: "bg-amber-50 text-amber-700",
   approved: "bg-blue-50 text-blue-700",
   rejected: "bg-rose-50 text-rose-700",
-  assigned: "bg-indigo-50 text-indigo-700",
+  technician_assigned: "bg-indigo-50 text-indigo-700",
   in_progress: "bg-cyan-50 text-cyan-700",
   resolved: "bg-emerald-50 text-emerald-700",
 };
@@ -91,7 +92,7 @@ export function MaintenancePanel() {
   useEffect(() => { load(); }, [load]);
 
   async function handleCreate() {
-    if (!assetId) { setFormError("Asset ID is required"); return; }
+    if (!assetId) { setFormError("An asset is required"); return; }
     if (!description.trim()) { setFormError("Description is required"); return; }
     setSaving(true); setFormError(null);
     try {
@@ -172,7 +173,7 @@ export function MaintenancePanel() {
             <h3 className="font-semibold text-neutral-800">Raise Maintenance Request</h3>
             {formError && <ErrorMsg msg={formError} />}
             <div className="grid gap-3 sm:grid-cols-2">
-              <input className={inputCls} placeholder="Asset ID *" type="number" value={assetId} onChange={(e) => setAssetId(e.target.value)} />
+              <AssetSelect className={inputCls} value={assetId} onChange={setAssetId} placeholder="Select asset *" />
               <select className={inputCls} value={priority} onChange={(e) => setPriority(e.target.value)}>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
@@ -251,7 +252,7 @@ export function MaintenancePanel() {
                         Assign
                       </button>
                     )}
-                    {req.status === "assigned" && (
+                    {req.status === "technician_assigned" && (
                       <button
                         className="rounded-full bg-cyan-500 px-3 py-1 text-xs font-semibold text-white hover:bg-cyan-600 disabled:opacity-60"
                         onClick={() => handleAction(req.id, "start")}

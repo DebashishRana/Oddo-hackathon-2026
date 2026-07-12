@@ -39,6 +39,14 @@ export const allocationsService = {
       metadata: { assetId: input.assetId, toUserId: input.allocatedToUserId, toDeptId: input.allocatedToDepartmentId },
     });
 
+    await activityService.notifyIfUser(input.allocatedToUserId, {
+      type: "asset_assigned",
+      title: "Asset assigned",
+      body: `${asset.name} (${asset.asset_tag}) has been allocated to you.`,
+      entityType: "allocation",
+      entityId: allocation.id,
+    });
+
     return allocation;
   },
 
@@ -58,6 +66,26 @@ export const allocationsService = {
       entityId: id,
       metadata: { assetId: allocation.asset_id, notes },
     });
+
+    await activityService.notifyIfUser(allocation.allocated_to_user_id, {
+      type: "asset_returned",
+      title: "Asset return recorded",
+      body: `Your allocation of ${allocation.asset_name ?? `asset #${allocation.asset_id}`} has been marked returned.`,
+      entityType: "allocation",
+      entityId: id,
+    });
+
+    await activityService.notifyRoles(
+      ["admin", "asset_manager"],
+      {
+        type: "asset_returned",
+        title: "Asset returned",
+        body: `${allocation.asset_name ?? `Asset #${allocation.asset_id}`} was returned${notes ? `: ${notes}` : "."}`,
+        entityType: "allocation",
+        entityId: id,
+      },
+      actorId
+    );
 
     return returned;
   },

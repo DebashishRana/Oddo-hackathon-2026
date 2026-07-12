@@ -2,15 +2,9 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { DashboardShell } from "../../features/dashboard/dashboard-shell";
 import { API_BASE_URL } from "@/lib/api";
-import { DEMO_AUTH_COOKIE, parseDemoSession } from "@/lib/demo-auth";
 
 async function getCurrentUser() {
   const cookieStore = await cookies();
-  const demoSession = parseDemoSession(cookieStore.get(DEMO_AUTH_COOKIE)?.value);
-
-  if (demoSession) {
-    return demoSession;
-  }
 
   try {
     const cookieHeader = cookieStore

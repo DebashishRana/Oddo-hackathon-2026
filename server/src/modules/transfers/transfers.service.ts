@@ -34,6 +34,19 @@ export const transfersService = {
       entityId: transfer.id,
       metadata: { assetId: input.assetId },
     });
+
+    await activityService.notifyRoles(
+      ["admin", "asset_manager", "department_head"],
+      {
+        type: "transfer_requested",
+        title: "Transfer request pending",
+        body: `Transfer requested for ${asset.name} (${asset.asset_tag}).`,
+        entityType: "transfer",
+        entityId: transfer.id,
+      },
+      input.requestedBy
+    );
+
     return transfer;
   },
 
@@ -76,6 +89,22 @@ export const transfersService = {
       metadata: { assetId: transfer.asset_id, newAllocationId: newAllocation.id },
     });
 
+    await activityService.notifyIfUser(transfer.requested_by, {
+      type: "transfer_approved",
+      title: "Transfer approved",
+      body: `Your transfer request for ${asset.name} (${asset.asset_tag}) was approved.`,
+      entityType: "transfer",
+      entityId: id,
+    });
+
+    await activityService.notifyIfUser(transfer.to_user_id, {
+      type: "asset_assigned",
+      title: "Asset transferred to you",
+      body: `${asset.name} (${asset.asset_tag}) has been transferred to you.`,
+      entityType: "transfer",
+      entityId: id,
+    });
+
     return updated;
   },
 
@@ -92,6 +121,17 @@ export const transfersService = {
       entityId: id,
       metadata: { reason },
     });
+
+    await activityService.notifyIfUser(transfer.requested_by, {
+      type: "transfer_rejected",
+      title: "Transfer rejected",
+      body: reason
+        ? `Your transfer request was rejected: ${reason}`
+        : "Your transfer request was rejected.",
+      entityType: "transfer",
+      entityId: id,
+    });
+
     return updated;
   },
 };

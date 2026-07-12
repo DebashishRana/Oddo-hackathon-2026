@@ -71,6 +71,20 @@ export class UsersController {
     });
   }
 
+  async options(_req: Request, res: Response) {
+    const users = await userRepository.listDirectory({ isActive: true });
+    return ok(res, "User options retrieved.", {
+      users: users.map((u) => ({
+        id: u.id,
+        email: u.email,
+        name: u.name,
+        department: u.department,
+        departmentId: u.department_id,
+        role: u.role_slug,
+      })),
+    });
+  }
+
   async directory(req: Request, res: Response) {
     const { roleSlug, departmentId, isActive, q } = req.query;
     const filters: Record<string, unknown> = {};
@@ -129,6 +143,15 @@ export class UsersController {
       entityType: "user",
       entityId: targetId,
       metadata: { from: target.role_slug, to: role },
+    });
+
+    await activityService.notify({
+      userId: targetId,
+      type: "role_updated",
+      title: "Role updated",
+      body: `Your role was changed to ${roleRecord.name}.`,
+      entityType: "user",
+      entityId: targetId,
     });
 
     return ok(res, "User role updated.", {
